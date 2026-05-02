@@ -282,16 +282,50 @@ function CornerTile({ tile }) {
     );
   }
   if (tile.id === 10) {
-    // JAIL / Just Visiting
+    // JAIL / Just Visiting — diagonal split, prisoner behind bars
     return (
       <div className="corner-inner corner-jail">
-        <div className="jail-just-visiting">JUST VISITING</div>
+        {/* Outer "Just Visiting" label running along diagonal edge */}
+        <div className="jail-just-visiting-label">JUST VISITING</div>
+ 
+        {/* Inner jail cell occupies the inner-corner area (toward board center) */}
         <div className="jail-cell">
-          <div className="jail-bars">
-            <span></span><span></span><span></span><span></span>
+          {/* Prisoner SVG behind the bars */}
+          <svg className="jail-prisoner" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            {/* Head */}
+            <circle cx="50" cy="34" r="14" fill="#FFE0BD" stroke="#1a1a1a" strokeWidth="2" />
+            {/* Hat brim */}
+            <ellipse cx="50" cy="22" rx="18" ry="3" fill="#1a1a1a" />
+            {/* Hat top */}
+            <rect x="40" y="8" width="20" height="14" fill="#1a1a1a" />
+            {/* Mustache */}
+            <path d="M 42 38 Q 46 40 50 38 Q 54 40 58 38" stroke="#1a1a1a" strokeWidth="2" fill="none" />
+            {/* Eyes */}
+            <circle cx="45" cy="32" r="1.5" fill="#1a1a1a" />
+            <circle cx="55" cy="32" r="1.5" fill="#1a1a1a" />
+            {/* Body / suit */}
+            <path d="M 30 50 L 30 95 L 70 95 L 70 50 Q 70 46 60 46 L 40 46 Q 30 46 30 50 Z"
+                  fill="#1a1a1a" />
+            {/* Shirt collar / white */}
+            <polygon points="42,46 50,58 58,46" fill="#fff" stroke="#1a1a1a" strokeWidth="1" />
+            {/* Bowtie */}
+            <polygon points="46,52 50,55 54,52 54,58 50,55 46,58" fill="#C5392A" stroke="#1a1a1a" strokeWidth="0.5" />
+            {/* Hands gripping bars (white gloves) */}
+            <ellipse cx="22" cy="62" rx="6" ry="4" fill="#fff" stroke="#1a1a1a" strokeWidth="1.5" />
+            <ellipse cx="78" cy="62" rx="6" ry="4" fill="#fff" stroke="#1a1a1a" strokeWidth="1.5" />
+          </svg>
+ 
+          {/* Vertical jail bars overlay */}
+          <div className="jail-bars-grid">
+            <span></span><span></span><span></span><span></span><span></span>
           </div>
-          <div className="jail-label">IN JAIL</div>
         </div>
+ 
+        {/* "IN JAIL" small label box, sits on top corner */}
+        <div className="jail-in-label">IN JAIL</div>
+ 
+        {/* Diagonal divider line */}
+        <div className="jail-diagonal"></div>
       </div>
     );
   }
