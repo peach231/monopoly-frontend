@@ -272,7 +272,7 @@
 }
 
 /* ============================================
-   BOARD - LARGER, takes more screen real estate
+   BOARD
    ============================================ */
 .board-wrapper {
   flex: 1;
@@ -291,14 +291,12 @@
 
 .board {
   display: grid;
-  /* Larger corners (2fr) and side tiles (1fr) - tiles extend further inward */
   grid-template-columns: 2fr repeat(9, 1fr) 2fr;
   grid-template-rows: 2fr repeat(9, 1fr) 2fr;
   gap: 0;
   background: #c8e6c0;
   border: 4px solid #1a1a1a;
   border-radius: 4px;
-  /* Board sized to fit available area without scrolling */
   width: min(98vmin, 95vh, 95vw, 880px);
   height: min(98vmin, 95vh, 95vw, 880px);
   max-width: 100%;
@@ -318,7 +316,7 @@
   transition: background 0.15s;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.55);
+  border: 1px solid rgba(0,0,0,0.75);
   display: flex;
   align-items: stretch;
   justify-content: stretch;
@@ -327,43 +325,43 @@
 .tile:hover { background: #c5dfba; }
 
 /* ============================================
-   COLOR BAR - extends along the OUTER edge of tile
+   COLOR BAR — INNER edge (toward board center)
    ============================================ */
 .tile .color-bar {
   position: absolute;
   z-index: 1;
 }
 
-/* Bottom row tiles (ids 1-9): outer edge is TOP of tile */
+/* Bottom row (1-9): outer edge is TOP */
 .tile[data-side="bottom"] .color-bar {
   top: 0; left: 0; right: 0;
   height: 22%;
   border-bottom: 1.5px solid #1a1a1a;
 }
 
-/* Left column tiles (ids 11-19): outer edge is LEFT */
+/* Left column (11-19): INNER edge is RIGHT (toward center) */
 .tile[data-side="left"] .color-bar {
-  top: 0; left: 0; bottom: 0;
+  top: 0; right: 0; bottom: 0;
   width: 22%;
-  border-right: 1.5px solid #1a1a1a;
+  border-left: 1.5px solid #1a1a1a;
 }
 
-/* Top row tiles (ids 21-29): outer edge is BOTTOM */
+/* Top row (21-29): outer edge is BOTTOM */
 .tile[data-side="top"] .color-bar {
   bottom: 0; left: 0; right: 0;
   height: 22%;
   border-top: 1.5px solid #1a1a1a;
 }
 
-/* Right column tiles (ids 31-39): outer edge is RIGHT */
+/* Right column (31-39): INNER edge is LEFT (toward center) */
 .tile[data-side="right"] .color-bar {
-  top: 0; right: 0; bottom: 0;
+  top: 0; left: 0; bottom: 0;
   width: 22%;
-  border-left: 1.5px solid #1a1a1a;
+  border-right: 1.5px solid #1a1a1a;
 }
 
 /* ============================================
-   TILE CONTENT - layout per side
+   TILE CONTENT
    ============================================ */
 .tile-content {
   position: relative;
@@ -405,15 +403,13 @@
   max-height: 100%;
 }
 
-/* Side-specific layouts */
-
-/* BOTTOM row: color bar on top of tile (outer), name in middle, price at bottom (outer) */
+/* BOTTOM row: color bar top, name middle, price bottom */
 .tile[data-side="bottom"] .tile-content {
   padding-top: 24%;
   padding-bottom: 14%;
 }
 
-/* TOP row: color bar on bottom (outer), name rotated 180°, price at top (outer) */
+/* TOP row: color bar bottom, name rotated 180°, price top */
 .tile[data-side="top"] .tile-content {
   padding-bottom: 24%;
   padding-top: 14%;
@@ -422,51 +418,58 @@
   transform: rotate(180deg);
 }
 
-/* LEFT column: color bar on left (outer), name on right (inner), price at left (outer) */
+/* LEFT column: color bar RIGHT (inner), name on right, price on left */
 .tile[data-side="left"] .tile-content {
-  padding-left: 24%;
-  padding-right: 14%;
-}
-/* LEFT column: name positioned at inner edge (right side), reads bottom-to-top */
-.tile[data-side="left"] .tile-name-wrap {
-  position: absolute;
-  right: 2px;
-  top: 0;
-  bottom: 0;
-  width: auto;
-  height: 100%;
-  writing-mode: vertical-lr;
-  transform: rotate(180deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-  flex: 0 0 auto;
-}
-
-/* RIGHT column: color bar on right (outer), name on left (inner), price at right (outer) */
-.tile[data-side="right"] .tile-content {
   padding-right: 24%;
   padding-left: 14%;
 }
-/* RIGHT column: name positioned at inner edge (left side), reads top-to-bottom */
-.tile[data-side="right"] .tile-name-wrap {
+/* LEFT: name at inner edge, rotated 90° CW (readable from left side) */
+.tile[data-side="left"] .tile-name-wrap {
   position: absolute;
-  left: 2px;
+  right: 22%;
   top: 0;
   bottom: 0;
+  left: auto;
   width: auto;
   height: 100%;
-  writing-mode: vertical-lr;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3;
+  padding: 0;
   flex: 0 0 auto;
+}
+.tile[data-side="left"] .tile-name-wrap .tile-name {
+  transform: rotate(90deg);
+  white-space: nowrap;
+}
+
+/* RIGHT column: color bar LEFT (inner), name on left, price on right */
+.tile[data-side="right"] .tile-content {
+  padding-left: 24%;
+  padding-right: 14%;
+}
+/* RIGHT: name at inner edge, rotated 90° CCW (readable from right side) */
+.tile[data-side="right"] .tile-name-wrap {
+  position: absolute;
+  left: 22%;
+  top: 0;
+  bottom: 0;
+  right: auto;
+  width: auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex: 0 0 auto;
+}
+.tile[data-side="right"] .tile-name-wrap .tile-name {
+  transform: rotate(-90deg);
+  white-space: nowrap;
 }
 
 /* ============================================
-   PRICE - positioned at the OUTER edge from color bar
+   PRICE — positioned at the OUTER edge
    ============================================ */
 .tile-price-edge {
   position: absolute;
@@ -530,8 +533,6 @@
 
 /* ============================================
    SPECIAL TILES (chance/chest/tax/railroad/utility)
-   Name pushed to INWARD edge (where color bar would be)
-   Icon takes most of the tile
    ============================================ */
 .tile-chance .tile-content,
 .tile-chest .tile-content,
@@ -583,11 +584,25 @@
 .tile-tax[data-side="left"] .tile-name-wrap,
 .tile-railroad[data-side="left"] .tile-name-wrap,
 .tile-utility[data-side="left"] .tile-name-wrap {
-  right: 2px; top: 0; bottom: 0;
+  right: 22%;
+  top: 0;
+  bottom: 0;
+  left: auto;
   width: auto;
   height: 100%;
-  writing-mode: vertical-lr;
-  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  writing-mode: initial;
+}
+.tile-chance[data-side="left"] .tile-name-wrap .tile-name,
+.tile-chest[data-side="left"] .tile-name-wrap .tile-name,
+.tile-tax[data-side="left"] .tile-name-wrap .tile-name,
+.tile-railroad[data-side="left"] .tile-name-wrap .tile-name,
+.tile-utility[data-side="left"] .tile-name-wrap .tile-name {
+  transform: rotate(90deg);
+  white-space: nowrap;
 }
 
 /* Right column: inward edge is LEFT */
@@ -596,14 +611,28 @@
 .tile-tax[data-side="right"] .tile-name-wrap,
 .tile-railroad[data-side="right"] .tile-name-wrap,
 .tile-utility[data-side="right"] .tile-name-wrap {
-  left: 2px; top: 0; bottom: 0;
+  left: 22%;
+  top: 0;
+  bottom: 0;
   right: auto;
   width: auto;
   height: 100%;
-  writing-mode: vertical-lr;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  writing-mode: initial;
+}
+.tile-chance[data-side="right"] .tile-name-wrap .tile-name,
+.tile-chest[data-side="right"] .tile-name-wrap .tile-name,
+.tile-tax[data-side="right"] .tile-name-wrap .tile-name,
+.tile-railroad[data-side="right"] .tile-name-wrap .tile-name,
+.tile-utility[data-side="right"] .tile-name-wrap .tile-name {
+  transform: rotate(-90deg);
+  white-space: nowrap;
 }
 
-/* Icon fills the rest of the special tile (large) */
+/* Icon fills the rest of the special tile (large, centered) */
 .tile-chance .tile-icon-wrap,
 .tile-chest .tile-icon-wrap,
 .tile-tax .tile-icon-wrap,
@@ -635,21 +664,18 @@
 .tile-utility[data-side="top"] .tile-icon-wrap {
   padding-bottom: 18%;
 }
-/* Left-col: icon shifted left */
+/* Left-col & Right-col: no padding shift — let icon center naturally */
 .tile-chance[data-side="left"] .tile-icon-wrap,
 .tile-chest[data-side="left"] .tile-icon-wrap,
 .tile-tax[data-side="left"] .tile-icon-wrap,
 .tile-railroad[data-side="left"] .tile-icon-wrap,
-.tile-utility[data-side="left"] .tile-icon-wrap {
-  padding-right: 18%;
-}
-/* Right-col: icon shifted right */
+.tile-utility[data-side="left"] .tile-icon-wrap,
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
 .tile-tax[data-side="right"] .tile-icon-wrap,
 .tile-railroad[data-side="right"] .tile-icon-wrap,
 .tile-utility[data-side="right"] .tile-icon-wrap {
-  padding-left: 18%;
+  padding: 0;
 }
 
 /* Override the tile-svg size for special tiles - much bigger */
@@ -665,7 +691,7 @@
   object-fit: contain;
 }
 
-/* Special tile name styling — slightly larger, bold */
+/* Special tile name styling */
 .tile-chance .tile-name,
 .tile-chest .tile-name,
 .tile-tax .tile-name,
@@ -709,7 +735,7 @@
   z-index: 4;
 }
 
-/* Houses sit on the outer edge of the color bar */
+/* Houses sit on the inner edge of the color bar */
 .tile[data-side="bottom"] .houses-indicator,
 .tile[data-side="bottom"] .hotel-indicator {
   top: 23%;
@@ -722,16 +748,18 @@
   left: 50%;
   transform: translateX(-50%);
 }
+/* Left: color bar on RIGHT, houses on RIGHT */
 .tile[data-side="left"] .houses-indicator,
 .tile[data-side="left"] .hotel-indicator {
   top: 50%;
-  left: 23%;
+  right: 23%;
   transform: translateY(-50%);
 }
+/* Right: color bar on LEFT, houses on LEFT */
 .tile[data-side="right"] .houses-indicator,
 .tile[data-side="right"] .hotel-indicator {
   top: 50%;
-  right: 23%;
+  left: 23%;
   transform: translateY(-50%);
 }
 
@@ -749,7 +777,7 @@
   pointer-events: none;
 }
 
-/* Tokens position depends on side - placed at INNER edge (toward board center) */
+/* Tokens at INNER edge (toward board center) */
 .tile[data-side="bottom"] .tile-tokens {
   bottom: 14%;
   left: 0;
@@ -760,12 +788,14 @@
   left: 0;
   right: 0;
 }
+/* Left: inner edge is RIGHT */
 .tile[data-side="left"] .tile-tokens {
   right: 14%;
   top: 0;
   bottom: 0;
   flex-direction: column;
 }
+/* Right: inner edge is LEFT */
 .tile[data-side="right"] .tile-tokens {
   left: 14%;
   top: 0;
@@ -801,7 +831,7 @@
 }
 
 /* ============================================
-   CORNER TILES - large and detailed
+   CORNER TILES
    ============================================ */
 .tile-corner {
   background: #d5eccc;
@@ -839,10 +869,9 @@
   z-index: 5;
 }
 
-/* GO corner - red arrow pointing left, big GO */
+/* GO corner */
 .corner-go {
   background: #d5eccc;
-  transform: rotate(0);
 }
 .corner-go-arrow {
   width: 80%;
@@ -874,7 +903,7 @@
   max-width: 95%;
 }
 
-/* JAIL corner — modeled on the real Monopoly board */
+/* JAIL corner */
 .corner-jail {
   background: #d5eccc;
   position: relative;
@@ -883,8 +912,7 @@
   display: block;
 }
 
-/* The inner jail cell occupies the upper-right ~75% (toward board center).
-   On a bottom-left grid corner like JAIL, "inward" = top-right. */
+/* Inner jail cell (toward board center = top-right) */
 .jail-cell {
   position: absolute;
   top: 0;
@@ -897,7 +925,7 @@
   overflow: hidden;
 }
 
-/* Vertical jail bars grid — overlays the cell */
+/* Vertical jail bars */
 .jail-bars-grid {
   position: absolute;
   inset: 0;
@@ -915,7 +943,7 @@
   box-shadow: 1px 0 0 rgba(255,255,255,0.35);
 }
 
-/* "IN JAIL" small label sits at the top-right of the cell */
+/* "IN JAIL" label inside the cell */
 .jail-in-label {
   position: absolute;
   top: 4px;
@@ -933,7 +961,7 @@
   line-height: 1;
 }
 
-/* Diagonal black line splitting the corner from inner cell to outer corner */
+/* Diagonal divider */
 .jail-diagonal {
   position: absolute;
   top: 72%;
@@ -946,13 +974,14 @@
   z-index: 2;
 }
 
-/* "JUST" along the left edge of the outer corner */
+/* "JUST" along the left edge, reading bottom-to-top */
 .jail-just-label {
   position: absolute;
   left: 4px;
-  bottom: 12%;
-  writing-mode: vertical-lr;
-  transform: rotate(180deg);
+  bottom: 4px;
+  transform-origin: left bottom;
+  transform: rotate(90deg);
+  white-space: nowrap;
   font-family: 'Outfit', sans-serif;
   font-size: clamp(6px, 1vmin, 11px);
   font-weight: 800;
@@ -962,11 +991,12 @@
   z-index: 3;
 }
 
-/* "VISITING" along the bottom edge of the outer corner */
+/* "VISITING" along the bottom edge */
 .jail-visiting-label {
   position: absolute;
   bottom: 4px;
-  left: 12%;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Outfit', sans-serif;
   font-size: clamp(6px, 1vmin, 11px);
   font-weight: 800;
@@ -1018,7 +1048,7 @@
 }
 
 /* ============================================
-   BOARD CENTER - watermark + card decks + dice
+   BOARD CENTER
    ============================================ */
 .board-center {
   grid-row: 2 / 11;
@@ -1049,7 +1079,7 @@
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* Card decks - angled card stacks like the real Monopoly board */
+/* Card decks */
 .card-deck {
   position: absolute;
   width: 32%;
@@ -1058,14 +1088,12 @@
   z-index: 2;
 }
 
-/* Chance deck: top-left of center area, angled -10deg (matches real board's angle) */
 .card-deck-chance {
   top: 12%;
   left: 12%;
   transform: rotate(-12deg);
 }
 
-/* Community Chest deck: bottom-right of center, angled */
 .card-deck-chest {
   bottom: 12%;
   right: 12%;
@@ -1078,7 +1106,6 @@
   height: 100%;
 }
 
-/* Stack effect: 3 cards offset slightly */
 .card-back {
   position: absolute;
   inset: 0;
@@ -1096,7 +1123,7 @@
   transform: translate(2px, 2px);
 }
 .card-back-1 {
-  background: #F7941D; /* orange for Chance */
+  background: #F7941D;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1116,14 +1143,14 @@
 
 .card-back-icon {
   font-family: 'Fredoka', 'Arial Black', sans-serif;
-  font-size: clamp(20px, 4vmin, 40px);
+  font-size: clamp(28px, 5.5vmin, 52px);
   font-weight: 900;
   color: #1a1a1a;
   line-height: 1;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
-/* Chest cards have different colors */
+/* Chest cards */
 .card-back-chest-3 {
   background: #f5f0e8;
   transform: translate(4px, 4px);
@@ -1133,7 +1160,7 @@
   transform: translate(2px, 2px);
 }
 .card-back-chest-1 {
-  background: #FEF200; /* yellow-ish for Chest */
+  background: #FEF200;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1153,8 +1180,8 @@
 }
 
 .card-back-icon-chest {
-  width: 50%;
-  max-width: 50px;
+  width: 70%;
+  max-width: 80px;
 }
 
 .dice-area {
@@ -1634,7 +1661,7 @@
 }
 
 /* ============================================
-   RESPONSIVE - MOBILE / IFRAME
+   RESPONSIVE
    ============================================ */
 @media (max-width: 900px) {
   .game-layout {
