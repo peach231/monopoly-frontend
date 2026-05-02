@@ -133,20 +133,20 @@
 .btn-secondary:hover { background: #e5dfd5; }
  
 .btn-control {
-  padding: 10px 16px;
+  padding: 6px 14px;
   font-size: 0.85rem;
-  min-height: 44px;
+  min-height: 32px;
   background: #f0ebe3;
   color: #333;
   border: 1px solid #d5cfc4;
 }
  
-.btn-roll { background: #c5392a; color: #fff; font-size: 1rem; padding: 14px 28px; border: none; }
+.btn-roll { background: #c5392a; color: #fff; font-size: 0.95rem; padding: 8px 22px; border: none; }
 .btn-roll:hover { background: #a82e22; }
 .btn-buy { background: #1fb25a; color: #fff; border: none; }
 .btn-auction { background: #e8920e; color: #fff; border: none; }
 .btn-end { background: #0072bb; color: #fff; border: none; }
-.btn-start { background: #c5392a; color: #fff; font-size: 1rem; padding: 14px 28px; border: none; }
+.btn-start { background: #c5392a; color: #fff; font-size: 0.95rem; padding: 8px 22px; border: none; }
 .btn-start:hover { background: #a82e22; }
  
 .btn-small {
@@ -235,12 +235,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: #2b5b3c;
   flex-shrink: 0;
   gap: 8px;
   flex-wrap: wrap;
-  min-height: 44px;
+  min-height: 36px;
 }
  
 .room-info {
@@ -279,9 +279,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  overflow: auto;
+  padding: 2px;
+  overflow: hidden;
   min-width: 0;
+  min-height: 0;
   background:
     repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,0,0,0.008) 20px, rgba(0,0,0,0.008) 40px),
     repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(0,0,0,0.008) 20px, rgba(0,0,0,0.008) 40px),
@@ -297,10 +298,13 @@
   background: #c8e6c0;
   border: 4px solid #1a1a1a;
   border-radius: 4px;
-  /* Bigger board: takes 96% of available square space */
-  width: min(96vmin, 880px);
-  height: min(96vmin, 880px);
+  /* Board sized to fit available area without scrolling */
+  width: min(98vmin, 95vh, 95vw, 880px);
+  height: min(98vmin, 95vh, 95vw, 880px);
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 1;
+  flex-shrink: 1;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.05);
 }
  
@@ -381,29 +385,35 @@
   text-align: center;
   flex: 1;
   width: 100%;
+  height: 100%;
   padding: 2px;
+  overflow: hidden;
 }
  
 .tile-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  font-size: clamp(6px, 1.15vmin, 11px);
+  font-size: clamp(5.5px, 1.05vmin, 10px);
   line-height: 1.05;
   color: #1a1a1a;
   text-transform: uppercase;
   letter-spacing: 0.2px;
   word-break: break-word;
+  hyphens: auto;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
 }
  
-/* Side-specific layouts - all use column flex; rotation handled by transform on tile-name-wrap */
+/* Side-specific layouts */
  
-/* BOTTOM row: color bar on top of tile, name in middle, price at bottom */
+/* BOTTOM row: color bar on top of tile (inward), name in middle, price at bottom */
 .tile[data-side="bottom"] .tile-content {
   padding-top: 24%;
   padding-bottom: 14%;
 }
  
-/* TOP row: color bar on bottom, name rotated 180°, price at top */
+/* TOP row: color bar on bottom (inward), name rotated 180°, price at top */
 .tile[data-side="top"] .tile-content {
   padding-bottom: 24%;
   padding-top: 14%;
@@ -412,22 +422,23 @@
   transform: rotate(180deg);
 }
  
-/* LEFT column: color bar on right, name rotated 90deg, price at left */
+/* LEFT column: color bar on right (inward), name reads bottom-up via writing-mode, price at left */
 .tile[data-side="left"] .tile-content {
   padding-right: 24%;
   padding-left: 14%;
 }
 .tile[data-side="left"] .tile-name-wrap {
-  transform: rotate(90deg);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
  
-/* RIGHT column: color bar on left, name rotated -90deg, price at right */
+/* RIGHT column: color bar on left (inward), name reads top-down via writing-mode, price at right */
 .tile[data-side="right"] .tile-content {
   padding-left: 24%;
   padding-right: 14%;
 }
 .tile[data-side="right"] .tile-name-wrap {
-  transform: rotate(-90deg);
+  writing-mode: vertical-rl;
 }
  
 /* ============================================
@@ -444,14 +455,15 @@
   position: absolute;
   z-index: 3;
   font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  font-size: clamp(6px, 1.05vmin, 10px);
+  font-weight: 800;
+  font-size: clamp(7px, 1.25vmin, 12px);
   color: #1a1a1a;
-  background: rgba(213, 236, 204, 0.85);
-  padding: 1px 4px;
+  background: rgba(213, 236, 204, 0.92);
+  padding: 1px 5px;
   border-radius: 2px;
   pointer-events: none;
   white-space: nowrap;
+  letter-spacing: 0.2px;
 }
  
 .tile[data-side="bottom"] .tile-price-edge {
@@ -499,16 +511,134 @@
   max-width: 56px;
 }
  
-/* On rotated sides, the icon also rotates so it faces the right way */
+/* ============================================
+   SPECIAL TILES (chance/chest/tax)
+   Name pushed to INWARD edge (where color bar would be)
+   Icon takes most of the tile
+   ============================================ */
+.tile-chance .tile-content,
+.tile-chest .tile-content,
+.tile-tax .tile-content {
+  padding: 0 !important;
+  position: relative;
+}
+ 
+/* Name positioning: pushed to inward edge of tile */
+.tile-chance .tile-name-wrap,
+.tile-chest .tile-name-wrap,
+.tile-tax .tile-name-wrap {
+  position: absolute;
+  flex: 0 0 auto;
+  padding: 2px 4px;
+  z-index: 3;
+}
+ 
+/* Bottom row: inward edge is TOP */
+.tile-chance[data-side="bottom"] .tile-name-wrap,
+.tile-chest[data-side="bottom"] .tile-name-wrap,
+.tile-tax[data-side="bottom"] .tile-name-wrap {
+  top: 2px; left: 0; right: 0;
+  height: auto;
+  width: 100%;
+}
+ 
+/* Top row: inward edge is BOTTOM */
+.tile-chance[data-side="top"] .tile-name-wrap,
+.tile-chest[data-side="top"] .tile-name-wrap,
+.tile-tax[data-side="top"] .tile-name-wrap {
+  bottom: 2px; left: 0; right: 0;
+  top: auto;
+  height: auto;
+  width: 100%;
+}
+ 
+/* Left column: inward edge is RIGHT */
+.tile-chance[data-side="left"] .tile-name-wrap,
+.tile-chest[data-side="left"] .tile-name-wrap,
+.tile-tax[data-side="left"] .tile-name-wrap {
+  right: 2px; top: 0; bottom: 0;
+  width: auto;
+  height: 100%;
+}
+ 
+/* Right column: inward edge is LEFT */
+.tile-chance[data-side="right"] .tile-name-wrap,
+.tile-chest[data-side="right"] .tile-name-wrap,
+.tile-tax[data-side="right"] .tile-name-wrap {
+  left: 2px; top: 0; bottom: 0;
+  right: auto;
+  width: auto;
+  height: 100%;
+}
+ 
+/* Icon fills the rest of the special tile (large) */
+.tile-chance .tile-icon-wrap,
+.tile-chest .tile-icon-wrap,
+.tile-tax .tile-icon-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+ 
+/* Bottom-row special tile: icon shifted down (name is at top) */
+.tile-chance[data-side="bottom"] .tile-icon-wrap,
+.tile-chest[data-side="bottom"] .tile-icon-wrap,
+.tile-tax[data-side="bottom"] .tile-icon-wrap {
+  padding-top: 18%;
+}
+/* Top-row: icon shifted up */
+.tile-chance[data-side="top"] .tile-icon-wrap,
+.tile-chest[data-side="top"] .tile-icon-wrap,
+.tile-tax[data-side="top"] .tile-icon-wrap {
+  padding-bottom: 18%;
+}
+/* Left-col: icon shifted left */
+.tile-chance[data-side="left"] .tile-icon-wrap,
+.tile-chest[data-side="left"] .tile-icon-wrap,
+.tile-tax[data-side="left"] .tile-icon-wrap {
+  padding-right: 18%;
+}
+/* Right-col: icon shifted right */
+.tile-chance[data-side="right"] .tile-icon-wrap,
+.tile-chest[data-side="right"] .tile-icon-wrap,
+.tile-tax[data-side="right"] .tile-icon-wrap {
+  padding-left: 18%;
+}
+ 
+/* Override the tile-svg size for special tiles - much bigger */
+.tile-chance .tile-svg,
+.tile-chest .tile-svg,
+.tile-tax .tile-svg {
+  width: 90%;
+  height: 90%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+}
+ 
+/* Special tile name styling — slightly larger, bold */
+.tile-chance .tile-name,
+.tile-chest .tile-name,
+.tile-tax .tile-name {
+  font-size: clamp(5px, 0.95vmin, 9px);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+ 
+/* Icon rotation matches text orientation per side */
 .tile[data-side="top"] .tile-icon-wrap {
   transform: rotate(180deg);
 }
 .tile[data-side="left"] .tile-icon-wrap {
-  /* Don't rotate the icon — keep it readable as the tile rotates */
-  transform: rotate(0);
+  transform: rotate(90deg);
 }
 .tile[data-side="right"] .tile-icon-wrap {
-  transform: rotate(0);
+  transform: rotate(-90deg);
 }
  
 /* ============================================
@@ -699,66 +829,104 @@
   max-width: 95%;
 }
  
-/* JAIL corner */
+/* JAIL corner — modeled on the real Monopoly board */
 .corner-jail {
   background: #d5eccc;
-  display: grid;
-  /* Diagonal split: just visiting label runs along top/left edges */
-  grid-template-columns: 1fr 2.5fr;
-  grid-template-rows: 1fr 2.5fr;
-  padding: 0;
-}
-.jail-just-visiting {
-  grid-column: 1 / 3;
-  grid-row: 1 / 2;
-  background: #d5eccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(6px, 1vmin, 10px);
-  font-weight: 700;
-  color: #1a1a1a;
-  border-bottom: 2px solid #1a1a1a;
-  letter-spacing: 0.5px;
-}
-.jail-cell {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  background: #F7941D;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-left: 2px solid #1a1a1a;
+  overflow: hidden;
+  padding: 0;
+  display: block;
 }
-.jail-bars {
+ 
+/* The inner jail cell occupies the upper-right ~75% (the corner closest to board center).
+   On a bottom-left grid corner like JAIL, "inward" = top-right. */
+.jail-cell {
   position: absolute;
-  inset: 4px;
+  top: 0;
+  right: 0;
+  width: 72%;
+  height: 72%;
+  background: #F7941D;
+  border-bottom: 2px solid #1a1a1a;
+  border-left: 2px solid #1a1a1a;
+  overflow: hidden;
+}
+ 
+/* Prisoner SVG fills the jail cell */
+.jail-prisoner {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  z-index: 1;
+}
+ 
+/* Vertical jail bars grid — overlays the prisoner */
+.jail-bars-grid {
+  position: absolute;
+  inset: 0;
   display: flex;
   justify-content: space-around;
   align-items: stretch;
+  padding: 4px 6px;
   pointer-events: none;
+  z-index: 2;
 }
-.jail-bars span {
+.jail-bars-grid span {
   width: 3px;
   background: #1a1a1a;
-  border-radius: 2px;
-  box-shadow: 1px 0 0 rgba(255,255,255,0.4);
+  border-radius: 1px;
+  box-shadow: 1px 0 0 rgba(255,255,255,0.35);
 }
-.jail-label {
-  position: relative;
-  z-index: 2;
+ 
+/* "IN JAIL" small label sits at the top-right of the cell */
+.jail-in-label {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 3;
   background: #d5eccc;
-  padding: 2px 6px;
   border: 1.5px solid #1a1a1a;
+  padding: 2px 5px;
   border-radius: 3px;
   font-family: 'Fredoka', sans-serif;
-  font-size: clamp(7px, 1.2vmin, 12px);
+  font-size: clamp(6px, 1vmin, 11px);
   font-weight: 800;
   color: #1a1a1a;
   letter-spacing: 0.5px;
+  line-height: 1;
+}
+ 
+/* Diagonal black line splitting the corner from inner cell to outer corner */
+.jail-diagonal {
+  position: absolute;
+  top: 72%;
+  left: 0;
+  width: 39.6%;
+  height: 2px;
+  background: #1a1a1a;
+  transform-origin: left center;
+  transform: rotate(-45deg);
+  z-index: 2;
+}
+ 
+/* "JUST VISITING" text running along the diagonal, in the orange edge strip */
+.jail-just-visiting-label {
+  position: absolute;
+  bottom: 14%;
+  left: 6%;
+  transform-origin: left center;
+  transform: rotate(-45deg);
+  background: #F7941D;
+  padding: 3px 8px;
+  border: 1.5px solid #1a1a1a;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(6px, 1vmin, 11px);
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  z-index: 3;
 }
  
 /* FREE PARKING corner */
@@ -1128,12 +1296,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 6px;
+  padding: 5px 10px;
   background: #2b5b3c;
   flex-shrink: 0;
   flex-wrap: wrap;
-  min-height: 50px;
+  min-height: 40px;
 }
  
 .waiting-msg {
