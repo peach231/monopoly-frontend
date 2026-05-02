@@ -95,7 +95,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const myProperties = useMemo(() => {
     if (!gameState || !me) return [];
     return gameState.properties.filter(p => p.ownerId === playerId);
-  }, [gameState, playerId]);
+}, [gameState, playerId, me]);
 
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
