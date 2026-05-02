@@ -1,23 +1,23 @@
 import React from 'react';
-
+ 
 const COLOR_MAP = {
-  brown: '#8B4513',
-  lightblue: '#87CEEB',
-  pink: '#FF69B4',
-  orange: '#FFA500',
-  red: '#FF0000',
-  yellow: '#FFD700',
-  green: '#228B22',
-  darkblue: '#00008B'
+  brown: '#955436',
+  lightblue: '#AAE0FA',
+  pink: '#D93A96',
+  orange: '#F7941D',
+  red: '#ED1B24',
+  yellow: '#FEF200',
+  green: '#1FB25A',
+  darkblue: '#0072BB'
 };
-
+ 
 const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
   'graduation-hat': '🎓',
   pencil: '✏️'
 };
-
+ 
 const BOARD_TILES = [
   { id: 0, name: "Go", type: "corner" },
   { id: 1, name: "Mediterranean Ave", colorGroup: "brown" },
@@ -60,7 +60,7 @@ const BOARD_TILES = [
   { id: 38, name: "Luxury Tax" },
   { id: 39, name: "Boardwalk", colorGroup: "darkblue" }
 ];
-
+ 
 export default function PlayerPanel({ players, properties, currentPlayerId, myId, onPropertyClick }) {
   return (
     <div className="player-panel">
@@ -69,7 +69,7 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
         const isMe = player.id === myId;
         const isCurrent = player.id === currentPlayerId;
         const playerProps = properties.filter(p => p.ownerId === player.id);
-
+ 
         return (
           <div
             key={player.id}
@@ -89,10 +89,10 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
               </div>
               {isCurrent && <span className="turn-badge">▶</span>}
             </div>
-
+ 
             {player.inJail && <div className="jail-badge">🔒 In Jail</div>}
             {player.jailCards > 0 && <div className="jail-card-badge">🎫 x{player.jailCards}</div>}
-
+ 
             <div className="player-properties">
               {playerProps.map(prop => {
                 const tile = BOARD_TILES[prop.id];
