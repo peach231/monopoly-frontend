@@ -1,0 +1,1005 @@
+/* ============================================
+   SCHOOPOLY - Main Game Styles
+   Mobile-first, iframe-safe, touch-friendly
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #1a1a2e;
+  color: #fff;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/* ============================================
+   LOBBY
+   ============================================ */
+.lobby {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 16px;
+}
+
+.lobby-card {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.lobby-card h1 {
+  margin: 0 0 4px 0;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+}
+
+.subtitle {
+  color: #8892b0;
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lobby-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lobby-card label {
+  text-align: left;
+  font-size: 0.85rem;
+  color: #a8b2d1;
+  font-weight: 600;
+}
+
+.lobby-card input {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #233554;
+  background: #0a192f;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.lobby-card input:focus {
+  border-color: #64ffda;
+}
+
+.error-banner {
+  background: #e74c3c;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-primary, .btn-secondary, .btn-control, .btn-start, .btn-small, .btn-text, .btn-action {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.btn-primary {
+  background: #64ffda;
+  color: #0a192f;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #4fd1c5;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #233554;
+  color: #ccd6f6;
+}
+
+.btn-secondary:hover {
+  background: #2d4a6f;
+}
+
+.btn-control {
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  min-height: 44px;
+}
+
+.btn-roll {
+  background: #e74c3c;
+  color: #fff;
+  font-size: 1rem;
+  padding: 14px 28px;
+}
+
+.btn-buy {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.btn-auction {
+  background: #f39c12;
+  color: #fff;
+}
+
+.btn-end {
+  background: #3498db;
+  color: #fff;
+}
+
+.btn-start {
+  background: #9b59b6;
+  color: #fff;
+  font-size: 1rem;
+  padding: 14px 28px;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  background: #233554;
+  color: #ccd6f6;
+}
+
+.btn-text {
+  background: transparent;
+  color: #64ffda;
+  text-decoration: underline;
+}
+
+.btn-action {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  background: #233554;
+  color: #ccd6f6;
+}
+
+.btn-sell {
+  background: #c0392b;
+}
+
+.btn-mortgage {
+  background: #7f8c8d;
+}
+
+.btn-unmortgage {
+  background: #27ae60;
+}
+
+.btn-accept {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.btn-decline {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.btn-close {
+  background: #233554;
+  color: #ccd6f6;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 16px;
+  color: #8892b0;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #233554;
+  border-top-color: #64ffda;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   GAME CONTAINER
+   ============================================ */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #0f3460;
+  flex-shrink: 0;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.room-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-code {
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: #64ffda;
+  font-weight: bold;
+}
+
+.game-status {
+  display: flex;
+  align-items: center;
+}
+
+.turn-indicator {
+  font-weight: 600;
+  color: #f39c12;
+  font-size: 0.9rem;
+}
+
+.game-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ============================================
+   BOARD
+   ============================================ */
+.board-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  overflow: auto;
+  min-width: 0;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  gap: 1px;
+  background: #0a192f;
+  border: 2px solid #233554;
+  border-radius: 8px;
+  width: min(85vmin, 600px);
+  height: min(85vmin, 600px);
+  aspect-ratio: 1;
+}
+
+.tile {
+  background: #16213e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px;
+  font-size: clamp(6px, 1.2vmin, 11px);
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tile:hover {
+  background: #1e2a4a;
+}
+
+.tile-corner {
+  background: #0f3460;
+  font-weight: bold;
+  font-size: clamp(7px, 1.5vmin, 13px);
+}
+
+.tile-name {
+  font-weight: 600;
+  line-height: 1.1;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.tile-price {
+  color: #64ffda;
+  font-size: 0.8em;
+}
+
+.owner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.houses-indicator, .hotel-indicator {
+  font-size: 0.7em;
+  line-height: 1;
+}
+
+.tile-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1px;
+  min-height: 16px;
+}
+
+.token {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+
+.board-center {
+  grid-row: 2 / 11;
+  grid-column: 2 / 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0a192f;
+  gap: 12px;
+}
+
+.dice-area {
+  display: flex;
+  gap: 12px;
+}
+
+.die {
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  color: #0a192f;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.free-parking {
+  color: #f39c12;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ============================================
+   SIDE PANEL
+   ============================================ */
+.side-panel {
+  width: 220px;
+  background: #16213e;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #233554;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.player-panel {
+  padding: 8px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  max-height: 50%;
+}
+
+.player-panel h4 {
+  margin: 0 0 8px 0;
+  color: #64ffda;
+  font-size: 0.85rem;
+}
+
+.player-card {
+  background: #0a192f;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.player-card.current {
+  border-color: #f39c12;
+}
+
+.player-card.me {
+  border-color: #64ffda;
+}
+
+.player-card.bankrupt {
+  opacity: 0.5;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-token {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-money {
+  font-size: 0.75rem;
+  color: #64ffda;
+}
+
+.turn-badge {
+  color: #f39c12;
+  font-size: 0.8rem;
+}
+
+.jail-badge, .jail-card-badge {
+  font-size: 0.7rem;
+  margin-top: 2px;
+}
+
+.player-properties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.prop-chip {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   GAME LOG
+   ============================================ */
+.game-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow: hidden;
+  border-top: 1px solid #233554;
+}
+
+.game-log h4 {
+  margin: 0 0 6px 0;
+  color: #64ffda;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.log-entries {
+  overflow-y: auto;
+  flex: 1;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.log-entry {
+  padding: 2px 0;
+  border-bottom: 1px solid #1e2a4a;
+  color: #a8b2d1;
+}
+
+/* ============================================
+   CONTROLS BAR
+   ============================================ */
+.controls-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #0f3460;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  min-height: 56px;
+}
+
+.waiting-msg {
+  color: #8892b0;
+  font-size: 0.9rem;
+}
+
+.game-over {
+  color: #f39c12;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* ============================================
+   AUCTION BAR
+   ============================================ */
+.auction-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: #16213e;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.auction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.auction-bid {
+  color: #f39c12;
+  font-size: 0.8rem;
+}
+
+.auction-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.auction-controls input {
+  width: 80px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #233554;
+  background: #0a192f;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: #16213e;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.modal h3 {
+  margin: 0 0 16px 0;
+  color: #64ffda;
+}
+
+.modal h4 {
+  margin: 0 0 8px 0;
+  color: #ccd6f6;
+  font-size: 0.9rem;
+}
+
+.card-modal {
+  text-align: center;
+  max-width: 320px;
+}
+
+.card-modal.chance .card-header {
+  background: #e74c3c;
+}
+
+.card-modal.chest .card-header {
+  background: #3498db;
+}
+
+.card-header {
+  padding: 16px;
+  border-radius: 8px 8px 0 0;
+  margin: -20px -20px 16px -20px;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.card-body {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.trade-modal {
+  max-width: 480px;
+}
+
+.trade-section {
+  margin-bottom: 16px;
+}
+
+.trade-section label {
+  display: block;
+  margin-bottom: 4px;
+  color: #a8b2d1;
+  font-size: 0.85rem;
+}
+
+.trade-section select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #233554;
+  background: #0a192f;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.trade-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.trade-col label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #a8b2d1;
+  margin-bottom: 8px;
+}
+
+.trade-col input {
+  width: 80px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #233554;
+  background: #0a192f;
+  color: #fff;
+}
+
+.prop-list {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #233554;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.prop-item {
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  background: #0a192f;
+  transition: background 0.2s;
+}
+
+.prop-item:hover {
+  background: #1e2a4a;
+}
+
+.prop-item.selected {
+  background: #233554;
+  border: 1px solid #64ffda;
+}
+
+.trade-pending .trade-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 12px;
+  background: #0a192f;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.trade-pending .trade-preview strong {
+  color: #64ffda;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* Property Modal */
+.property-modal {
+  max-width: 340px;
+}
+
+.property-header {
+  padding: 16px;
+  border-radius: 12px 12px 0 0;
+  margin: -20px -20px 16px -20px;
+  text-align: center;
+}
+
+.property-header h3 {
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.property-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.property-body {
+  margin-bottom: 16px;
+}
+
+.property-owner {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: #0a192f;
+  border-radius: 6px;
+}
+
+.mortgaged-badge {
+  color: #e74c3c;
+  margin-left: 8px;
+}
+
+.rent-table {
+  background: #0a192f;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.rent-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #1e2a4a;
+}
+
+.rent-row:last-child {
+  border-bottom: none;
+}
+
+.rent-total {
+  background: #1e2a4a;
+  font-weight: 600;
+}
+
+.houses-display, .hotel-display {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.property-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE / IFRAME
+   ============================================ */
+@media (max-width: 768px) {
+  .game-layout {
+    flex-direction: column;
+  }
+
+  .side-panel {
+    width: 100%;
+    height: 160px;
+    flex-direction: row;
+    border-left: none;
+    border-top: 1px solid #233554;
+  }
+
+  .player-panel {
+    width: 50%;
+    max-height: 100%;
+  }
+
+  .game-log {
+    width: 50%;
+    border-top: none;
+    border-left: 1px solid #233554;
+  }
+
+  .board {
+    width: min(95vw, 95vw);
+    height: min(95vw, 95vw);
+  }
+
+  .tile {
+    font-size: clamp(5px, 1.5vw, 9px);
+    padding: 1px;
+  }
+
+  .token {
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
+  }
+
+  .die {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+  }
+
+  .controls-bar {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .btn-control {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .trade-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .board-wrapper {
+    padding: 2px;
+  }
+
+  .board {
+    gap: 0.5px;
+    border-width: 1px;
+  }
+
+  .tile-name {
+    font-size: 5px;
+  }
+
+  .top-bar {
+    padding: 6px 8px;
+  }
+
+  .room-code {
+    font-size: 0.8rem;
+  }
+
+  .side-panel {
+    height: 120px;
+  }
+
+  .player-card {
+    padding: 4px;
+  }
+
+  .player-token {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .player-name, .player-money {
+    font-size: 0.7rem;
+  }
+
+  .log-entries {
+    font-size: 0.6rem;
+  }
+}
+
+/* Prevent iframe scroll trap */
+@media (max-height: 500px) {
+  .side-panel {
+    height: 100px;
+  }
+
+  .board {
+    width: min(90vmin, 90vmin);
+    height: min(90vmin, 90vmin);
+  }
+}
