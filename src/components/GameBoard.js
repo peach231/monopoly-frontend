@@ -1,11 +1,10 @@
-
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import PlayerPanel from './PlayerPanel';
 import CardModal from './Modals/CardModal';
 import TradeModal from './Modals/TradeModal';
 import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
- 
+
 const BOARD_TILES = [
   { id: 0, name: "Go", type: "corner" },
   { id: 1, name: "Mediterranean Ave", type: "property", colorGroup: "brown", price: 60 },
@@ -48,7 +47,7 @@ const BOARD_TILES = [
   { id: 38, name: "Luxury Tax", type: "tax", price: 100 },
   { id: 39, name: "Boardwalk", type: "property", colorGroup: "darkblue", price: 400 }
 ];
- 
+
 const COLOR_MAP = {
   brown: '#955436',
   lightblue: '#AAE0FA',
@@ -59,14 +58,14 @@ const COLOR_MAP = {
   green: '#1FB25A',
   darkblue: '#0072BB'
 };
- 
+
 const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
   'graduation-hat': '🎓',
   pencil: '✏️'
 };
- 
+
 function getGridPos(tileId) {
   if (tileId >= 20 && tileId <= 30) {
     return { gridRow: 1, gridColumn: tileId - 19 };
@@ -82,7 +81,7 @@ function getGridPos(tileId) {
   }
   return { gridRow: 1, gridColumn: 1 };
 }
- 
+
 function getTileSide(tileId) {
   if (tileId >= 1 && tileId <= 9) return 'bottom';
   if (tileId >= 11 && tileId <= 19) return 'left';
@@ -90,11 +89,11 @@ function getTileSide(tileId) {
   if (tileId >= 31 && tileId <= 39) return 'right';
   return null; // corners
 }
- 
+
 /* ============================================
    SVG ICONS for non-property tiles
    ============================================ */
- 
+
 const TrainIcon = () => (
   <svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     {/* Track */}
@@ -120,7 +119,7 @@ const TrainIcon = () => (
     <circle cx="62" cy="54" r="2" fill="#fff" />
   </svg>
 );
- 
+
 const BulbIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     {/* Rays */}
@@ -143,7 +142,7 @@ const BulbIcon = () => (
     <rect x="42" y="85" width="16" height="4" fill="#666" stroke="#1a1a1a" strokeWidth="1" />
   </svg>
 );
- 
+
 const FaucetIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     {/* Handle top */}
@@ -164,7 +163,7 @@ const FaucetIcon = () => (
     <ellipse cx="78" cy="93" rx="2.5" ry="3.5" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
   </svg>
 );
- 
+
 const ChanceIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     <text x="50" y="78" textAnchor="middle" fontSize="92" fontWeight="900"
@@ -172,7 +171,7 @@ const ChanceIcon = () => (
           stroke="#1a1a1a" strokeWidth="2">?</text>
   </svg>
 );
- 
+
 const ChestIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     {/* Chest body */}
@@ -191,7 +190,7 @@ const ChestIcon = () => (
     <circle cx="22" cy="44" r="3" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1" />
   </svg>
 );
- 
+
 const DiamondRingIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     {/* Ring band */}
@@ -203,19 +202,16 @@ const DiamondRingIcon = () => (
     <line x1="38" y1="32" x2="62" y2="32" stroke="#1a1a1a" strokeWidth="1.5" />
   </svg>
 );
- 
+
 const TaxIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     {/* Money/dollar bag */}
     <text x="50" y="68" textAnchor="middle" fontSize="62" fontWeight="900"
           fill="#1FB25A" fontFamily="Fredoka, Arial Black, sans-serif"
           stroke="#1a1a1a" strokeWidth="2">$</text>
-    {/* Arrow pointing in (to pay) */}
-    <path d="M 20 88 L 80 88 L 75 80 M 80 88 L 75 96"
-          stroke="#1a1a1a" strokeWidth="3" fill="none" strokeLinecap="round" />
   </svg>
 );
- 
+
 const CarIcon = () => (
   <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
     {/* Car body */}
@@ -236,7 +232,7 @@ const CarIcon = () => (
     <circle cx="88" cy="62" r="5" fill="#888" />
   </svg>
 );
- 
+
 const ArrowIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
     {/* Big arrow pointing to jail (down-left in this case) */}
@@ -244,7 +240,7 @@ const ArrowIcon = () => (
           fill="#C5392A" stroke="#1a1a1a" strokeWidth="2.5" />
   </svg>
 );
- 
+
 const GoArrowIcon = () => (
   <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="go-arrow-svg">
     {/* Long arrow pointing left (toward bottom row direction of play) */}
@@ -252,7 +248,7 @@ const GoArrowIcon = () => (
           fill="#C5392A" stroke="#1a1a1a" strokeWidth="1.5" />
   </svg>
 );
- 
+
 /* Render an SVG icon based on tile type */
 function TileIcon({ tile }) {
   if (tile.type === 'railroad') return <TrainIcon />;
@@ -266,11 +262,11 @@ function TileIcon({ tile }) {
   }
   return null;
 }
- 
+
 /* ============================================
    CORNER TILE RENDERING
    ============================================ */
- 
+
 function CornerTile({ tile }) {
   if (tile.id === 0) {
     // GO corner
@@ -283,48 +279,26 @@ function CornerTile({ tile }) {
     );
   }
   if (tile.id === 10) {
-    // JAIL / Just Visiting — diagonal split, prisoner behind bars
+    // JAIL / Just Visiting — diagonal split, bars only, JUST & VISITING on outer edges
     return (
       <div className="corner-inner corner-jail">
-        {/* Outer "Just Visiting" label running along diagonal edge */}
-        <div className="jail-just-visiting-label">JUST VISITING</div>
- 
-        {/* Inner jail cell occupies the inner-corner area (toward board center) */}
+        {/* Inner jail cell occupies the upper-right ~75% (toward board center) */}
         <div className="jail-cell">
-          {/* Prisoner SVG behind the bars */}
-          <svg className="jail-prisoner" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            {/* Head */}
-            <circle cx="50" cy="34" r="14" fill="#FFE0BD" stroke="#1a1a1a" strokeWidth="2" />
-            {/* Hat brim */}
-            <ellipse cx="50" cy="22" rx="18" ry="3" fill="#1a1a1a" />
-            {/* Hat top */}
-            <rect x="40" y="8" width="20" height="14" fill="#1a1a1a" />
-            {/* Mustache */}
-            <path d="M 42 38 Q 46 40 50 38 Q 54 40 58 38" stroke="#1a1a1a" strokeWidth="2" fill="none" />
-            {/* Eyes */}
-            <circle cx="45" cy="32" r="1.5" fill="#1a1a1a" />
-            <circle cx="55" cy="32" r="1.5" fill="#1a1a1a" />
-            {/* Body / suit */}
-            <path d="M 30 50 L 30 95 L 70 95 L 70 50 Q 70 46 60 46 L 40 46 Q 30 46 30 50 Z"
-                  fill="#1a1a1a" />
-            {/* Shirt collar / white */}
-            <polygon points="42,46 50,58 58,46" fill="#fff" stroke="#1a1a1a" strokeWidth="1" />
-            {/* Bowtie */}
-            <polygon points="46,52 50,55 54,52 54,58 50,55 46,58" fill="#C5392A" stroke="#1a1a1a" strokeWidth="0.5" />
-            {/* Hands gripping bars (white gloves) */}
-            <ellipse cx="22" cy="62" rx="6" ry="4" fill="#fff" stroke="#1a1a1a" strokeWidth="1.5" />
-            <ellipse cx="78" cy="62" rx="6" ry="4" fill="#fff" stroke="#1a1a1a" strokeWidth="1.5" />
-          </svg>
- 
           {/* Vertical jail bars overlay */}
           <div className="jail-bars-grid">
             <span></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
- 
-        {/* "IN JAIL" small label box, sits on top corner */}
+
+        {/* "IN JAIL" small label box, sits in the cell */}
         <div className="jail-in-label">IN JAIL</div>
- 
+
+        {/* "JUST" along the left edge */}
+        <div className="jail-just-label">JUST</div>
+
+        {/* "VISITING" along the bottom edge */}
+        <div className="jail-visiting-label">VISITING</div>
+
         {/* Diagonal divider line */}
         <div className="jail-diagonal"></div>
       </div>
@@ -352,7 +326,7 @@ function CornerTile({ tile }) {
   }
   return <div className="corner-inner">{tile.name}</div>;
 }
- 
+
 export default function GameBoard({ gameState, playerId, emit, onStartGame, getShareLink }) {
   const [showTrade, setShowTrade] = useState(false);
   const [showProperty, setShowProperty] = useState(null);
@@ -360,7 +334,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [bidAmount, setBidAmount] = useState('');
   const [hoppingTokens, setHoppingTokens] = useState({});
   const prevPositionsRef = useRef({});
- 
+
   // Track player position changes and trigger hop animation
   useEffect(() => {
     if (!gameState?.players) return;
@@ -372,7 +346,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         newHopping[player.id] = true;
       }
     });
- 
+
     if (Object.keys(newHopping).length > 0) {
       setHoppingTokens(newHopping);
       const timer = setTimeout(() => setHoppingTokens({}), 700);
@@ -382,37 +356,37 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       prevPositionsRef.current = updated;
       return () => clearTimeout(timer);
     }
- 
+
     // Update prev positions
     const updated = {};
     gameState.players.forEach(p => { updated[p.id] = p.position; });
     prevPositionsRef.current = updated;
   }, [gameState?.players]);
- 
+
   const isCurrentPlayer = gameState?.currentPlayerId === playerId;
   const me = gameState?.players.find(p => p.id === playerId);
   const currentPlayer = gameState?.players.find(p => p.id === gameState?.currentPlayerId);
- 
+
   const myProperties = useMemo(() => {
     if (!gameState || !me) return [];
     return gameState.properties.filter(p => p.ownerId === playerId);
   }, [gameState, playerId]);
- 
+
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
   };
- 
+
   const handleBuy = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('buyProperty', { roomCode, playerId });
   };
- 
+
   const handleAuction = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('startAuction', { roomCode, playerId });
   };
- 
+
   const handleBid = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     const amount = parseInt(bidAmount);
@@ -420,32 +394,32 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     await emit('placeBid', { roomCode, playerId, amount });
     setBidAmount('');
   };
- 
+
   const handleEndAuction = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('endAuction', { roomCode, playerId });
   };
- 
+
   const handleEndTurn = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('endTurn', { roomCode, playerId });
   };
- 
+
   const handlePayJail = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('payJailFine', { roomCode, playerId });
   };
- 
+
   const handleUseJailCard = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('useJailCard', { roomCode, playerId });
   };
- 
+
   const handleResolveCard = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('resolveCard', { roomCode, playerId });
   };
- 
+
   const copyLink = () => {
     const link = getShareLink();
     navigator.clipboard.writeText(link).then(() => {
@@ -453,15 +427,15 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       setTimeout(() => setCopied(false), 2000);
     });
   };
- 
+
   const getPlayersOnTile = (tileId) => {
     return gameState?.players.filter(p => p.position === tileId && !p.isBankrupt) || [];
   };
- 
+
   const getPropertyState = (tileId) => {
     return gameState?.properties.find(p => p.id === tileId);
   };
- 
+
   return (
     <div className="game-container">
       {/* Top Bar */}
@@ -485,7 +459,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           )}
         </div>
       </div>
- 
+
       <div className="game-layout">
         {/* Board */}
         <div className="board-wrapper">
@@ -499,7 +473,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const side = getTileSide(tile.id);
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
- 
+
               // CORNER TILES (Go, Jail, Free Parking, Go To Jail)
               if (isCorner) {
                 return (
@@ -527,7 +501,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   </div>
                 );
               }
- 
+
               // REGULAR TILES (properties, railroads, utilities, chance, chest, tax)
               return (
                 <div
@@ -550,20 +524,20 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
                     />
                   )}
- 
+
                   <div className="tile-content">
                     {/* Property name - rotated to face inward based on side */}
                     <div className="tile-name-wrap">
                       <span className="tile-name">{tile.name}</span>
                     </div>
- 
+
                     {/* Icon for non-property tiles (centered) */}
                     {hasIcon && (
                       <div className="tile-icon-wrap">
                         <TileIcon tile={tile} />
                       </div>
                     )}
- 
+
                     {/* Owner indicator */}
                     {propState?.ownerId && (
                       <div
@@ -571,7 +545,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                         style={{ backgroundColor: owner?.color || '#999' }}
                       />
                     )}
- 
+
                     {/* Houses/hotel indicator */}
                     {propState?.houses > 0 && (
                       <div className="houses-indicator">
@@ -579,7 +553,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       </div>
                     )}
                     {propState?.hotel && <div className="hotel-indicator">🏨</div>}
- 
+
                     {/* Tokens (players on tile) */}
                     <div className="tile-tokens">
                       {playersHere.map((p, i) => (
@@ -594,19 +568,19 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       ))}
                     </div>
                   </div>
- 
-                  {/* Price - positioned at outer edge of tile (opposite of color bar) */}
+
+                  {/* Price - positioned at outer edge of tile */}
                   {tile.price && (
                     <div className="tile-price-edge">${tile.price}</div>
                   )}
                 </div>
               );
             })}
- 
+
             {/* Center Area */}
             <div className="board-center">
               <span className="board-center-title">MONOPOLY</span>
- 
+
               {/* Chance Deck (top-left of center, angled) */}
               <div className="card-deck card-deck-chance">
                 <div className="card-deck-stack">
@@ -618,7 +592,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   </div>
                 </div>
               </div>
- 
+
               {/* Community Chest Deck (bottom-right of center, angled) */}
               <div className="card-deck card-deck-chest">
                 <div className="card-deck-stack">
@@ -632,7 +606,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   </div>
                 </div>
               </div>
- 
+
               <div className="dice-area">
                 {gameState?.dice && (
                   <div className="dice">
@@ -647,7 +621,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             </div>
           </div>
         </div>
- 
+
         {/* Side Panel */}
         <div className="side-panel">
           <PlayerPanel
@@ -657,7 +631,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             myId={playerId}
             onPropertyClick={setShowProperty}
           />
- 
+
           {/* Game Log */}
           <div className="game-log">
             <h4>Game Log</h4>
@@ -669,7 +643,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </div>
         </div>
       </div>
- 
+
       {/* Controls */}
       <div className="controls-bar">
         {gameState?.status === 'playing' && isCurrentPlayer && (
@@ -679,7 +653,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 🎲 Roll Dice
               </button>
             )}
- 
+
             {gameState.turnPhase === 'buy' && (
               <>
                 <button className="btn-control btn-buy" onClick={handleBuy}>
@@ -690,7 +664,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </button>
               </>
             )}
- 
+
             {gameState.turnPhase === 'auction' && gameState.auction && (
               <AuctionModal
                 auction={gameState.auction}
@@ -702,14 +676,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 onEnd={handleEndAuction}
               />
             )}
- 
+
             {gameState.pendingCard && (
               <CardModal
                 card={gameState.pendingCard}
                 onResolve={handleResolveCard}
               />
             )}
- 
+
             {currentPlayer?.inJail && gameState.turnPhase === 'roll' && (
               <>
                 <button className="btn-control" onClick={handlePayJail}>
@@ -722,7 +696,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 )}
               </>
             )}
- 
+
             {gameState.turnPhase === 'end' && (
               <>
                 <button className="btn-control btn-end" onClick={handleEndTurn}>
@@ -735,20 +709,20 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             )}
           </>
         )}
- 
+
         {gameState?.status === 'playing' && !isCurrentPlayer && (
           <div className="waiting-msg">
             Waiting for {currentPlayer?.name}...
           </div>
         )}
- 
+
         {gameState?.status === 'ended' && (
           <div className="game-over">
             🎉 {gameState.players.find(p => !p.isBankrupt)?.name} Wins!
           </div>
         )}
       </div>
- 
+
       {/* Modals */}
       {showTrade && (
         <TradeModal
@@ -773,7 +747,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           }}
         />
       )}
- 
+
       {gameState?.pendingTrade?.isForMe && (
         <div className="modal-overlay">
           <div className="modal trade-pending">
@@ -804,7 +778,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </div>
         </div>
       )}
- 
+
       {showProperty !== null && (
         <PropertyModal
           tileId={showProperty}
@@ -835,5 +809,3 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     </div>
   );
 }
-
-
