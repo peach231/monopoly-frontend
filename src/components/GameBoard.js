@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import PlayerPanel from './PlayerPanel';
 import CardModal from './Modals/CardModal';
 import TradeModal from './Modals/TradeModal';
 import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
-
+ 
 const BOARD_TILES = [
   { id: 0, name: "Go", type: "corner" },
   { id: 1, name: "Mediterranean Ave", type: "property", colorGroup: "brown", price: 60 },
@@ -47,25 +47,25 @@ const BOARD_TILES = [
   { id: 38, name: "Luxury Tax", type: "tax", price: 100 },
   { id: 39, name: "Boardwalk", type: "property", colorGroup: "darkblue", price: 400 }
 ];
-
+ 
 const COLOR_MAP = {
-  brown: '#8B4513',
-  lightblue: '#87CEEB',
-  pink: '#FF69B4',
-  orange: '#FFA500',
-  red: '#FF0000',
-  yellow: '#FFD700',
-  green: '#228B22',
-  darkblue: '#00008B'
+  brown: '#955436',
+  lightblue: '#AAE0FA',
+  pink: '#D93A96',
+  orange: '#F7941D',
+  red: '#ED1B24',
+  yellow: '#FEF200',
+  green: '#1FB25A',
+  darkblue: '#0072BB'
 };
-
+ 
 const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
   'graduation-hat': '🎓',
   pencil: '✏️'
 };
-
+ 
 function getGridPos(tileId) {
   if (tileId >= 20 && tileId <= 30) {
     return { gridRow: 1, gridColumn: tileId - 19 };
@@ -81,37 +81,75 @@ function getGridPos(tileId) {
   }
   return { gridRow: 1, gridColumn: 1 };
 }
-
+ 
+function getTileSide(tileId) {
+  if (tileId >= 1 && tileId <= 9) return 'bottom';
+  if (tileId >= 11 && tileId <= 19) return 'left';
+  if (tileId >= 21 && tileId <= 29) return 'top';
+  if (tileId >= 31 && tileId <= 39) return 'right';
+  return null; // corners
+}
+ 
 export default function GameBoard({ gameState, playerId, emit, onStartGame, getShareLink }) {
   const [showTrade, setShowTrade] = useState(false);
   const [showProperty, setShowProperty] = useState(null);
   const [copied, setCopied] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
-
+  const [hoppingTokens, setHoppingTokens] = useState({});
+  const prevPositionsRef = useRef({});
+ 
+  // Track player position changes and trigger hop animation
+  useEffect(() => {
+    if (!gameState?.players) return;
+    const prev = prevPositionsRef.current;
+    const newHopping = {};
+    
+    gameState.players.forEach(player => {
+      if (prev[player.id] !== undefined && prev[player.id] !== player.position) {
+        newHopping[player.id] = true;
+      }
+    });
+ 
+    if (Object.keys(newHopping).length > 0) {
+      setHoppingTokens(newHopping);
+      const timer = setTimeout(() => setHoppingTokens({}), 700);
+      // Update prev positions after setting hopping
+      const updated = {};
+      gameState.players.forEach(p => { updated[p.id] = p.position; });
+      prevPositionsRef.current = updated;
+      return () => clearTimeout(timer);
+    }
+ 
+    // Update prev positions
+    const updated = {};
+    gameState.players.forEach(p => { updated[p.id] = p.position; });
+    prevPositionsRef.current = updated;
+  }, [gameState?.players]);
+ 
   const isCurrentPlayer = gameState?.currentPlayerId === playerId;
   const me = gameState?.players.find(p => p.id === playerId);
   const currentPlayer = gameState?.players.find(p => p.id === gameState?.currentPlayerId);
-
+ 
   const myProperties = useMemo(() => {
     if (!gameState || !me) return [];
     return gameState.properties.filter(p => p.ownerId === playerId);
-}, [gameState, playerId, me]);
-
+  }, [gameState, playerId]);
+ 
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
   };
-
+ 
   const handleBuy = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('buyProperty', { roomCode, playerId });
   };
-
+ 
   const handleAuction = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('startAuction', { roomCode, playerId });
   };
-
+ 
   const handleBid = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     const amount = parseInt(bidAmount);
@@ -119,32 +157,32 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     await emit('placeBid', { roomCode, playerId, amount });
     setBidAmount('');
   };
-
+ 
   const handleEndAuction = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('endAuction', { roomCode, playerId });
   };
-
+ 
   const handleEndTurn = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('endTurn', { roomCode, playerId });
   };
-
+ 
   const handlePayJail = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('payJailFine', { roomCode, playerId });
   };
-
+ 
   const handleUseJailCard = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('useJailCard', { roomCode, playerId });
   };
-
+ 
   const handleResolveCard = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('resolveCard', { roomCode, playerId });
   };
-
+ 
   const copyLink = () => {
     const link = getShareLink();
     navigator.clipboard.writeText(link).then(() => {
@@ -152,15 +190,15 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
+ 
   const getPlayersOnTile = (tileId) => {
     return gameState?.players.filter(p => p.position === tileId && !p.isBankrupt) || [];
   };
-
+ 
   const getPropertyState = (tileId) => {
     return gameState?.properties.find(p => p.id === tileId);
   };
-
+ 
   return (
     <div className="game-container">
       {/* Top Bar */}
@@ -184,7 +222,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           )}
         </div>
       </div>
-
+ 
       <div className="game-layout">
         {/* Board */}
         <div className="board-wrapper">
@@ -195,15 +233,16 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const playersHere = getPlayersOnTile(tile.id);
               const isCorner = tile.type === 'corner';
               const owner = gameState?.players.find(p => p.id === propState?.ownerId);
-
+              const side = getTileSide(tile.id);
+ 
               return (
                 <div
                   key={tile.id}
                   className={`tile tile-${tile.type} ${isCorner ? 'tile-corner' : ''}`}
+                  data-side={side || undefined}
                   style={{
                     gridRow: pos.gridRow,
                     gridColumn: pos.gridColumn,
-                    ...(tile.colorGroup ? { borderTop: `4px solid ${COLOR_MAP[tile.colorGroup]}` } : {})
                   }}
                   onClick={() => {
                     if (tile.type === 'property' || tile.type === 'railroad' || tile.type === 'utility') {
@@ -211,6 +250,12 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     }
                   }}
                 >
+                  {tile.colorGroup && (
+                    <div
+                      className="color-bar"
+                      style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
+                    />
+                  )}
                   <div className="tile-content">
                     <span className="tile-name">{tile.name}</span>
                     {tile.price && <span className="tile-price">${tile.price}</span>}
@@ -231,7 +276,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     {playersHere.map((p, i) => (
                       <span
                         key={p.id}
-                        className="token"
+                        className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
                         style={{
                           backgroundColor: p.color,
                           transform: `translate(${(i % 2) * 12 - 6}px, ${Math.floor(i / 2) * 12 - 6}px)`
@@ -245,9 +290,10 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </div>
               );
             })}
-
+ 
             {/* Center Area */}
             <div className="board-center">
+              <span className="board-center-title">MONOPOLY</span>
               <div className="dice-area">
                 {gameState?.dice && (
                   <div className="dice">
@@ -262,7 +308,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             </div>
           </div>
         </div>
-
+ 
         {/* Side Panel */}
         <div className="side-panel">
           <PlayerPanel
@@ -272,7 +318,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             myId={playerId}
             onPropertyClick={setShowProperty}
           />
-
+ 
           {/* Game Log */}
           <div className="game-log">
             <h4>Game Log</h4>
@@ -284,7 +330,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </div>
         </div>
       </div>
-
+ 
       {/* Controls */}
       <div className="controls-bar">
         {gameState?.status === 'playing' && isCurrentPlayer && (
@@ -294,7 +340,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 🎲 Roll Dice
               </button>
             )}
-
+ 
             {gameState.turnPhase === 'buy' && (
               <>
                 <button className="btn-control btn-buy" onClick={handleBuy}>
@@ -305,7 +351,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </button>
               </>
             )}
-
+ 
             {gameState.turnPhase === 'auction' && gameState.auction && (
               <AuctionModal
                 auction={gameState.auction}
@@ -317,14 +363,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 onEnd={handleEndAuction}
               />
             )}
-
+ 
             {gameState.pendingCard && (
               <CardModal
                 card={gameState.pendingCard}
                 onResolve={handleResolveCard}
               />
             )}
-
+ 
             {currentPlayer?.inJail && gameState.turnPhase === 'roll' && (
               <>
                 <button className="btn-control" onClick={handlePayJail}>
@@ -337,7 +383,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 )}
               </>
             )}
-
+ 
             {gameState.turnPhase === 'end' && (
               <>
                 <button className="btn-control btn-end" onClick={handleEndTurn}>
@@ -350,20 +396,20 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             )}
           </>
         )}
-
+ 
         {gameState?.status === 'playing' && !isCurrentPlayer && (
           <div className="waiting-msg">
             Waiting for {currentPlayer?.name}...
           </div>
         )}
-
+ 
         {gameState?.status === 'ended' && (
           <div className="game-over">
             🎉 {gameState.players.find(p => !p.isBankrupt)?.name} Wins!
           </div>
         )}
       </div>
-
+ 
       {/* Modals */}
       {showTrade && (
         <TradeModal
@@ -388,7 +434,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           }}
         />
       )}
-
+ 
       {gameState?.pendingTrade?.isForMe && (
         <div className="modal-overlay">
           <div className="modal trade-pending">
@@ -419,7 +465,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </div>
         </div>
       )}
-
+ 
       {showProperty !== null && (
         <PropertyModal
           tileId={showProperty}
