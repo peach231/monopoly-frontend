@@ -65,20 +65,16 @@ function App() {
     await emit('startGame', { roomCode });
   };
 
-  const getShareLink = () => {
+ const getShareLink = () => {
     const roomCode = sessionStorage.getItem('roomCode');
     const parentUrl = process.env.REACT_APP_PARENT_URL;
+
+    // Use the exact URL you set in Vercel first
     if (parentUrl) {
-      return `${parentUrl}?room=${roomCode}`;
+      return `${parentUrl}${parentUrl.includes('?') ? '&' : '?'}room=${roomCode}`;
     }
-    // If in iframe, try to use parent URL
-    if (window.self !== window.top) {
-      try {
-        return `${window.parent.location.origin}${window.parent.location.pathname}?room=${roomCode}`;
-      } catch (e) {
-        // Cross-origin iframe, fallback
-      }
-    }
+
+    // Fallback if the environment variable is missing
     return `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
   };
 
