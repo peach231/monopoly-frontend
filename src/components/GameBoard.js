@@ -60,10 +60,10 @@ const COLOR_MAP = {
 };
  
 const TOKEN_EMOJI = {
-  backpack: '🎒',
-  textbooks: '📚',
-  'graduation-hat': '🎓',
-  pencil: '✏️'
+  dog: 'https://www.image2url.com/r2/default/files/1777748866437-8b4cadb2-e564-4319-ab5f-819c6830d3f2.png',
+  hat: 'https://www.image2url.com/r2/default/images/1777748703721-72fa1fdf-851e-490d-a254-5b640f0310e1.png',
+  car: 'https://www.image2url.com/r2/default/images/1777748903874-307a7256-cfe7-4e4c-9d30-e7914c9dc19a.png',
+  ship: 'https://www.image2url.com/r2/default/images/1777748945449-a1af7a6c-d806-44ef-b5c5-d16f544d55fc.png'
 };
  
 function getGridPos(tileId) {
