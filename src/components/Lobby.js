@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
-
+ 
 export default function Lobby({ onCreate, onJoin, error }) {
   const [mode, setMode] = useState('menu'); // menu | create | join
   const [name, setName] = useState('');
   const [roomCode, setRoomCode] = useState('');
-
+ 
   const handleCreate = (e) => {
     e.preventDefault();
     if (name.trim()) onCreate(name.trim());
   };
-
+ 
   const handleJoin = (e) => {
     e.preventDefault();
     if (name.trim() && roomCode.trim()) {
       onJoin(roomCode.trim().toUpperCase(), name.trim());
     }
   };
-
+ 
   return (
     <div className="lobby">
       <div className="lobby-card">
-        <h1>🏫 Schoolopoly</h1>
-        <p className="subtitle">A Monopoly-style game for students</p>
-
+        <h1>MONOPOLY</h1>
+        <p className="subtitle">The Classic Property Trading Game</p>
+ 
         {error && <div className="error-banner">{error}</div>}
-
+ 
         {mode === 'menu' && (
           <div className="menu-buttons">
             <button className="btn-primary" onClick={() => setMode('create')}>
@@ -35,7 +35,7 @@ export default function Lobby({ onCreate, onJoin, error }) {
             </button>
           </div>
         )}
-
+ 
         {mode === 'create' && (
           <form onSubmit={handleCreate}>
             <label>Your Name</label>
@@ -55,7 +55,7 @@ export default function Lobby({ onCreate, onJoin, error }) {
             </button>
           </form>
         )}
-
+ 
         {mode === 'join' && (
           <form onSubmit={handleJoin}>
             <label>Your Name</label>
