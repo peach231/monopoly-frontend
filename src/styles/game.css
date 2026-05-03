@@ -332,28 +332,28 @@
   z-index: 1;
 }
 
-/* Bottom row (1-9): outer edge is TOP */
+/* Bottom row (1-9): color bar at TOP (outer edge) */
 .tile[data-side="bottom"] .color-bar {
   top: 0; left: 0; right: 0;
   height: 22%;
   border-bottom: 1.5px solid #1a1a1a;
 }
 
-/* Left column (11-19): INNER edge is RIGHT (toward center) */
+/* Left column (11-19): color bar at RIGHT (inner edge toward center) */
 .tile[data-side="left"] .color-bar {
   top: 0; right: 0; bottom: 0;
   width: 22%;
   border-left: 1.5px solid #1a1a1a;
 }
 
-/* Top row (21-29): outer edge is BOTTOM */
+/* Top row (21-29): color bar at BOTTOM (outer edge) */
 .tile[data-side="top"] .color-bar {
   bottom: 0; left: 0; right: 0;
   height: 22%;
   border-top: 1.5px solid #1a1a1a;
 }
 
-/* Right column (31-39): INNER edge is LEFT (toward center) */
+/* Right column (31-39): color bar at LEFT (inner edge toward center) */
 .tile[data-side="right"] .color-bar {
   top: 0; left: 0; bottom: 0;
   width: 22%;
@@ -372,7 +372,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2px;
 }
 
 /* Tile name wrapper */
@@ -381,13 +380,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  flex: 1;
   width: 100%;
   height: 100%;
-  padding: 2px;
   overflow: hidden;
 }
 
+/* Base tile name - shared across all sides */
 .tile-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
@@ -406,29 +404,15 @@
   text-align: center;
 }
 
-/* Each word in the property name renders on its own line for top/bottom.
-   For left/right, words flow inline within a vertical column. */
+/* Each word on its own line */
 .tile-name-word {
   display: block;
   white-space: nowrap;
 }
 
-/* Side tiles: words flow inline so they wrap naturally within vertical columns */
-.tile[data-side="left"] .tile-name-word,
-.tile[data-side="right"] .tile-name-word {
-  display: inline;
-  white-space: normal;
-}
-
-/* Add a non-breaking space between words for side tiles so names don't run together */
-.tile[data-side="left"] .tile-name-word:not(:last-child)::after,
-.tile[data-side="right"] .tile-name-word:not(:last-child)::after {
-  content: "\A0";
-  white-space: pre;
-}
-
 /* ============================================
    BOTTOM ROW (properties 1-9)
+   Normal horizontal text. Color bar at top.
    ============================================ */
 .tile[data-side="bottom"] .tile-content {
   padding-top: 24%;
@@ -437,19 +421,21 @@
 
 /* ============================================
    TOP ROW (properties 21-29)
+   Normal horizontal text (NOT rotated 180°).
+   Color bar at bottom. Price at top.
    ============================================ */
 .tile[data-side="top"] .tile-content {
   padding-bottom: 24%;
   padding-top: 14%;
 }
-.tile[data-side="top"] .tile-name-wrap {
-  transform: rotate(180deg);
-}
 
 /* ============================================
    LEFT COLUMN (properties 11-19)
+   Text block rotated 90° CW.
+   Reading direction: bottom-to-top.
+   Color bar at RIGHT (inner).
+   Price at LEFT (outer).
    ============================================ */
-/* Color bar on RIGHT (inner). Name sits between price (outer ~14%) and color bar (inner ~24%). */
 .tile[data-side="left"] .tile-content {
   padding-right: 24%;
   padding-left: 14%;
@@ -461,38 +447,30 @@
   left: 14%;
   top: 0;
   bottom: 0;
-  width: auto;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 1px;
-  flex: 0 0 auto;
 }
 
-/* vertical-lr + rotate(180deg):
-   - Visual text flows bottom-to-top
-   - Visual columns progress right-to-left
-   - First column sits at the inner edge (right side of strip) and wraps leftward toward outer edge
-   - This makes overflow letters move LEFT, matching the user's request */
+/* Rotate the entire text block 90° clockwise.
+   This makes horizontal text read bottom-to-top.
+   The text block's "top" becomes the tile's right edge. */
 .tile[data-side="left"] .tile-name {
-  writing-mode: vertical-lr;
-  text-orientation: mixed;
-  transform: rotate(180deg);
+  transform: rotate(90deg);
+  transform-origin: center center;
   font-size: clamp(5.5px, 1.05vmin, 10px);
-  line-height: 1;
-  text-align: center;
-  display: block;
-  max-height: 100%;
-  max-width: none;
-  overflow-wrap: break-word;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 /* ============================================
    RIGHT COLUMN (properties 31-39)
+   Text block rotated 90° CCW.
+   Reading direction: top-to-bottom.
+   Color bar at LEFT (inner).
+   Price at RIGHT (outer).
    ============================================ */
-/* Color bar on LEFT (inner). Name sits between color bar (inner ~24%) and price (outer ~14%). */
 .tile[data-side="right"] .tile-content {
   padding-left: 24%;
   padding-right: 14%;
@@ -504,31 +482,21 @@
   right: 14%;
   top: 0;
   bottom: 0;
-  width: auto;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 1px;
-  flex: 0 0 auto;
 }
 
-/* vertical-lr + rotate(180deg):
-   - Visual text flows bottom-to-top (user explicitly requested this)
-   - Visual columns progress right-to-left
-   - First column sits at the outer edge (right side of strip) and flows inward */
+/* Rotate the entire text block 90° counter-clockwise.
+   This makes horizontal text read top-to-bottom.
+   The text block's "top" becomes the tile's left edge. */
 .tile[data-side="right"] .tile-name {
-  writing-mode: vertical-lr;
-  text-orientation: mixed;
-  transform: rotate(180deg);
+  transform: rotate(-90deg);
+  transform-origin: center center;
   font-size: clamp(5.5px, 1.05vmin, 10px);
-  line-height: 1;
-  text-align: center;
-  display: block;
-  max-height: 100%;
-  max-width: none;
-  overflow-wrap: break-word;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 /* ============================================
@@ -549,22 +517,32 @@
   letter-spacing: 0.2px;
 }
 
+/* Bottom: price at bottom */
 .tile[data-side="bottom"] .tile-price-edge {
-  bottom: 2px; left: 50%;
+  bottom: 2px;
+  left: 50%;
   transform: translateX(-50%);
 }
-/* FIX: Top row price no longer rotated — readable right-side-up */
+
+/* Top: price at top, NOT rotated */
 .tile[data-side="top"] .tile-price-edge {
-  top: 2px; left: 50%;
+  top: 2px;
+  left: 50%;
   transform: translateX(-50%);
 }
+
+/* Left: price at left (outer), rotated to read bottom-to-top */
 .tile[data-side="left"] .tile-price-edge {
-  left: 2px; top: 50%;
+  left: 2px;
+  top: 50%;
   transform: translateY(-50%) rotate(90deg);
   transform-origin: center;
 }
+
+/* Right: price at right (outer), rotated to read top-to-bottom */
 .tile[data-side="right"] .tile-price-edge {
-  right: 2px; top: 50%;
+  right: 2px;
+  top: 50%;
   transform: translateY(-50%) rotate(-90deg);
   transform-origin: center;
 }
@@ -620,31 +598,34 @@
   overflow: hidden;
 }
 
-/* Bottom row: inward edge is TOP */
+/* Bottom row: name at top (inward edge) */
 .tile-chance[data-side="bottom"] .tile-name-wrap,
 .tile-chest[data-side="bottom"] .tile-name-wrap,
 .tile-tax[data-side="bottom"] .tile-name-wrap,
 .tile-railroad[data-side="bottom"] .tile-name-wrap,
 .tile-utility[data-side="bottom"] .tile-name-wrap {
-  top: 2px; left: 0; right: 0;
+  top: 2px;
+  left: 0;
+  right: 0;
   height: auto;
   width: 100%;
 }
 
-/* Top row: inward edge is BOTTOM */
+/* Top row: name at bottom (inward edge) */
 .tile-chance[data-side="top"] .tile-name-wrap,
 .tile-chest[data-side="top"] .tile-name-wrap,
 .tile-tax[data-side="top"] .tile-name-wrap,
 .tile-railroad[data-side="top"] .tile-name-wrap,
 .tile-utility[data-side="top"] .tile-name-wrap {
-  bottom: 2px; left: 0; right: 0;
+  bottom: 2px;
+  left: 0;
+  right: 0;
   top: auto;
   height: auto;
   width: 100%;
 }
 
-/* Left column: name occupies the inner-edge strip (where a property's
-   color bar would be). Icon takes the rest of the tile. */
+/* Left column: name strip at RIGHT (inner edge), rotated 90° CW */
 .tile-chance[data-side="left"] .tile-name-wrap,
 .tile-chest[data-side="left"] .tile-name-wrap,
 .tile-tax[data-side="left"] .tile-name-wrap,
@@ -663,26 +644,19 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* Left specials: same rotation as left properties for consistency */
 .tile-chance[data-side="left"] .tile-name,
 .tile-chest[data-side="left"] .tile-name,
 .tile-tax[data-side="left"] .tile-name,
 .tile-railroad[data-side="left"] .tile-name,
 .tile-utility[data-side="left"] .tile-name {
-  writing-mode: vertical-lr;
-  text-orientation: mixed;
-  transform: rotate(180deg);
+  transform: rotate(90deg);
+  transform-origin: center center;
   font-size: clamp(3.5px, 0.7vmin, 7px);
-  line-height: 1;
-  text-align: center;
-  display: block;
-  max-height: 100%;
-  max-width: none;
-  overflow-wrap: break-word;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
-/* Right column: name occupies the inner-edge strip on the LEFT side of
-   the tile (since right column's inner edge is LEFT). */
+/* Right column: name strip at LEFT (inner edge), rotated 90° CCW */
 .tile-chance[data-side="right"] .tile-name-wrap,
 .tile-chest[data-side="right"] .tile-name-wrap,
 .tile-tax[data-side="right"] .tile-name-wrap,
@@ -701,26 +675,19 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* Right specials: vertical-rl + rotate(180deg) so text starts at the
-   outer edge of the strip and reads bottom-to-top */
 .tile-chance[data-side="right"] .tile-name,
 .tile-chest[data-side="right"] .tile-name,
 .tile-tax[data-side="right"] .tile-name,
 .tile-railroad[data-side="right"] .tile-name,
 .tile-utility[data-side="right"] .tile-name {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
+  transform: rotate(-90deg);
+  transform-origin: center center;
   font-size: clamp(3.5px, 0.7vmin, 7px);
-  line-height: 1;
-  text-align: center;
-  display: block;
-  max-height: 100%;
-  max-width: none;
-  overflow-wrap: break-word;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
-/* Icon fills the rest of the special tile (large, centered) */
+/* Icon fills the rest of the special tile */
 .tile-chance .tile-icon-wrap,
 .tile-chest .tile-icon-wrap,
 .tile-tax .tile-icon-wrap,
@@ -736,7 +703,7 @@
   padding: 0;
 }
 
-/* Bottom-row special tile: icon shifted down (name is at top) */
+/* Bottom-row: icon shifted down (name at top) */
 .tile-chance[data-side="bottom"] .tile-icon-wrap,
 .tile-chest[data-side="bottom"] .tile-icon-wrap,
 .tile-tax[data-side="bottom"] .tile-icon-wrap,
@@ -744,7 +711,8 @@
 .tile-utility[data-side="bottom"] .tile-icon-wrap {
   padding-top: 18%;
 }
-/* Top-row: icon shifted up */
+
+/* Top-row: icon shifted up (name at bottom) */
 .tile-chance[data-side="top"] .tile-icon-wrap,
 .tile-chest[data-side="top"] .tile-icon-wrap,
 .tile-tax[data-side="top"] .tile-icon-wrap,
@@ -753,29 +721,27 @@
   padding-bottom: 18%;
 }
 
-/* Left-col special: shift icon away from inner edge (right) where name lives.
-   The wrapper is rotated 90deg, so padding-top maps to visual padding-right. */
+/* Left-col: icon shifted away from right edge where name lives */
 .tile-chance[data-side="left"] .tile-icon-wrap,
 .tile-chest[data-side="left"] .tile-icon-wrap,
 .tile-tax[data-side="left"] .tile-icon-wrap,
 .tile-railroad[data-side="left"] .tile-icon-wrap,
 .tile-utility[data-side="left"] .tile-icon-wrap {
   padding: 0;
-  padding-top: 22%;
+  padding-right: 22%;
 }
 
-/* Right-col special: shift icon away from inner edge (left) where name lives.
-   The wrapper is rotated -90deg, so padding-top maps to visual padding-left. */
+/* Right-col: icon shifted away from left edge where name lives */
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
 .tile-tax[data-side="right"] .tile-icon-wrap,
 .tile-railroad[data-side="right"] .tile-icon-wrap,
 .tile-utility[data-side="right"] .tile-icon-wrap {
   padding: 0;
-  padding-top: 22%;
+  padding-left: 22%;
 }
 
-/* Override the tile-svg size for special tiles - much bigger */
+/* Override tile-svg size for special tiles */
 .tile-chance .tile-svg,
 .tile-chest .tile-svg,
 .tile-tax .tile-svg,
@@ -796,18 +762,6 @@
 .tile-utility .tile-name {
   font-weight: 800;
   letter-spacing: 0.3px;
-}
-
-/* Icon rotation matches text orientation per side.
-   FIX: Removed rotate(180deg) for top row so icons are readable. */
-.tile[data-side="top"] .tile-icon-wrap {
-  transform: rotate(180deg);
-}
-.tile[data-side="left"] .tile-icon-wrap {
-  transform: rotate(90deg);
-}
-.tile[data-side="right"] .tile-icon-wrap {
-  transform: rotate(-90deg);
 }
 
 /* ============================================
