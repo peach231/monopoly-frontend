@@ -396,11 +396,23 @@
   color: #1a1a1a;
   text-transform: uppercase;
   letter-spacing: 0.2px;
-  word-break: break-word;
-  hyphens: auto;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
   max-width: 100%;
   max-height: 100%;
+  text-align: center;
+}
+
+/* Each word in the property name renders on its own line.
+   In top/bottom rows, lines stack vertically (default flex column).
+   In left/right columns, writing-mode flips this so lines stack
+   horizontally and individual letters are rotated for readability. */
+.tile-name-word {
+  display: block;
+  white-space: nowrap;
 }
 
 /* BOTTOM row: color bar top, name middle, price bottom */
@@ -418,54 +430,62 @@
   transform: rotate(180deg);
 }
 
-/* LEFT column: color bar RIGHT (inner), name on right, price on left */
+/* LEFT column: color bar RIGHT (inner), name fills the strip between
+   price (outer ~14%) and color bar (inner ~24%), price on left */
 .tile[data-side="left"] .tile-content {
   padding-right: 24%;
   padding-left: 14%;
 }
-/* LEFT: name at inner edge, rotated 90° CW (readable from left side) */
+/* LEFT: name occupies the area between price and color bar.
+   writing-mode rotates each character 90° CW (readable from left side)
+   AND makes block children stack right-to-left, which gives
+   us word-per-line behavior naturally. */
 .tile[data-side="left"] .tile-name-wrap {
   position: absolute;
-  right: 22%;
+  right: 24%;
+  left: 14%;
   top: 0;
   bottom: 0;
-  left: auto;
   width: auto;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 2px;
   flex: 0 0 auto;
 }
-.tile[data-side="left"] .tile-name-wrap .tile-name {
-  transform: rotate(90deg);
-  white-space: nowrap;
+.tile[data-side="left"] .tile-name {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  flex-direction: row-reverse;
+  gap: 2px;
 }
 
-/* RIGHT column: color bar LEFT (inner), name on left, price on right */
+/* RIGHT column: color bar LEFT (inner), name fills strip between
+   color bar (inner ~24%) and price (outer ~14%), price on right */
 .tile[data-side="right"] .tile-content {
   padding-left: 24%;
   padding-right: 14%;
 }
-/* RIGHT: name at inner edge, rotated 90° CCW (readable from right side) */
 .tile[data-side="right"] .tile-name-wrap {
   position: absolute;
-  left: 22%;
+  left: 24%;
+  right: 14%;
   top: 0;
   bottom: 0;
-  right: auto;
   width: auto;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 2px;
   flex: 0 0 auto;
 }
-.tile[data-side="right"] .tile-name-wrap .tile-name {
-  transform: rotate(-90deg);
-  white-space: nowrap;
+.tile[data-side="right"] .tile-name {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  flex-direction: row;
+  gap: 2px;
 }
 
 /* ============================================
@@ -578,58 +598,64 @@
   width: 100%;
 }
 
-/* Left column: inward edge is RIGHT */
+/* Left column: name occupies the inner-edge strip (where a property's
+   color bar would be). Icon takes the rest of the tile. */
 .tile-chance[data-side="left"] .tile-name-wrap,
 .tile-chest[data-side="left"] .tile-name-wrap,
 .tile-tax[data-side="left"] .tile-name-wrap,
 .tile-railroad[data-side="left"] .tile-name-wrap,
 .tile-utility[data-side="left"] .tile-name-wrap {
-  right: 22%;
+  right: 0;
   top: 0;
   bottom: 0;
   left: auto;
-  width: auto;
+  width: 22%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  writing-mode: initial;
+  padding: 2px;
+  background: rgba(213, 236, 204, 0.6);
 }
-.tile-chance[data-side="left"] .tile-name-wrap .tile-name,
-.tile-chest[data-side="left"] .tile-name-wrap .tile-name,
-.tile-tax[data-side="left"] .tile-name-wrap .tile-name,
-.tile-railroad[data-side="left"] .tile-name-wrap .tile-name,
-.tile-utility[data-side="left"] .tile-name-wrap .tile-name {
-  transform: rotate(90deg);
-  white-space: nowrap;
+.tile-chance[data-side="left"] .tile-name,
+.tile-chest[data-side="left"] .tile-name,
+.tile-tax[data-side="left"] .tile-name,
+.tile-railroad[data-side="left"] .tile-name,
+.tile-utility[data-side="left"] .tile-name {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  flex-direction: row-reverse;
+  gap: 2px;
 }
 
-/* Right column: inward edge is LEFT */
+/* Right column: name occupies the inner-edge strip on the LEFT side of
+   the tile (since right column's inner edge is LEFT). */
 .tile-chance[data-side="right"] .tile-name-wrap,
 .tile-chest[data-side="right"] .tile-name-wrap,
 .tile-tax[data-side="right"] .tile-name-wrap,
 .tile-railroad[data-side="right"] .tile-name-wrap,
 .tile-utility[data-side="right"] .tile-name-wrap {
-  left: 22%;
+  left: 0;
   top: 0;
   bottom: 0;
   right: auto;
-  width: auto;
+  width: 22%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  writing-mode: initial;
+  padding: 2px;
+  background: rgba(213, 236, 204, 0.6);
 }
-.tile-chance[data-side="right"] .tile-name-wrap .tile-name,
-.tile-chest[data-side="right"] .tile-name-wrap .tile-name,
-.tile-tax[data-side="right"] .tile-name-wrap .tile-name,
-.tile-railroad[data-side="right"] .tile-name-wrap .tile-name,
-.tile-utility[data-side="right"] .tile-name-wrap .tile-name {
-  transform: rotate(-90deg);
-  white-space: nowrap;
+.tile-chance[data-side="right"] .tile-name,
+.tile-chest[data-side="right"] .tile-name,
+.tile-tax[data-side="right"] .tile-name,
+.tile-railroad[data-side="right"] .tile-name,
+.tile-utility[data-side="right"] .tile-name {
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  flex-direction: row;
+  gap: 2px;
 }
 
 /* Icon fills the rest of the special tile (large, centered) */
@@ -664,18 +690,23 @@
 .tile-utility[data-side="top"] .tile-icon-wrap {
   padding-bottom: 18%;
 }
-/* Left-col & Right-col: no padding shift — let icon center naturally */
+/* Left-col special: shift icon away from inner edge (right) where name lives */
 .tile-chance[data-side="left"] .tile-icon-wrap,
 .tile-chest[data-side="left"] .tile-icon-wrap,
 .tile-tax[data-side="left"] .tile-icon-wrap,
 .tile-railroad[data-side="left"] .tile-icon-wrap,
-.tile-utility[data-side="left"] .tile-icon-wrap,
+.tile-utility[data-side="left"] .tile-icon-wrap {
+  padding: 0;
+  padding-right: 22%;
+}
+/* Right-col special: shift icon away from inner edge (left) where name lives */
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
 .tile-tax[data-side="right"] .tile-icon-wrap,
 .tile-railroad[data-side="right"] .tile-icon-wrap,
 .tile-utility[data-side="right"] .tile-icon-wrap {
   padding: 0;
+  padding-left: 22%;
 }
 
 /* Override the tile-svg size for special tiles - much bigger */
