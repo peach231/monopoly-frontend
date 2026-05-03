@@ -406,21 +406,44 @@
   text-align: center;
 }
 
-/* Each word in the property name renders on its own line.
-   In top/bottom rows, lines stack vertically (default flex column).
-   In left/right columns, writing-mode flips this so lines stack
-   horizontally and individual letters are rotated for readability. */
+/* Each word in the property name renders on its own line for top/bottom.
+   For left/right, words flow inline within a vertical column. */
 .tile-name-word {
   display: block;
   white-space: nowrap;
 }
 
-/* FIX #1: Side tiles use inline words so they flow in a single
-   vertical column and wrap to adjacent columns naturally. */
+/* Side tiles: words flow inline so they wrap naturally within vertical columns */
 .tile[data-side="left"] .tile-name-word,
 .tile[data-side="right"] .tile-name-word {
   display: inline;
   white-space: normal;
+}
+
+/* Add a non-breaking space between words for side tiles so names don't run together */
+.tile[data-side="left"] .tile-name-word:not(:last-child)::after,
+.tile[data-side="right"] .tile-name-word:not(:last-child)::after {
+  content: "\A0";
+  white-space: pre;
+}
+
+/* ============================================
+   BOTTOM ROW (properties 1-9)
+   ============================================ */
+.tile[data-side="bottom"] .tile-content {
+  padding-top: 24%;
+  padding-bottom: 14%;
+}
+
+/* ============================================
+   TOP ROW (properties 21-29)
+   ============================================ */
+.tile[data-side="top"] .tile-content {
+  padding-bottom: 24%;
+  padding-top: 14%;
+}
+.tile[data-side="top"] .tile-name-wrap {
+  transform: rotate(180deg);
 }
 
 /* ============================================
@@ -448,16 +471,21 @@
   flex: 0 0 auto;
 }
 
-/* FIX #2: vertical-lr places the first column at the LEFT (outer) edge
-   and progresses rightward (inward toward center). Words flow inline
-   and wrap to new columns when they hit the bottom edge. */
+/* vertical-lr + rotate(180deg):
+   - Visual text flows bottom-to-top
+   - Visual columns progress right-to-left
+   - First column sits at the inner edge (right side of strip) and wraps leftward toward outer edge
+   - This makes overflow letters move LEFT, matching the user's request */
 .tile[data-side="left"] .tile-name {
   writing-mode: vertical-lr;
   text-orientation: mixed;
-  font-size: clamp(4px, 0.8vmin, 8px);
+  transform: rotate(180deg);
+  font-size: clamp(5.5px, 1.05vmin, 10px);
   line-height: 1;
   text-align: center;
   display: block;
+  max-height: 100%;
+  max-width: none;
   overflow-wrap: break-word;
 }
 
@@ -486,16 +514,20 @@
   flex: 0 0 auto;
 }
 
-/* FIX #2: vertical-rl places the first column at the RIGHT (outer) edge
-   and progresses leftward (inward toward center). This flips the right-
-   side text to point inward like the real board. */
+/* vertical-lr + rotate(180deg):
+   - Visual text flows bottom-to-top (user explicitly requested this)
+   - Visual columns progress right-to-left
+   - First column sits at the outer edge (right side of strip) and flows inward */
 .tile[data-side="right"] .tile-name {
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
   text-orientation: mixed;
-  font-size: clamp(4px, 0.8vmin, 8px);
+  transform: rotate(180deg);
+  font-size: clamp(5.5px, 1.05vmin, 10px);
   line-height: 1;
   text-align: center;
   display: block;
+  max-height: 100%;
+  max-width: none;
   overflow-wrap: break-word;
 }
 
@@ -521,9 +553,10 @@
   bottom: 2px; left: 50%;
   transform: translateX(-50%);
 }
+/* FIX: Top row price no longer rotated — readable right-side-up */
 .tile[data-side="top"] .tile-price-edge {
   top: 2px; left: 50%;
-  transform: translateX(-50%) rotate(180deg);
+  transform: translateX(-50%);
 }
 .tile[data-side="left"] .tile-price-edge {
   left: 2px; top: 50%;
@@ -630,19 +663,21 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* FIX #2: Left specials use vertical-rl so text flows from the tile's
-   outer (right) edge inward (left) within the strip. */
+/* Left specials: same rotation as left properties for consistency */
 .tile-chance[data-side="left"] .tile-name,
 .tile-chest[data-side="left"] .tile-name,
 .tile-tax[data-side="left"] .tile-name,
 .tile-railroad[data-side="left"] .tile-name,
 .tile-utility[data-side="left"] .tile-name {
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
   text-orientation: mixed;
+  transform: rotate(180deg);
   font-size: clamp(3.5px, 0.7vmin, 7px);
   line-height: 1;
   text-align: center;
   display: block;
+  max-height: 100%;
+  max-width: none;
   overflow-wrap: break-word;
 }
 
@@ -666,8 +701,8 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* FIX #2: Right specials also use vertical-rl so text flows from the
-   strip's outer (right) edge inward (left) toward the center. */
+/* Right specials: vertical-rl + rotate(180deg) so text starts at the
+   outer edge of the strip and reads bottom-to-top */
 .tile-chance[data-side="right"] .tile-name,
 .tile-chest[data-side="right"] .tile-name,
 .tile-tax[data-side="right"] .tile-name,
@@ -675,10 +710,13 @@
 .tile-utility[data-side="right"] .tile-name {
   writing-mode: vertical-rl;
   text-orientation: mixed;
+  transform: rotate(180deg);
   font-size: clamp(3.5px, 0.7vmin, 7px);
   line-height: 1;
   text-align: center;
   display: block;
+  max-height: 100%;
+  max-width: none;
   overflow-wrap: break-word;
 }
 
@@ -715,8 +753,8 @@
   padding-bottom: 18%;
 }
 
-/* FIX #3: Left-col icons are rotated 90deg. Unrotated padding-top maps
-   to visual padding-right (the inner edge where the name strip lives). */
+/* Left-col special: shift icon away from inner edge (right) where name lives.
+   The wrapper is rotated 90deg, so padding-top maps to visual padding-right. */
 .tile-chance[data-side="left"] .tile-icon-wrap,
 .tile-chest[data-side="left"] .tile-icon-wrap,
 .tile-tax[data-side="left"] .tile-icon-wrap,
@@ -726,8 +764,8 @@
   padding-top: 22%;
 }
 
-/* FIX #3: Right-col icons are rotated -90deg. Unrotated padding-top maps
-   to visual padding-left (the inner edge where the name strip lives). */
+/* Right-col special: shift icon away from inner edge (left) where name lives.
+   The wrapper is rotated -90deg, so padding-top maps to visual padding-left. */
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
 .tile-tax[data-side="right"] .tile-icon-wrap,
@@ -760,7 +798,8 @@
   letter-spacing: 0.3px;
 }
 
-/* Icon rotation matches text orientation per side */
+/* Icon rotation matches text orientation per side.
+   FIX: Removed rotate(180deg) for top row so icons are readable. */
 .tile[data-side="top"] .tile-icon-wrap {
   transform: rotate(180deg);
 }
