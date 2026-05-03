@@ -415,31 +415,23 @@
   white-space: nowrap;
 }
 
-/* BOTTOM row: color bar top, name middle, price bottom */
-.tile[data-side="bottom"] .tile-content {
-  padding-top: 24%;
-  padding-bottom: 14%;
+/* FIX #1: Side tiles use inline words so they flow in a single
+   vertical column and wrap to adjacent columns naturally. */
+.tile[data-side="left"] .tile-name-word,
+.tile[data-side="right"] .tile-name-word {
+  display: inline;
+  white-space: normal;
 }
 
-/* TOP row: color bar bottom, name rotated 180°, price top */
-.tile[data-side="top"] .tile-content {
-  padding-bottom: 24%;
-  padding-top: 14%;
-}
-.tile[data-side="top"] .tile-name-wrap {
-  transform: rotate(180deg);
-}
-
-/* LEFT column: color bar RIGHT (inner), name fills the strip between
-   price (outer ~14%) and color bar (inner ~24%), price on left */
+/* ============================================
+   LEFT COLUMN (properties 11-19)
+   ============================================ */
+/* Color bar on RIGHT (inner). Name sits between price (outer ~14%) and color bar (inner ~24%). */
 .tile[data-side="left"] .tile-content {
   padding-right: 24%;
   padding-left: 14%;
 }
-/* LEFT: name occupies the area between price and color bar.
-   writing-mode rotates each character 90° CW (readable from left side)
-   AND makes block children stack right-to-left, which gives
-   us word-per-line behavior naturally. */
+
 .tile[data-side="left"] .tile-name-wrap {
   position: absolute;
   right: 24%;
@@ -451,22 +443,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2px;
+  overflow: hidden;
+  padding: 1px;
   flex: 0 0 auto;
 }
+
+/* FIX #2: vertical-lr places the first column at the LEFT (outer) edge
+   and progresses rightward (inward toward center). Words flow inline
+   and wrap to new columns when they hit the bottom edge. */
 .tile[data-side="left"] .tile-name {
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
   text-orientation: mixed;
-  flex-direction: row-reverse;
-  gap: 2px;
+  font-size: clamp(4px, 0.8vmin, 8px);
+  line-height: 1;
+  text-align: center;
+  display: block;
+  overflow-wrap: break-word;
 }
 
-/* RIGHT column: color bar LEFT (inner), name fills strip between
-   color bar (inner ~24%) and price (outer ~14%), price on right */
+/* ============================================
+   RIGHT COLUMN (properties 31-39)
+   ============================================ */
+/* Color bar on LEFT (inner). Name sits between color bar (inner ~24%) and price (outer ~14%). */
 .tile[data-side="right"] .tile-content {
   padding-left: 24%;
   padding-right: 14%;
 }
+
 .tile[data-side="right"] .tile-name-wrap {
   position: absolute;
   left: 24%;
@@ -478,14 +481,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2px;
+  overflow: hidden;
+  padding: 1px;
   flex: 0 0 auto;
 }
+
+/* FIX #2: vertical-rl places the first column at the RIGHT (outer) edge
+   and progresses leftward (inward toward center). This flips the right-
+   side text to point inward like the real board. */
 .tile[data-side="right"] .tile-name {
-  writing-mode: vertical-lr;
+  writing-mode: vertical-rl;
   text-orientation: mixed;
-  flex-direction: row;
-  gap: 2px;
+  font-size: clamp(4px, 0.8vmin, 8px);
+  line-height: 1;
+  text-align: center;
+  display: block;
+  overflow-wrap: break-word;
 }
 
 /* ============================================
@@ -573,6 +584,7 @@
   flex: 0 0 auto;
   padding: 2px 4px;
   z-index: 3;
+  overflow: hidden;
 }
 
 /* Bottom row: inward edge is TOP */
@@ -617,6 +629,9 @@
   padding: 2px;
   background: rgba(213, 236, 204, 0.6);
 }
+
+/* FIX #2: Left specials use vertical-rl so text flows from the tile's
+   outer (right) edge inward (left) within the strip. */
 .tile-chance[data-side="left"] .tile-name,
 .tile-chest[data-side="left"] .tile-name,
 .tile-tax[data-side="left"] .tile-name,
@@ -624,8 +639,11 @@
 .tile-utility[data-side="left"] .tile-name {
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  flex-direction: row-reverse;
-  gap: 2px;
+  font-size: clamp(3.5px, 0.7vmin, 7px);
+  line-height: 1;
+  text-align: center;
+  display: block;
+  overflow-wrap: break-word;
 }
 
 /* Right column: name occupies the inner-edge strip on the LEFT side of
@@ -647,15 +665,21 @@
   padding: 2px;
   background: rgba(213, 236, 204, 0.6);
 }
+
+/* FIX #2: Right specials also use vertical-rl so text flows from the
+   strip's outer (right) edge inward (left) toward the center. */
 .tile-chance[data-side="right"] .tile-name,
 .tile-chest[data-side="right"] .tile-name,
 .tile-tax[data-side="right"] .tile-name,
 .tile-railroad[data-side="right"] .tile-name,
 .tile-utility[data-side="right"] .tile-name {
-  writing-mode: vertical-lr;
+  writing-mode: vertical-rl;
   text-orientation: mixed;
-  flex-direction: row;
-  gap: 2px;
+  font-size: clamp(3.5px, 0.7vmin, 7px);
+  line-height: 1;
+  text-align: center;
+  display: block;
+  overflow-wrap: break-word;
 }
 
 /* Icon fills the rest of the special tile (large, centered) */
@@ -690,23 +714,27 @@
 .tile-utility[data-side="top"] .tile-icon-wrap {
   padding-bottom: 18%;
 }
-/* Left-col special: shift icon away from inner edge (right) where name lives */
+
+/* FIX #3: Left-col icons are rotated 90deg. Unrotated padding-top maps
+   to visual padding-right (the inner edge where the name strip lives). */
 .tile-chance[data-side="left"] .tile-icon-wrap,
 .tile-chest[data-side="left"] .tile-icon-wrap,
 .tile-tax[data-side="left"] .tile-icon-wrap,
 .tile-railroad[data-side="left"] .tile-icon-wrap,
 .tile-utility[data-side="left"] .tile-icon-wrap {
   padding: 0;
-  padding-right: 22%;
+  padding-top: 22%;
 }
-/* Right-col special: shift icon away from inner edge (left) where name lives */
+
+/* FIX #3: Right-col icons are rotated -90deg. Unrotated padding-top maps
+   to visual padding-left (the inner edge where the name strip lives). */
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
 .tile-tax[data-side="right"] .tile-icon-wrap,
 .tile-railroad[data-side="right"] .tile-icon-wrap,
 .tile-utility[data-side="right"] .tile-icon-wrap {
   padding: 0;
-  padding-left: 22%;
+  padding-top: 22%;
 }
 
 /* Override the tile-svg size for special tiles - much bigger */
@@ -728,7 +756,6 @@
 .tile-tax .tile-name,
 .tile-railroad .tile-name,
 .tile-utility .tile-name {
-  font-size: clamp(5px, 0.95vmin, 9px);
   font-weight: 800;
   letter-spacing: 0.3px;
 }
