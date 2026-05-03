@@ -526,9 +526,15 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   )}
 
                   <div className="tile-content">
-                    {/* Property name - rotated to face inward based on side */}
+                    {/* Property name - rotated to face inward based on side.
+                        Each word becomes its own line so left/right column names
+                        wrap naturally instead of overflowing. */}
                     <div className="tile-name-wrap">
-                      <span className="tile-name">{tile.name}</span>
+                      <span className="tile-name">
+                        {tile.name.split(' ').map((word, wi) => (
+                          <span key={wi} className="tile-name-word">{word}</span>
+                        ))}
+                      </span>
                     </div>
 
                     {/* Icon for non-property tiles (centered) */}
