@@ -87,7 +87,7 @@ function getTileSide(tileId) {
   if (tileId >= 11 && tileId <= 19) return 'left';
   if (tileId >= 21 && tileId <= 29) return 'top';
   if (tileId >= 31 && tileId <= 39) return 'right';
-  return null; // corners
+  return null;
 }
 
 /* ============================================
@@ -96,24 +96,16 @@ function getTileSide(tileId) {
 
 const TrainIcon = () => (
   <svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    {/* Track */}
     <line x1="0" y1="62" x2="100" y2="62" stroke="#1a1a1a" strokeWidth="2" />
-    {/* Body */}
     <rect x="14" y="26" width="56" height="24" fill="#1a1a1a" />
-    {/* Cab */}
     <rect x="48" y="14" width="24" height="14" fill="#1a1a1a" />
-    {/* Window */}
     <rect x="53" y="18" width="14" height="7" fill="#fff" />
-    {/* Cowcatcher */}
     <polygon points="2,46 14,34 14,52" fill="#1a1a1a" />
-    {/* Smokestack */}
     <rect x="22" y="8" width="7" height="20" fill="#1a1a1a" />
     <rect x="19" y="6" width="13" height="5" fill="#1a1a1a" />
-    {/* Wheels */}
     <circle cx="22" cy="54" r="6" fill="#1a1a1a" stroke="#888" strokeWidth="1.5" />
     <circle cx="42" cy="54" r="6" fill="#1a1a1a" stroke="#888" strokeWidth="1.5" />
     <circle cx="62" cy="54" r="6" fill="#1a1a1a" stroke="#888" strokeWidth="1.5" />
-    {/* Wheel hubs */}
     <circle cx="22" cy="54" r="2" fill="#fff" />
     <circle cx="42" cy="54" r="2" fill="#fff" />
     <circle cx="62" cy="54" r="2" fill="#fff" />
@@ -122,7 +114,6 @@ const TrainIcon = () => (
 
 const BulbIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    {/* Rays */}
     <g stroke="#FFB300" strokeWidth="4" strokeLinecap="round">
       <line x1="50" y1="3" x2="50" y2="13" />
       <line x1="18" y1="20" x2="25" y2="27" />
@@ -130,13 +121,10 @@ const BulbIcon = () => (
       <line x1="5" y1="50" x2="15" y2="50" />
       <line x1="85" y1="50" x2="95" y2="50" />
     </g>
-    {/* Bulb */}
     <ellipse cx="50" cy="50" rx="24" ry="28" fill="#FFE082" stroke="#1a1a1a" strokeWidth="2.5" />
-    {/* Filament */}
     <path d="M 42 48 Q 50 56 58 48" stroke="#FF6F00" strokeWidth="2" fill="none" />
     <line x1="42" y1="48" x2="42" y2="40" stroke="#1a1a1a" strokeWidth="1.5" />
     <line x1="58" y1="48" x2="58" y2="40" stroke="#1a1a1a" strokeWidth="1.5" />
-    {/* Base */}
     <rect x="38" y="76" width="24" height="5" fill="#888" stroke="#1a1a1a" strokeWidth="1" />
     <rect x="40" y="81" width="20" height="4" fill="#888" stroke="#1a1a1a" strokeWidth="1" />
     <rect x="42" y="85" width="16" height="4" fill="#666" stroke="#1a1a1a" strokeWidth="1" />
@@ -145,19 +133,13 @@ const BulbIcon = () => (
 
 const FaucetIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    {/* Handle top */}
     <circle cx="40" cy="18" r="9" fill="#666" stroke="#1a1a1a" strokeWidth="2" />
     <line x1="32" y1="18" x2="48" y2="18" stroke="#1a1a1a" strokeWidth="2" />
     <line x1="40" y1="10" x2="40" y2="26" stroke="#1a1a1a" strokeWidth="2" />
-    {/* Vertical pipe */}
     <rect x="36" y="26" width="8" height="14" fill="#888" stroke="#1a1a1a" strokeWidth="1.5" />
-    {/* Horizontal pipe */}
     <rect x="20" y="40" width="50" height="14" fill="#888" stroke="#1a1a1a" strokeWidth="1.5" />
-    {/* Spout */}
     <rect x="62" y="54" width="10" height="10" fill="#666" stroke="#1a1a1a" strokeWidth="1.5" />
-    {/* Water stream */}
     <rect x="65" y="64" width="4" height="14" fill="#3FA9F5" />
-    {/* Water drops */}
     <ellipse cx="67" cy="86" rx="4" ry="6" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
     <ellipse cx="56" cy="92" rx="3" ry="4" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
     <ellipse cx="78" cy="93" rx="2.5" ry="3.5" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
@@ -174,18 +156,13 @@ const ChanceIcon = () => (
 
 const ChestIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    {/* Chest body */}
     <rect x="12" y="50" width="76" height="34" fill="#8B4513" stroke="#1a1a1a" strokeWidth="2" />
-    {/* Chest lid */}
     <path d="M 12 50 Q 50 22 88 50 Z" fill="#A0522D" stroke="#1a1a1a" strokeWidth="2" />
-    {/* Bands */}
     <line x1="12" y1="64" x2="88" y2="64" stroke="#1a1a1a" strokeWidth="2" />
     <line x1="30" y1="36" x2="30" y2="84" stroke="#1a1a1a" strokeWidth="1.5" />
     <line x1="70" y1="36" x2="70" y2="84" stroke="#1a1a1a" strokeWidth="1.5" />
-    {/* Lock */}
     <rect x="44" y="58" width="12" height="14" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1.5" />
     <circle cx="50" cy="64" r="2" fill="#1a1a1a" />
-    {/* Coin glint */}
     <circle cx="78" cy="44" r="4" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1" />
     <circle cx="22" cy="44" r="3" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1" />
   </svg>
@@ -193,10 +170,8 @@ const ChestIcon = () => (
 
 const DiamondRingIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    {/* Ring band */}
     <ellipse cx="50" cy="68" rx="28" ry="22" fill="none" stroke="#FFD700" strokeWidth="6" />
     <ellipse cx="50" cy="68" rx="28" ry="22" fill="none" stroke="#1a1a1a" strokeWidth="1" />
-    {/* Diamond */}
     <polygon points="50,15 38,32 50,50 62,32" fill="#B0E0E6" stroke="#1a1a1a" strokeWidth="2" />
     <polygon points="50,15 44,24 50,32 56,24" fill="#fff" />
     <line x1="38" y1="32" x2="62" y2="32" stroke="#1a1a1a" strokeWidth="1.5" />
@@ -205,7 +180,6 @@ const DiamondRingIcon = () => (
 
 const TaxIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    {/* Money/dollar bag */}
     <text x="50" y="68" textAnchor="middle" fontSize="62" fontWeight="900"
           fill="#1FB25A" fontFamily="Fredoka, Arial Black, sans-serif"
           stroke="#1a1a1a" strokeWidth="2">$</text>
@@ -214,18 +188,13 @@ const TaxIcon = () => (
 
 const CarIcon = () => (
   <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
-    {/* Car body */}
     <path d="M 10 50 L 25 30 L 80 30 L 95 50 L 110 50 L 110 60 L 10 60 Z"
           fill="#C5392A" stroke="#1a1a1a" strokeWidth="2" />
-    {/* Roof */}
     <path d="M 32 30 L 42 18 L 70 18 L 80 30 Z"
           fill="#C5392A" stroke="#1a1a1a" strokeWidth="2" />
-    {/* Windows */}
     <path d="M 36 30 L 44 22 L 56 22 L 56 30 Z" fill="#AAE0FA" stroke="#1a1a1a" strokeWidth="1.5" />
     <path d="M 60 30 L 60 22 L 68 22 L 76 30 Z" fill="#AAE0FA" stroke="#1a1a1a" strokeWidth="1.5" />
-    {/* Headlight */}
     <circle cx="98" cy="44" r="3" fill="#FFE082" stroke="#1a1a1a" strokeWidth="1" />
-    {/* Wheels */}
     <circle cx="32" cy="62" r="10" fill="#1a1a1a" />
     <circle cx="32" cy="62" r="5" fill="#888" />
     <circle cx="88" cy="62" r="10" fill="#1a1a1a" />
@@ -235,7 +204,6 @@ const CarIcon = () => (
 
 const ArrowIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
-    {/* Big arrow pointing to jail (down-left in this case) */}
     <path d="M 20 30 L 70 30 L 70 15 L 92 50 L 70 85 L 70 70 L 20 70 Z"
           fill="#C5392A" stroke="#1a1a1a" strokeWidth="2.5" />
   </svg>
@@ -243,13 +211,11 @@ const ArrowIcon = () => (
 
 const GoArrowIcon = () => (
   <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="go-arrow-svg">
-    {/* Long arrow pointing left (toward bottom row direction of play) */}
     <path d="M 5 15 L 18 5 L 18 12 L 95 12 L 95 18 L 18 18 L 18 25 Z"
           fill="#C5392A" stroke="#1a1a1a" strokeWidth="1.5" />
   </svg>
 );
 
-/* Die face dot map for 3x3 grid (positions 1-9) */
 const DIE_DOTS = {
   1: [5],
   2: [1, 9],
@@ -270,7 +236,6 @@ function DieFace({ value }) {
   );
 }
 
-/* Render an SVG icon based on tile type */
 function TileIcon({ tile }) {
   if (tile.type === 'railroad') return <TrainIcon />;
   if (tile.type === 'utility') {
@@ -284,13 +249,8 @@ function TileIcon({ tile }) {
   return null;
 }
 
-/* ============================================
-   CORNER TILE RENDERING
-   ============================================ */
-
 function CornerTile({ tile }) {
   if (tile.id === 0) {
-    // GO corner
     return (
       <div className="corner-inner corner-go">
         <div className="corner-go-arrow"><GoArrowIcon /></div>
@@ -300,33 +260,21 @@ function CornerTile({ tile }) {
     );
   }
   if (tile.id === 10) {
-    // JAIL / Just Visiting — diagonal split, bars only, JUST & VISITING on outer edges
     return (
       <div className="corner-inner corner-jail">
-        {/* Inner jail cell occupies the upper-right ~75% (toward board center) */}
         <div className="jail-cell">
-          {/* Vertical jail bars overlay */}
           <div className="jail-bars-grid">
             <span></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
-
-        {/* "IN JAIL" small label box, sits in the cell */}
         <div className="jail-in-label">IN JAIL</div>
-
-        {/* "JUST" along the left edge */}
         <div className="jail-just-label">JUST</div>
-
-        {/* "VISITING" along the bottom edge */}
         <div className="jail-visiting-label">VISITING</div>
-
-        {/* Diagonal divider line */}
         <div className="jail-diagonal"></div>
       </div>
     );
   }
   if (tile.id === 20) {
-    // FREE PARKING
     return (
       <div className="corner-inner corner-parking">
         <div className="corner-parking-top">FREE</div>
@@ -336,7 +284,6 @@ function CornerTile({ tile }) {
     );
   }
   if (tile.id === 30) {
-    // GO TO JAIL
     return (
       <div className="corner-inner corner-gotojail">
         <div className="corner-gotojail-top">GO TO</div>
@@ -361,7 +308,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const movingPlayersRef = useRef(new Set());
   const timeoutsRef = useRef([]);
 
-  // Sync dice display with gameState when not rolling
   useEffect(() => {
     if (gameState?.dice) {
       if (!diceAnim.isRolling) {
@@ -370,7 +316,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     }
   }, [gameState?.dice, diceAnim.isRolling]);
 
-  // Token step-by-step movement animation
   useEffect(() => {
     if (!gameState?.players) return;
 
@@ -426,7 +371,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     });
   }, [gameState?.players, gameState?.turnSequence]);
 
-  // Cleanup intervals and timeouts on unmount
   useEffect(() => {
     return () => {
       if (diceIntervalRef.current) clearInterval(diceIntervalRef.current);
@@ -446,20 +390,19 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
 
-    // Start dice scramble
     setDiceAnim({ isRolling: true, values: [1, 1] });
     diceIntervalRef.current = setInterval(() => {
       setDiceAnim(prev => ({
         ...prev,
         values: [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1]
       }));
-    }, 80);
+    }, 120);
 
     const startTime = Date.now();
     await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
 
     const elapsed = Date.now() - startTime;
-    const minRoll = 900;
+    const minRoll = 1200;
     const remaining = Math.max(0, minRoll - elapsed);
 
     setTimeout(() => {
@@ -540,7 +483,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
   return (
     <div className="game-container">
-      {/* Top Bar */}
       <div className="top-bar">
         <div className="room-info">
           <span className="room-code">Room: {gameState?.roomCode}</span>
@@ -563,7 +505,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       </div>
 
       <div className="game-layout">
-        {/* Board */}
         <div className="board-wrapper">
           <div className="board">
             {BOARD_TILES.map(tile => {
@@ -576,7 +517,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
 
-              // CORNER TILES (Go, Jail, Free Parking, Go To Jail)
               if (isCorner) {
                 return (
                   <div
@@ -604,7 +544,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 );
               }
 
-              // REGULAR TILES (properties, railroads, utilities, chance, chest, tax)
               return (
                 <div
                   key={tile.id}
@@ -628,9 +567,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   )}
 
                   <div className="tile-content">
-                    {/* Property name - rotated to face inward based on side.
-                        Each word becomes its own line so left/right column names
-                        wrap naturally instead of overflowing. */}
                     <div className="tile-name-wrap">
                       <span className="tile-name">
                         {tile.name.split(' ').map((word, wi) => (
@@ -639,14 +575,12 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       </span>
                     </div>
 
-                    {/* Icon for non-property tiles (centered) */}
                     {hasIcon && (
                       <div className="tile-icon-wrap">
                         <TileIcon tile={tile} />
                       </div>
                     )}
 
-                    {/* Owner indicator */}
                     {propState?.ownerId && (
                       <div
                         className="owner-dot"
@@ -654,7 +588,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       />
                     )}
 
-                    {/* Houses/hotel indicator */}
                     {propState?.houses > 0 && (
                       <div className="houses-indicator">
                         {Array(propState.houses).fill('🏠').join('')}
@@ -662,7 +595,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     )}
                     {propState?.hotel && <div className="hotel-indicator">🏨</div>}
 
-                    {/* Tokens (players on tile) */}
                     <div className="tile-tokens">
                       {playersHere.map((p, i) => (
                         <span
@@ -677,7 +609,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     </div>
                   </div>
 
-                  {/* Price - positioned at outer edge of tile */}
                   {tile.price && (
                     <div className="tile-price-edge">${tile.price}</div>
                   )}
@@ -685,11 +616,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               );
             })}
 
-            {/* Center Area */}
             <div className="board-center">
               <span className="board-center-title">MONOPOLY</span>
 
-              {/* Chance Deck (top-left of center, angled) */}
               <div className="card-deck card-deck-chance">
                 <div className="card-deck-stack">
                   <div className="card-back card-back-3"></div>
@@ -701,7 +630,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </div>
               </div>
 
-              {/* Community Chest Deck (bottom-right of center, angled) */}
               <div className="card-deck card-deck-chest">
                 <div className="card-deck-stack">
                   <div className="card-back card-back-chest-3"></div>
@@ -718,12 +646,12 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               <div className="dice-area">
                 <div className="dice">
                   <div className={`die ${diceAnim.isRolling ? 'rolling' : ''}`}>
+                    <span className="die-number-faded die-number-left">{diceAnim.values[0]}</span>
                     <DieFace value={diceAnim.values[0]} />
-                    <span className="die-number-faded">{diceAnim.values[0]}</span>
                   </div>
                   <div className={`die ${diceAnim.isRolling ? 'rolling' : ''}`}>
                     <DieFace value={diceAnim.values[1]} />
-                    <span className="die-number-faded">{diceAnim.values[1]}</span>
+                    <span className="die-number-faded die-number-right">{diceAnim.values[1]}</span>
                   </div>
                 </div>
               </div>
@@ -734,7 +662,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </div>
         </div>
 
-        {/* Side Panel */}
         <div className="side-panel">
           <PlayerPanel
             players={gameState?.players || []}
@@ -744,7 +671,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             onPropertyClick={setShowProperty}
           />
 
-          {/* Game Log */}
           <div className="game-log">
             <h4>Game Log</h4>
             <div className="log-entries">
@@ -756,13 +682,12 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         </div>
       </div>
 
-      {/* Controls */}
       <div className="controls-bar">
         {gameState?.status === 'playing' && isCurrentPlayer && (
           <>
             {gameState.turnPhase === 'roll' && (
-              <button className="btn-control btn-roll" onClick={handleRoll}>
-                🎲 Roll Dice
+              <button className="btn-control btn-roll" onClick={handleRoll} disabled={diceAnim.isRolling}>
+                {diceAnim.isRolling ? '🎲 Rolling...' : '🎲 Roll Dice'}
               </button>
             )}
 
@@ -835,7 +760,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         )}
       </div>
 
-      {/* Modals */}
       {showTrade && (
         <TradeModal
           players={gameState?.players || []}
