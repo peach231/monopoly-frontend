@@ -472,14 +472,14 @@
    Price at RIGHT (outer).
    ============================================ */
 .tile[data-side="right"] .tile-content {
-  padding-left: 22%;
-  padding-right: 14%;
+  padding-left: 14%;
+  padding-right: 24%;
 }
 
 .tile[data-side="right"] .tile-name-wrap {
   position: absolute;
-  left: 22%;
-  right: 38%;
+  left: 14%;
+  right: 24%;
   top: 0;
   bottom: 0;
   display: flex;
