@@ -479,7 +479,7 @@
 .tile[data-side="right"] .tile-name-wrap {
   position: absolute;
   left: 14%;
-  right: 24%;
+  right: 50%;
   top: 0;
   bottom: 0;
   display: flex;
@@ -1344,7 +1344,7 @@
 .free-parking {
   position: relative;
   z-index: 3;
-  color: #2b5b3c;
+  color: #2b5b3a;
   font-weight: 700;
   font-size: 0.9rem;
   font-family: 'Outfit', sans-serif;
