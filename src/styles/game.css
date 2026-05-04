@@ -472,13 +472,13 @@
    Price at RIGHT (outer).
    ============================================ */
 .tile[data-side="right"] .tile-content {
-  padding-left: 24%;
+  padding-left: 22%;
   padding-right: 14%;
 }
 
 .tile[data-side="right"] .tile-name-wrap {
   position: absolute;
-  left: 24%;
+  left: 22%;
   right: 14%;
   top: 0;
   bottom: 0;
@@ -644,43 +644,18 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* Left column: chance/chest/tax — rotated, larger readable font */
+/* Left column: chance/chest/tax/railroad/utility — rotated, larger readable font */
 .tile-chance[data-side="left"] .tile-name,
 .tile-chest[data-side="left"] .tile-name,
-.tile-tax[data-side="left"] .tile-name {
+.tile-tax[data-side="left"] .tile-name,
+.tile-railroad[data-side="left"] .tile-name,
+.tile-utility[data-side="left"] .tile-name {
   transform: rotate(90deg);
   transform-origin: center center;
   font-size: clamp(5px, 0.9vmin, 9px);
   line-height: 1.05;
   white-space: nowrap;
   width: max-content;
-}
-
-/* Left column: railroad/utility — horizontal at top (like top/bottom tiles) */
-.tile-railroad[data-side="left"] .tile-name-wrap,
-.tile-utility[data-side="left"] .tile-name-wrap {
-  right: auto;
-  top: 2px;
-  left: 0;
-  width: 100%;
-  height: auto;
-  padding: 2px 4px;
-  background: transparent;
-}
-
-.tile-railroad[data-side="left"] .tile-name,
-.tile-utility[data-side="left"] .tile-name {
-  transform: none;
-  font-size: clamp(5px, 0.9vmin, 9px);
-  line-height: 1.05;
-  white-space: nowrap;
-  display: block;
-  text-align: center;
-}
-
-.tile-railroad[data-side="left"] .tile-name-word,
-.tile-utility[data-side="left"] .tile-name-word {
-  display: inline;
 }
 
 /* Right column: name strip at LEFT (inner edge), rotated 90° CCW */
@@ -702,43 +677,18 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* Right column: chance/chest/tax — rotated, larger readable font */
+/* Right column: chance/chest/tax/railroad/utility — rotated, larger readable font */
 .tile-chance[data-side="right"] .tile-name,
 .tile-chest[data-side="right"] .tile-name,
-.tile-tax[data-side="right"] .tile-name {
+.tile-tax[data-side="right"] .tile-name,
+.tile-railroad[data-side="right"] .tile-name,
+.tile-utility[data-side="right"] .tile-name {
   transform: rotate(-90deg);
   transform-origin: center center;
   font-size: clamp(5px, 0.9vmin, 9px);
   line-height: 1.05;
   white-space: nowrap;
   width: max-content;
-}
-
-/* Right column: railroad/utility — horizontal at top (like top/bottom tiles) */
-.tile-railroad[data-side="right"] .tile-name-wrap,
-.tile-utility[data-side="right"] .tile-name-wrap {
-  left: auto;
-  top: 2px;
-  right: 0;
-  width: 100%;
-  height: auto;
-  padding: 2px 4px;
-  background: transparent;
-}
-
-.tile-railroad[data-side="right"] .tile-name,
-.tile-utility[data-side="right"] .tile-name {
-  transform: none;
-  font-size: clamp(5px, 0.9vmin, 9px);
-  line-height: 1.05;
-  white-space: nowrap;
-  display: block;
-  text-align: center;
-}
-
-.tile-railroad[data-side="right"] .tile-name-word,
-.tile-utility[data-side="right"] .tile-name-word {
-  display: inline;
 }
 
 /* Icon fills the rest of the special tile */
@@ -785,13 +735,6 @@
   padding-right: 22%;
 }
 
-/* Railroad / Utility left: icon centered, room for top name */
-.tile-railroad[data-side="left"] .tile-icon-wrap,
-.tile-utility[data-side="left"] .tile-icon-wrap {
-  padding: 0;
-  padding-top: 18%;
-}
-
 /* Right-col: icon shifted away from left edge where name lives */
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
@@ -800,13 +743,6 @@
 .tile-utility[data-side="right"] .tile-icon-wrap {
   padding: 0;
   padding-left: 22%;
-}
-
-/* Railroad / Utility right: icon centered, room for top name */
-.tile-railroad[data-side="right"] .tile-icon-wrap,
-.tile-utility[data-side="right"] .tile-icon-wrap {
-  padding: 0;
-  padding-top: 18%;
 }
 
 /* Override tile-svg size for special tiles */
@@ -825,17 +761,21 @@
 /* ============================================
    FIX: Left/Right Special Tile Icon Rotation
    ============================================ */
-/* Left side: rotate chance/chest/tax icons 90deg CW to match vertical text */
+/* Left side: rotate chance/chest/tax/railroad/utility icons 90deg CW to match vertical text */
 .tile-chance[data-side="left"] .tile-svg,
 .tile-chest[data-side="left"] .tile-svg,
-.tile-tax[data-side="left"] .tile-svg {
+.tile-tax[data-side="left"] .tile-svg,
+.tile-railroad[data-side="left"] .tile-svg,
+.tile-utility[data-side="left"] .tile-svg {
   transform: rotate(90deg);
 }
 
-/* Right side: rotate chance/chest/tax icons 90deg CCW to match vertical text */
+/* Right side: rotate chance/chest/tax/railroad/utility icons 90deg CCW to match vertical text */
 .tile-chance[data-side="right"] .tile-svg,
 .tile-chest[data-side="right"] .tile-svg,
-.tile-tax[data-side="right"] .tile-svg {
+.tile-tax[data-side="right"] .tile-svg,
+.tile-railroad[data-side="right"] .tile-svg,
+.tile-utility[data-side="right"] .tile-svg {
   transform: rotate(-90deg);
 }
 
@@ -1381,6 +1321,11 @@
   white-space: nowrap;
 }
 
+.die-number-left {
+  right: auto;
+  left: -20px;
+}
+
 @keyframes dice-shake {
   0% { transform: rotate(0deg) translate(0, 0); }
   15% { transform: rotate(-18deg) translate(-2px, 2px); }
@@ -1393,7 +1338,7 @@
 }
 
 .die.rolling {
-  animation: dice-shake 0.12s infinite;
+  animation: dice-shake 0.2s infinite;
 }
 
 .free-parking {
