@@ -249,6 +249,27 @@ const GoArrowIcon = () => (
   </svg>
 );
 
+/* Die face dot map for 3x3 grid (positions 1-9) */
+const DIE_DOTS = {
+  1: [5],
+  2: [1, 9],
+  3: [1, 5, 9],
+  4: [1, 3, 7, 9],
+  5: [1, 3, 5, 7, 9],
+  6: [1, 3, 4, 6, 7, 9]
+};
+
+function DieFace({ value }) {
+  const active = DIE_DOTS[value] || [];
+  return (
+    <div className="die-face">
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(pos => (
+        <div key={pos} className={`die-dot ${active.includes(pos) ? '' : 'hidden'}`} />
+      ))}
+    </div>
+  );
+}
+
 /* Render an SVG icon based on tile type */
 function TileIcon({ tile }) {
   if (tile.type === 'railroad') return <TrainIcon />;
@@ -333,35 +354,85 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [copied, setCopied] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const [hoppingTokens, setHoppingTokens] = useState({});
+  const [animatedPositions, setAnimatedPositions] = useState({});
+  const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
   const prevPositionsRef = useRef({});
+  const diceIntervalRef = useRef(null);
+  const movingPlayersRef = useRef(new Set());
+  const timeoutsRef = useRef([]);
 
-  // Track player position changes and trigger hop animation
+  // Sync dice display with gameState when not rolling
+  useEffect(() => {
+    if (gameState?.dice) {
+      if (!diceAnim.isRolling) {
+        setDiceAnim(prev => ({ ...prev, values: gameState.dice }));
+      }
+    }
+  }, [gameState?.dice, diceAnim.isRolling]);
+
+  // Token step-by-step movement animation
   useEffect(() => {
     if (!gameState?.players) return;
-    const prev = prevPositionsRef.current;
-    const newHopping = {};
-    
+
     gameState.players.forEach(player => {
-      if (prev[player.id] !== undefined && prev[player.id] !== player.position) {
-        newHopping[player.id] = true;
+      const prevPos = prevPositionsRef.current[player.id];
+      const currPos = player.position;
+
+      if (prevPos === undefined) {
+        prevPositionsRef.current[player.id] = currPos;
+        return;
+      }
+
+      if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
+        movingPlayersRef.current.add(player.id);
+
+        const path = [];
+        let p = prevPos;
+        while (p !== currPos) {
+          p = (p + 1) % 40;
+          path.push(p);
+        }
+
+        const animateStep = (step) => {
+          if (step >= path.length) {
+            movingPlayersRef.current.delete(player.id);
+            setAnimatedPositions(prev => {
+              const next = { ...prev };
+              delete next[player.id];
+              return next;
+            });
+            prevPositionsRef.current[player.id] = currPos;
+            return;
+          }
+
+          setAnimatedPositions(prev => ({ ...prev, [player.id]: path[step] }));
+          setHoppingTokens(prev => ({ ...prev, [player.id]: true }));
+
+          const t1 = setTimeout(() => {
+            setHoppingTokens(prev => {
+              const next = { ...prev };
+              delete next[player.id];
+              return next;
+            });
+          }, 260);
+          timeoutsRef.current.push(t1);
+
+          const t2 = setTimeout(() => animateStep(step + 1), 280);
+          timeoutsRef.current.push(t2);
+        };
+
+        animateStep(0);
       }
     });
+  }, [gameState?.players, gameState?.turnSequence]);
 
-    if (Object.keys(newHopping).length > 0) {
-      setHoppingTokens(newHopping);
-      const timer = setTimeout(() => setHoppingTokens({}), 700);
-      // Update prev positions after setting hopping
-      const updated = {};
-      gameState.players.forEach(p => { updated[p.id] = p.position; });
-      prevPositionsRef.current = updated;
-      return () => clearTimeout(timer);
-    }
-
-    // Update prev positions
-    const updated = {};
-    gameState.players.forEach(p => { updated[p.id] = p.position; });
-    prevPositionsRef.current = updated;
-  }, [gameState?.players]);
+  // Cleanup intervals and timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (diceIntervalRef.current) clearInterval(diceIntervalRef.current);
+      timeoutsRef.current.forEach(clearTimeout);
+    };
+  }, []);
 
   const isCurrentPlayer = gameState?.currentPlayerId === playerId;
   const me = gameState?.players.find(p => p.id === playerId);
@@ -374,7 +445,34 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
+
+    // Start dice scramble
+    setDiceAnim({ isRolling: true, values: [1, 1] });
+    diceIntervalRef.current = setInterval(() => {
+      setDiceAnim(prev => ({
+        ...prev,
+        values: [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1]
+      }));
+    }, 80);
+
+    const startTime = Date.now();
     await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
+
+    const elapsed = Date.now() - startTime;
+    const minRoll = 900;
+    const remaining = Math.max(0, minRoll - elapsed);
+
+    setTimeout(() => {
+      if (diceIntervalRef.current) {
+        clearInterval(diceIntervalRef.current);
+        diceIntervalRef.current = null;
+      }
+      setDiceAnim(prev => ({
+        ...prev,
+        isRolling: false,
+        values: gameState?.dice || prev.values
+      }));
+    }, remaining);
   };
 
   const handleBuy = async () => {
@@ -429,7 +527,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   };
 
   const getPlayersOnTile = (tileId) => {
-    return gameState?.players.filter(p => p.position === tileId && !p.isBankrupt) || [];
+    return gameState?.players.filter(p => {
+      if (p.isBankrupt) return false;
+      const displayPos = animatedPositions[p.id] !== undefined ? animatedPositions[p.id] : p.position;
+      return displayPos === tileId;
+    }) || [];
   };
 
   const getPropertyState = (tileId) => {
@@ -614,12 +716,16 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               </div>
 
               <div className="dice-area">
-                {gameState?.dice && (
-                  <div className="dice">
-                    <span className="die">{gameState.dice[0]}</span>
-                    <span className="die">{gameState.dice[1]}</span>
+                <div className="dice">
+                  <div className={`die ${diceAnim.isRolling ? 'rolling' : ''}`}>
+                    <DieFace value={diceAnim.values[0]} />
+                    <span className="die-number-faded">{diceAnim.values[0]}</span>
                   </div>
-                )}
+                  <div className={`die ${diceAnim.isRolling ? 'rolling' : ''}`}>
+                    <DieFace value={diceAnim.values[1]} />
+                    <span className="die-number-faded">{diceAnim.values[1]}</span>
+                  </div>
+                </div>
               </div>
               <div className="free-parking">
                 💰 Free Parking: ${gameState?.freeParkingMoney || 0}
