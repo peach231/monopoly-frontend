@@ -472,14 +472,14 @@
    Price at RIGHT (outer).
    ============================================ */
 .tile[data-side="right"] .tile-content {
-  padding-left: 14%;
-  padding-right: 24%;
+  padding-left: 24%;
+  padding-right: 14%;
 }
 
 .tile[data-side="right"] .tile-name-wrap {
   position: absolute;
-  left: 14%;
-  right: 24%;
+  left: 24%;
+  right: 14%;
   top: 0;
   bottom: 0;
   display: flex;
@@ -644,18 +644,43 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* Left column: chance/chest/tax/railroad/utility — rotated, larger readable font */
+/* Left column: chance/chest/tax — rotated, larger readable font */
 .tile-chance[data-side="left"] .tile-name,
 .tile-chest[data-side="left"] .tile-name,
-.tile-tax[data-side="left"] .tile-name,
-.tile-railroad[data-side="left"] .tile-name,
-.tile-utility[data-side="left"] .tile-name {
+.tile-tax[data-side="left"] .tile-name {
   transform: rotate(90deg);
   transform-origin: center center;
   font-size: clamp(5px, 0.9vmin, 9px);
   line-height: 1.05;
   white-space: nowrap;
   width: max-content;
+}
+
+/* Left column: railroad/utility — horizontal at top (like top/bottom tiles) */
+.tile-railroad[data-side="left"] .tile-name-wrap,
+.tile-utility[data-side="left"] .tile-name-wrap {
+  right: auto;
+  top: 2px;
+  left: 0;
+  width: 100%;
+  height: auto;
+  padding: 2px 4px;
+  background: transparent;
+}
+
+.tile-railroad[data-side="left"] .tile-name,
+.tile-utility[data-side="left"] .tile-name {
+  transform: none;
+  font-size: clamp(5px, 0.9vmin, 9px);
+  line-height: 1.05;
+  white-space: nowrap;
+  display: block;
+  text-align: center;
+}
+
+.tile-railroad[data-side="left"] .tile-name-word,
+.tile-utility[data-side="left"] .tile-name-word {
+  display: inline;
 }
 
 /* Right column: name strip at LEFT (inner edge), rotated 90° CCW */
@@ -677,18 +702,43 @@
   background: rgba(213, 236, 204, 0.6);
 }
 
-/* Right column: chance/chest/tax/railroad/utility — rotated, larger readable font */
+/* Right column: chance/chest/tax — rotated, larger readable font */
 .tile-chance[data-side="right"] .tile-name,
 .tile-chest[data-side="right"] .tile-name,
-.tile-tax[data-side="right"] .tile-name,
-.tile-railroad[data-side="right"] .tile-name,
-.tile-utility[data-side="right"] .tile-name {
+.tile-tax[data-side="right"] .tile-name {
   transform: rotate(-90deg);
   transform-origin: center center;
   font-size: clamp(5px, 0.9vmin, 9px);
   line-height: 1.05;
   white-space: nowrap;
   width: max-content;
+}
+
+/* Right column: railroad/utility — horizontal at top (like top/bottom tiles) */
+.tile-railroad[data-side="right"] .tile-name-wrap,
+.tile-utility[data-side="right"] .tile-name-wrap {
+  left: auto;
+  top: 2px;
+  right: 0;
+  width: 100%;
+  height: auto;
+  padding: 2px 4px;
+  background: transparent;
+}
+
+.tile-railroad[data-side="right"] .tile-name,
+.tile-utility[data-side="right"] .tile-name {
+  transform: none;
+  font-size: clamp(5px, 0.9vmin, 9px);
+  line-height: 1.05;
+  white-space: nowrap;
+  display: block;
+  text-align: center;
+}
+
+.tile-railroad[data-side="right"] .tile-name-word,
+.tile-utility[data-side="right"] .tile-name-word {
+  display: inline;
 }
 
 /* Icon fills the rest of the special tile */
@@ -735,6 +785,13 @@
   padding-right: 22%;
 }
 
+/* Railroad / Utility left: icon centered, room for top name */
+.tile-railroad[data-side="left"] .tile-icon-wrap,
+.tile-utility[data-side="left"] .tile-icon-wrap {
+  padding: 0;
+  padding-top: 18%;
+}
+
 /* Right-col: icon shifted away from left edge where name lives */
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
@@ -743,6 +800,13 @@
 .tile-utility[data-side="right"] .tile-icon-wrap {
   padding: 0;
   padding-left: 22%;
+}
+
+/* Railroad / Utility right: icon centered, room for top name */
+.tile-railroad[data-side="right"] .tile-icon-wrap,
+.tile-utility[data-side="right"] .tile-icon-wrap {
+  padding: 0;
+  padding-top: 18%;
 }
 
 /* Override tile-svg size for special tiles */
@@ -1256,6 +1320,9 @@
   max-width: 80px;
 }
 
+/* ============================================
+   DICE
+   ============================================ */
 .dice-area {
   display: flex;
   gap: 14px;
@@ -1263,20 +1330,70 @@
   position: relative;
 }
 
+.dice {
+  display: flex;
+  gap: 14px;
+}
+
 .die {
   width: 50px;
   height: 50px;
   background: #fff;
-  color: #1a1a1a;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
-  font-weight: bold;
   box-shadow: 0 3px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
   border: 2px solid #1a1a1a;
+  position: relative;
+}
+
+.die-face {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 70%;
+  height: 70%;
+  gap: 2px;
+}
+
+.die-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #1a1a1a;
+}
+
+.die-dot.hidden {
+  visibility: hidden;
+}
+
+.die-number-faded {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: rgba(0,0,0,0.22);
+  font-weight: 700;
   font-family: 'Fredoka', sans-serif;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@keyframes dice-shake {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  15% { transform: rotate(-18deg) translate(-2px, 2px); }
+  30% { transform: rotate(12deg) translate(2px, -2px); }
+  45% { transform: rotate(-12deg) translate(-1px, 1px); }
+  60% { transform: rotate(18deg) translate(1px, -1px); }
+  75% { transform: rotate(-6deg) translate(-2px, 2px); }
+  90% { transform: rotate(6deg) translate(2px, -2px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+.die.rolling {
+  animation: dice-shake 0.12s infinite;
 }
 
 .free-parking {
@@ -1775,7 +1892,11 @@
   .die {
     width: 38px;
     height: 38px;
-    font-size: 1.2rem;
+  }
+
+  .die-number-faded {
+    right: -16px;
+    font-size: 0.65rem;
   }
 
   .controls-bar { padding: 6px; gap: 4px; }
@@ -1829,6 +1950,16 @@
   .tile-price-edge {
     font-size: 5px;
     padding: 0 2px;
+  }
+
+  .die {
+    width: 32px;
+    height: 32px;
+  }
+
+  .die-number-faded {
+    right: -14px;
+    font-size: 0.6rem;
   }
 }
 
