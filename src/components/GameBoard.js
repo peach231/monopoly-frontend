@@ -6,48 +6,47 @@ import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
 
 const BOARD_TILES = [
-  { id: 0, name: "Go", type: "corner" },
-  { id: 1, name: "Mediterranean Ave", type: "property", colorGroup: "brown", price: 60 },
-  { id: 2, name: "Community Chest", type: "chest" },
-  { id: 3, name: "Baltic Ave", type: "property", colorGroup: "brown", price: 60 },
-  { id: 4, name: "Income Tax", type: "tax", price: 200 },
-  { id: 5, name: "Reading Railroad", type: "railroad", price: 200 },
-  { id: 6, name: "Oriental Ave", type: "property", colorGroup: "lightblue", price: 100 },
-  { id: 7, name: "Chance", type: "chance" },
-  { id: 8, name: "Vermont Ave", type: "property", colorGroup: "lightblue", price: 100 },
-  { id: 9, name: "Connecticut Ave", type: "property", colorGroup: "lightblue", price: 120 },
-  { id: 10, name: "Jail", type: "corner" },
-  { id: 11, name: "St. Charles Place", type: "property", colorGroup: "pink", price: 140 },
+  { id: 0, name: "START", type: "corner" },
+  { id: 1, name: "Rio de Janeiro", type: "property", colorGroup: "brown", price: 60 },
+  { id: 2, name: "Treasure", type: "chest" },
+  { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60 },
+  { id: 4, name: "Earnings Tax", type: "tax", price: 200 },
+  { id: 5, name: "YYZ Airport", type: "railroad", price: 200 },
+  { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100 },
+  { id: 7, name: "Surprise", type: "chance" },
+  { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100 },
+  { id: 9, name: "Toronto", type: "property", colorGroup: "lightblue", price: 120 },
+  { id: 10, name: "Prison", type: "corner" },
+  { id: 11, name: "Venice", type: "property", colorGroup: "pink", price: 140 },
   { id: 12, name: "Electric Co", type: "utility", price: 150 },
-  { id: 13, name: "States Ave", type: "property", colorGroup: "pink", price: 140 },
-  { id: 14, name: "Virginia Ave", type: "property", colorGroup: "pink", price: 160 },
-  { id: 15, name: "Penn Railroad", type: "railroad", price: 200 },
-  { id: 16, name: "St. James Place", type: "property", colorGroup: "orange", price: 180 },
-  { id: 17, name: "Community Chest", type: "chest" },
-  { id: 18, name: "Tennessee Ave", type: "property", colorGroup: "orange", price: 180 },
-  { id: 19, name: "New York Ave", type: "property", colorGroup: "orange", price: 200 },
-  { id: 20, name: "Free Parking", type: "corner" },
-  { id: 21, name: "Kentucky Ave", type: "property", colorGroup: "red", price: 220 },
-  { id: 22, name: "Chance", type: "chance" },
-  { id: 23, name: "Indiana Ave", type: "property", colorGroup: "red", price: 220 },
-  { id: 24, name: "Illinois Ave", type: "property", colorGroup: "red", price: 240 },
-  { id: 25, name: "B&O Railroad", type: "railroad", price: 200 },
-  { id: 26, name: "Atlantic Ave", type: "property", colorGroup: "yellow", price: 260 },
-  { id: 27, name: "Ventnor Ave", type: "property", colorGroup: "yellow", price: 260 },
+  { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140 },
+  { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160 },
+  { id: 15, name: "CDG Airport", type: "railroad", price: 200 },
+  { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180 },
+  { id: 17, name: "Treasure", type: "chest" },
+  { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180 },
+  { id: 19, name: "Paris", type: "property", colorGroup: "orange", price: 200 },
+  { id: 20, name: "Vacation", type: "corner" },
+  { id: 21, name: "Manchester", type: "property", colorGroup: "red", price: 220 },
+  { id: 22, name: "Surprise", type: "chance" },
+  { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220 },
+  { id: 24, name: "London", type: "property", colorGroup: "red", price: 240 },
+  { id: 25, name: "HND Airport", type: "railroad", price: 200 },
+  { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260 },
+  { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260 },
   { id: 28, name: "Water Works", type: "utility", price: 150 },
-  { id: 29, name: "Marvin Gardens", type: "property", colorGroup: "yellow", price: 280 },
-  { id: 30, name: "Go To Jail", type: "corner" },
-  { id: 31, name: "Pacific Ave", type: "property", colorGroup: "green", price: 300 },
-  { id: 32, name: "N.C. Ave", type: "property", colorGroup: "green", price: 300 },
-  { id: 33, name: "Community Chest", type: "chest" },
-  { id: 34, name: "Penn Ave", type: "property", colorGroup: "green", price: 320 },
-  { id: 35, name: "Short Line", type: "railroad", price: 200 },
-  { id: 36, name: "Chance", type: "chance" },
-  { id: 37, name: "Park Place", type: "property", colorGroup: "darkblue", price: 350 },
-  { id: 38, name: "Luxury Tax", type: "tax", price: 100 },
-  { id: 39, name: "Boardwalk", type: "property", colorGroup: "darkblue", price: 400 }
+  { id: 29, name: "Tokyo", type: "property", colorGroup: "yellow", price: 280 },
+  { id: 30, name: "Go To Prison", type: "corner" },
+  { id: 31, name: "Chongqing", type: "property", colorGroup: "green", price: 300 },
+  { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300 },
+  { id: 33, name: "Treasure", type: "chest" },
+  { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320 },
+  { id: 35, name: "JFK Airport", type: "railroad", price: 200 },
+  { id: 36, name: "Surprise", type: "chance" },
+  { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350 },
+  { id: 38, name: "Premium Tax", type: "tax", price: 100 },
+  { id: 39, name: "New York", type: "property", colorGroup: "darkblue", price: 400 }
 ];
-
 const COLOR_MAP = {
   brown: '#955436',
   lightblue: '#AAE0FA',
@@ -58,6 +57,18 @@ const COLOR_MAP = {
   green: '#1FB25A',
   darkblue: '#0072BB'
 };
+
+const FLAG_EMOJI = {
+  1: '🇧🇷', 3: '🇧🇷',      // Brazil
+  6: '🇨🇦', 8: '🇨🇦', 9: '🇨🇦',  // Canada
+  11: '🇮🇹', 13: '🇮🇹', 14: '🇮🇹', // Italy
+  16: '🇫🇷', 18: '🇫🇷', 19: '🇫🇷', // France
+  21: '🇬🇧', 23: '🇬🇧', 24: '🇬🇧', // UK
+  26: '🇯🇵', 27: '🇯🇵', 29: '🇯🇵', // Japan
+  31: '🇨🇳', 32: '🇨🇳', 34: '🇨🇳', // China
+  37: '🇺🇸', 39: '🇺🇸'      // USA
+};
+
 
 const TOKEN_EMOJI = {
   backpack: '🎒',
@@ -254,7 +265,7 @@ function CornerTile({ tile }) {
     return (
       <div className="corner-inner corner-go">
         <div className="corner-go-arrow"><GoArrowIcon /></div>
-        <div className="corner-go-text">GO</div>
+        <div className="corner-go-text">START</div>
         <div className="corner-go-collect">COLLECT $200 SALARY AS YOU PASS</div>
       </div>
     );
@@ -267,7 +278,7 @@ function CornerTile({ tile }) {
             <span></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
-        <div className="jail-in-label">IN JAIL</div>
+        <div className="jail-in-label">IN PRISON</div>
         <div className="jail-just-label">JUST</div>
         <div className="jail-visiting-label">VISITING</div>
         <div className="jail-diagonal"></div>
@@ -279,7 +290,7 @@ function CornerTile({ tile }) {
       <div className="corner-inner corner-parking">
         <div className="corner-parking-top">FREE</div>
         <div className="corner-parking-icon"><CarIcon /></div>
-        <div className="corner-parking-bottom">PARKING</div>
+        <div className="corner-parking-bottom">VACATION</div>
       </div>
     );
   }
@@ -288,7 +299,7 @@ function CornerTile({ tile }) {
       <div className="corner-inner corner-gotojail">
         <div className="corner-gotojail-top">GO TO</div>
         <div className="corner-gotojail-icon"><ArrowIcon /></div>
-        <div className="corner-gotojail-bottom">JAIL</div>
+        <div className="corner-gotojail-bottom">PRISON</div>
       </div>
     );
   }
@@ -567,6 +578,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   )}
 
                   <div className="tile-content">
+                    {FLAG_EMOJI[tile.id] && (
+                      <div className="tile-flag">{FLAG_EMOJI[tile.id]}</div>
+                    )}
                     <div className="tile-name-wrap">
                       <span className="tile-name">
                         {tile.name.split(' ').map((word, wi) => (
@@ -617,14 +631,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             })}
 
             <div className="board-center">
-              <span className="board-center-title">MONOPOLY</span>
+              <span className="board-center-title">WORLD MONOPOLY</span>
 
               <div className="card-deck card-deck-chance">
                 <div className="card-deck-stack">
                   <div className="card-back card-back-3"></div>
                   <div className="card-back card-back-2"></div>
                   <div className="card-back card-back-1">
-                    <div className="card-back-label">CHANCE</div>
+                    <div className="card-back-label">SURPRISE</div>
                     <div className="card-back-icon">?</div>
                   </div>
                 </div>
@@ -635,7 +649,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   <div className="card-back card-back-chest-3"></div>
                   <div className="card-back card-back-chest-2"></div>
                   <div className="card-back card-back-chest-1">
-                    <div className="card-back-label-chest">COMMUNITY CHEST</div>
+                    <div className="card-back-label-chest">TREASURE</div>
                     <div className="card-back-icon-chest">
                       <ChestIcon />
                     </div>
@@ -656,7 +670,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </div>
               </div>
               <div className="free-parking">
-                💰 Free Parking: ${gameState?.freeParkingMoney || 0}
+                💰 Vacation Fund: ${gameState?.freeParkingMoney || 0}
               </div>
             </div>
           </div>
