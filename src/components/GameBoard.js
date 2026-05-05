@@ -565,12 +565,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 >
                   {/* Country flag fills the entire color-bar strip */}
                   {tile.country && (
-                    <div
-                      className="color-bar"
-                      style={{
-                        backgroundImage: `url(${getFlagUrl(tile.country)})`,
-                      }}
-                    />
+                    <div className="color-bar">
+                      <div
+                        className="color-bar-img"
+                        style={{
+                          backgroundImage: `url(${getFlagUrl(tile.country)})`,
+                        }}
+                      />
+                    </div>
                   )}
                   {/* Fallback solid color for non-country properties */}
                   {tile.colorGroup && !tile.country && (
