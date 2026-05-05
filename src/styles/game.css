@@ -1,3 +1,13 @@
+Fix auction feature
+Feature to click user and see cards
+Card flipping feature
+Fix right side spacing
+Click a card to see full
+Check mortgage feature
+Change “railroads” when clicking an airport
+
+Fix tie breaker in imposter
+
 /* ============================================
    MONOPOLY - Main Game Styles
    Authentic Monopoly board look & feel
@@ -325,96 +335,46 @@
 .tile:hover { background: #c5dfba; }
 
 /* ============================================
-   COLOR / FLAG BAR
+   COUNTRY FLAG BACKGROUND
    ============================================ */
 .tile .color-bar {
   position: absolute;
   z-index: 1;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
-/* Bottom row (1-9): bar at TOP (outer edge) */
+/* Bottom row (1-9): flag at TOP (outer edge) */
 .tile[data-side="bottom"] .color-bar {
   top: 0; left: 0; right: 0;
   height: 28%;
   border-bottom: 1.5px solid #1a1a1a;
 }
 
-/* Left column (11-19): bar at RIGHT (inner edge toward center) */
+/* Left column (11-19): flag at RIGHT (inner edge toward center) */
 .tile[data-side="left"] .color-bar {
   top: 0; right: 0; bottom: 0;
   width: 28%;
   border-left: 1.5px solid #1a1a1a;
+  background-size: cover;
+  background-position: center;
 }
 
-/* Top row (21-29): bar at BOTTOM (outer edge) */
+/* Top row (21-29): flag at BOTTOM (outer edge) */
 .tile[data-side="top"] .color-bar {
   bottom: 0; left: 0; right: 0;
   height: 28%;
   border-top: 1.5px solid #1a1a1a;
 }
 
-/* Right column (31-39): bar at LEFT (inner edge toward center) */
+/* Right column (31-39): flag at LEFT (inner edge toward center) */
 .tile[data-side="right"] .color-bar {
   top: 0; left: 0; bottom: 0;
   width: 28%;
   border-right: 1.5px solid #1a1a1a;
-}
-
-/* ============================================
-   FLAG BAR STYLING — Emoji + Gradient
-   ============================================ */
-.flag-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* Subtle gradient overlay behind the flag emoji */
-.flag-bar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.25;
-  z-index: 0;
-}
-
-/* Country-specific gradient tints */
-.tile[data-country="BR"] .flag-bar::before { background: linear-gradient(135deg, #009c3b 0%, #ffdf00 50%, #002776 100%); }
-.tile[data-country="CA"] .flag-bar::before { background: linear-gradient(135deg, #ff0000 0%, #ffffff 50%, #ff0000 100%); }
-.tile[data-country="IT"] .flag-bar::before { background: linear-gradient(135deg, #009246 0%, #ffffff 50%, #ce2b37 100%); }
-.tile[data-country="FR"] .flag-bar::before { background: linear-gradient(135deg, #0055a4 0%, #ffffff 50%, #ef4135 100%); }
-.tile[data-country="GB"] .flag-bar::before { background: linear-gradient(135deg, #012169 0%, #ffffff 50%, #c8102e 100%); }
-.tile[data-country="JP"] .flag-bar::before { background: linear-gradient(135deg, #ffffff 0%, #bc002d 50%, #ffffff 100%); }
-.tile[data-country="CN"] .flag-bar::before { background: linear-gradient(135deg, #de2910 0%, #ffde00 50%, #de2910 100%); }
-.tile[data-country="US"] .flag-bar::before { background: linear-gradient(135deg, #b22234 0%, #ffffff 50%, #3c3b6e 100%); }
-
-.flag-emoji {
-  position: relative;
-  z-index: 1;
-  font-size: clamp(14px, 2.5vmin, 22px);
-  line-height: 1;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
-}
-
-/* Bottom row: flag centered in the bar */
-.tile[data-side="bottom"] .flag-bar .flag-emoji {
-  margin-top: 2px;
-}
-
-/* Top row: flag centered in the bar */
-.tile[data-side="top"] .flag-bar .flag-emoji {
-  margin-bottom: 2px;
-}
-
-/* Left column: flag rotated to match vertical text flow */
-.tile[data-side="left"] .flag-bar .flag-emoji {
-  transform: rotate(90deg);
-}
-
-/* Right column: flag rotated to match vertical text flow */
-.tile[data-side="right"] .flag-bar .flag-emoji {
-  transform: rotate(-90deg);
+  background-size: cover;
+  background-position: center;
 }
 
 /* ============================================
@@ -853,4 +813,1229 @@
 }
 
 /* Right-col: icon shifted away from left edge where name lives */
-.tile-chance[data-side="right"] .tile
+.tile-chance[data-side="right"] .tile-icon-wrap,
+.tile-chest[data-side="right"] .tile-icon-wrap,
+.tile-tax[data-side="right"] .tile-icon-wrap,
+.tile-railroad[data-side="right"] .tile-icon-wrap,
+.tile-utility[data-side="right"] .tile-icon-wrap {
+  padding: 0;
+  padding-left: 22%;
+}
+
+/* Override tile-svg size for special tiles */
+.tile-chance .tile-svg,
+.tile-chest .tile-svg,
+.tile-tax .tile-svg,
+.tile-railroad .tile-svg,
+.tile-utility .tile-svg {
+  width: 90%;
+  height: 90%;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+}
+
+/* ============================================
+   FIX: Left/Right Special Tile Icon Rotation
+   ============================================ */
+/* Left side: rotate chance/chest/tax/railroad/utility icons 90deg CW to match vertical text */
+.tile-chance[data-side="left"] .tile-svg,
+.tile-chest[data-side="left"] .tile-svg,
+.tile-tax[data-side="left"] .tile-svg,
+.tile-railroad[data-side="left"] .tile-svg,
+.tile-utility[data-side="left"] .tile-svg {
+  transform: rotate(90deg);
+}
+
+/* Right side: rotate chance/chest/tax/railroad/utility icons 90deg CCW to match vertical text */
+.tile-chance[data-side="right"] .tile-svg,
+.tile-chest[data-side="right"] .tile-svg,
+.tile-tax[data-side="right"] .tile-svg,
+.tile-railroad[data-side="right"] .tile-svg,
+.tile-utility[data-side="right"] .tile-svg {
+  transform: rotate(-90deg);
+}
+
+/* Special tile name styling */
+.tile-chance .tile-name,
+.tile-chest .tile-name,
+.tile-tax .tile-name,
+.tile-railroad .tile-name,
+.tile-utility .tile-name {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================
+   OWNER DOT, HOUSES
+   ============================================ */
+.owner-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 4;
+  border: 1.5px solid rgba(0,0,0,0.3);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.houses-indicator, .hotel-indicator {
+  font-size: 0.7em;
+  line-height: 1;
+  position: absolute;
+  z-index: 4;
+}
+
+/* Houses sit on the inner edge of the color bar */
+.tile[data-side="bottom"] .houses-indicator,
+.tile[data-side="bottom"] .hotel-indicator {
+  top: 23%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tile[data-side="top"] .houses-indicator,
+.tile[data-side="top"] .hotel-indicator {
+  bottom: 23%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+/* Left: color bar on RIGHT, houses on RIGHT */
+.tile[data-side="left"] .houses-indicator,
+.tile[data-side="left"] .hotel-indicator {
+  top: 50%;
+  right: 23%;
+  transform: translateY(-50%);
+}
+/* Right: color bar on LEFT, houses on LEFT */
+.tile[data-side="right"] .houses-indicator,
+.tile[data-side="right"] .hotel-indicator {
+  top: 50%;
+  left: 23%;
+  transform: translateY(-50%);
+}
+
+/* ============================================
+   PLAYER TOKENS on tile
+   ============================================ */
+.tile-tokens {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Tokens at INNER edge (toward board center) */
+.tile[data-side="bottom"] .tile-tokens {
+  bottom: 14%;
+  left: 0;
+  right: 0;
+}
+.tile[data-side="top"] .tile-tokens {
+  top: 14%;
+  left: 0;
+  right: 0;
+}
+/* Left: inner edge is RIGHT */
+.tile[data-side="left"] .tile-tokens {
+  right: 14%;
+  top: 0;
+  bottom: 0;
+  flex-direction: column;
+}
+/* Right: inner edge is LEFT */
+.tile[data-side="right"] .tile-tokens {
+  left: 14%;
+  top: 0;
+  bottom: 0;
+  flex-direction: column;
+}
+
+.token {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  border: 2px solid #fff;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.3);
+  transition: all 0.15s ease;
+}
+
+@keyframes token-hop {
+  0%   { transform: translateY(0) scale(1); }
+  20%  { transform: translateY(-12px) scale(1.18); }
+  40%  { transform: translateY(0) scale(1); }
+  60%  { transform: translateY(-6px) scale(1.09); }
+  80%  { transform: translateY(0) scale(1); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.token.hopping {
+  animation: token-hop 0.65s ease-out;
+}
+
+/* ============================================
+   CORNER TILES
+   ============================================ */
+.tile-corner {
+  background: #d5eccc;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.corner-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.corner-tokens {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  z-index: 5;
+}
+
+/* GO corner */
+.corner-go {
+  background: #d5eccc;
+}
+.corner-go-arrow {
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.go-arrow-svg {
+  width: 100%;
+  max-width: 110px;
+  height: auto;
+}
+.corner-go-text {
+  font-family: 'Fredoka', 'Arial Black', sans-serif;
+  font-size: clamp(18px, 3.5vmin, 42px);
+  font-weight: 900;
+  color: #C5392A;
+  line-height: 1;
+  letter-spacing: 2px;
+  margin: 4px 0;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+}
+.corner-go-collect {
+  font-size: clamp(5px, 0.85vmin, 8px);
+  color: #1a1a1a;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1.1;
+  max-width: 95%;
+}
+
+/* JAIL corner */
+.corner-jail {
+  background: #d5eccc;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  display: block;
+}
+
+/* Inner jail cell (toward board center = top-right) */
+.jail-cell {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 72%;
+  height: 72%;
+  background: #F7941D;
+  border-bottom: 2px solid #1a1a1a;
+  border-left: 2px solid #1a1a1a;
+  overflow: hidden;
+}
+
+/* Vertical jail bars */
+.jail-bars-grid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  padding: 4px 6px;
+  pointer-events: none;
+  z-index: 2;
+}
+.jail-bars-grid span {
+  width: 3px;
+  background: #1a1a1a;
+  border-radius: 1px;
+  box-shadow: 1px 0 0 rgba(255,255,255,0.35);
+}
+
+/* "IN JAIL" label inside the cell */
+.jail-in-label {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 3;
+  background: #d5eccc;
+  border: 1.5px solid #1a1a1a;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(6px, 1vmin, 11px);
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+/* Diagonal divider */
+.jail-diagonal {
+  position: absolute;
+  top: 72%;
+  left: 0;
+  width: 39.6%;
+  height: 2px;
+  background: #1a1a1a;
+  transform-origin: left center;
+  transform: rotate(-45deg);
+  z-index: 2;
+}
+
+/* "JUST" along the left edge, reading bottom-to-top */
+.jail-just-label {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  transform-origin: left bottom;
+  transform: rotate(90deg);
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(6px, 1vmin, 11px);
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+/* "VISITING" along the bottom edge */
+.jail-visiting-label {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(6px, 1vmin, 11px);
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+/* FREE PARKING corner */
+.corner-parking { background: #d5eccc; }
+.corner-parking-top, .corner-parking-bottom {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: clamp(8px, 1.4vmin, 14px);
+  color: #1a1a1a;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.corner-parking-icon {
+  width: 80%;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.corner-svg {
+  width: 100%;
+  max-width: 90px;
+  height: auto;
+}
+
+/* GO TO JAIL corner */
+.corner-gotojail { background: #d5eccc; }
+.corner-gotojail-top, .corner-gotojail-bottom {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: clamp(8px, 1.4vmin, 14px);
+  color: #1a1a1a;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.corner-gotojail-icon {
+  width: 70%;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   BOARD CENTER
+   ============================================ */
+.board-center {
+  grid-row: 2 / 11;
+  grid-column: 2 / 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #c8e6c0;
+  position: relative;
+  gap: 12px;
+  padding: 8px;
+}
+
+.board-center-title {
+  font-family: 'Fredoka', 'Arial Black', sans-serif;
+  font-size: clamp(18px, 5vmin, 44px);
+  font-weight: 700;
+  color: #c5392a;
+  letter-spacing: 4px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+  opacity: 0.18;
+  pointer-events: none;
+  white-space: nowrap;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Card decks */
+.card-deck {
+  position: absolute;
+  width: 32%;
+  max-width: 180px;
+  aspect-ratio: 1.45;
+  z-index: 2;
+}
+
+.card-deck-chance {
+  top: 12%;
+  left: 12%;
+  transform: rotate(-12deg);
+}
+
+.card-deck-chest {
+  bottom: 12%;
+  right: 12%;
+  transform: rotate(-12deg);
+}
+
+.card-deck-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  border: 1.5px solid #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.card-back-3 {
+  background: #f5f0e8;
+  transform: translate(4px, 4px);
+}
+.card-back-2 {
+  background: #faf6ee;
+  transform: translate(2px, 2px);
+}
+.card-back-1 {
+  background: #F7941D;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.card-back-label {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: clamp(7px, 1.4vmin, 14px);
+  color: #1a1a1a;
+  letter-spacing: 1px;
+  text-align: center;
+  line-height: 1;
+}
+
+.card-back-icon {
+  font-family: 'Fredoka', 'Arial Black', sans-serif;
+  font-size: clamp(28px, 5.5vmin, 52px);
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+/* Chest cards */
+.card-back-chest-3 {
+  background: #f5f0e8;
+  transform: translate(4px, 4px);
+}
+.card-back-chest-2 {
+  background: #faf6ee;
+  transform: translate(2px, 2px);
+}
+.card-back-chest-1 {
+  background: #FEF200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.card-back-label-chest {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 800;
+  font-size: clamp(6px, 1.2vmin, 11px);
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.card-back-icon-chest {
+  width: 70%;
+  max-width: 80px;
+}
+
+/* ============================================
+   DICE
+   ============================================ */
+.dice-area {
+  display: flex;
+  gap: 14px;
+  z-index: 3;
+  position: relative;
+}
+
+.dice {
+  display: flex;
+  gap: 14px;
+}
+
+.die {
+  width: 50px;
+  height: 50px;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
+  border: 2px solid #1a1a1a;
+  position: relative;
+}
+
+.die-face {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 70%;
+  height: 70%;
+  gap: 2px;
+}
+
+.die-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #1a1a1a;
+}
+
+.die-dot.hidden {
+  visibility: hidden;
+}
+
+.die-number-faded {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: rgba(0,0,0,0.22);
+  font-weight: 700;
+  font-family: 'Fredoka', sans-serif;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.die-number-left {
+  right: auto;
+  left: -20px;
+}
+
+@keyframes dice-shake {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  15% { transform: rotate(-18deg) translate(-2px, 2px); }
+  30% { transform: rotate(12deg) translate(2px, -2px); }
+  45% { transform: rotate(-12deg) translate(-1px, 1px); }
+  60% { transform: rotate(18deg) translate(1px, -1px); }
+  75% { transform: rotate(-6deg) translate(-2px, 2px); }
+  90% { transform: rotate(6deg) translate(2px, -2px); }
+  100% { transform: rotate(0deg) translate(0, 0); }
+}
+
+.die.rolling {
+  animation: dice-shake 0.2s infinite;
+}
+
+.free-parking {
+  position: relative;
+  z-index: 3;
+  color: #2b5b3a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: 'Outfit', sans-serif;
+  background: rgba(255,255,255,0.6);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* ============================================
+   SIDE PANEL
+   ============================================ */
+.side-panel {
+  width: 220px;
+  background: #f5f0e8;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid #d5cfc4;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.player-panel {
+  padding: 8px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  max-height: 50%;
+}
+
+.player-panel h4 {
+  margin: 0 0 8px 0;
+  color: #2b5b3c;
+  font-size: 0.85rem;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.player-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+  border: 2px solid #e8e3da;
+  transition: border-color 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.player-card.current { border-color: #e8920e; }
+.player-card.me { border-color: #c5392a; }
+.player-card.bankrupt { opacity: 0.5; }
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-token {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #1a1a1a;
+}
+
+.player-money {
+  font-size: 0.75rem;
+  color: #2b5b3c;
+  font-weight: 600;
+}
+
+.turn-badge {
+  color: #e8920e;
+  font-size: 0.8rem;
+}
+
+.jail-badge, .jail-card-badge {
+  font-size: 0.7rem;
+  margin-top: 2px;
+  color: #555;
+}
+
+.player-properties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.prop-chip {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.15);
+}
+
+/* ============================================
+   GAME LOG
+   ============================================ */
+.game-log {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow: hidden;
+  border-top: 1px solid #d5cfc4;
+}
+
+.game-log h4 {
+  margin: 0 0 6px 0;
+  color: #2b5b3c;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.log-entries {
+  overflow-y: auto;
+  flex: 1;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.log-entry {
+  padding: 2px 0;
+  border-bottom: 1px solid #e8e3da;
+  color: #555;
+}
+
+/* ============================================
+   CONTROLS BAR
+   ============================================ */
+.controls-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: #2b5b3c;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  min-height: 40px;
+}
+
+.waiting-msg {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+}
+
+.game-over {
+  color: #ffe082;
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* ============================================
+   AUCTION BAR
+   ============================================ */
+.auction-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: #f5f0e8;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #d5cfc4;
+  color: #1a1a1a;
+}
+
+.auction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.auction-bid {
+  color: #e8920e;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.auction-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.auction-controls input {
+  width: 80px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #d5cfc4;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.85rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background: #f5f0e8;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  border: 2px solid #d5cfc4;
+  color: #1a1a1a;
+}
+
+.modal h3 {
+  margin: 0 0 16px 0;
+  color: #c5392a;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.modal h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.card-modal {
+  text-align: center;
+  max-width: 320px;
+}
+
+.card-modal.chance .card-header { background: #F7941D; }
+.card-modal.chest .card-header { background: #FEF200; color: #1a1a1a; }
+
+.card-header {
+  padding: 16px;
+  border-radius: 8px 8px 0 0;
+  margin: -20px -20px 16px -20px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #fff;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.card-body {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.trade-modal { max-width: 480px; }
+
+.trade-section { margin-bottom: 16px; }
+.trade-section label {
+  display: block;
+  margin-bottom: 4px;
+  color: #555;
+  font-size: 0.85rem;
+}
+.trade-section select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #d5cfc4;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.trade-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.trade-col label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.trade-col input {
+  width: 80px;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #d5cfc4;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: 'Outfit', sans-serif;
+}
+
+.prop-list {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #d5cfc4;
+  border-radius: 6px;
+  padding: 4px;
+  background: #fff;
+}
+
+.prop-item {
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  background: #fafafa;
+  transition: background 0.2s;
+  color: #333;
+}
+
+.prop-item:hover { background: #f0ebe3; }
+.prop-item.selected {
+  background: #e8e3da;
+  border: 1px solid #c5392a;
+}
+
+.trade-pending .trade-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  border: 1px solid #d5cfc4;
+}
+
+.trade-pending .trade-preview strong {
+  color: #c5392a;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.property-modal { max-width: 340px; }
+
+.property-header {
+  padding: 16px;
+  border-radius: 12px 12px 0 0;
+  margin: -20px -20px 16px -20px;
+  text-align: center;
+}
+
+.property-header h3 {
+  margin: 0;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.property-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.property-body { margin-bottom: 16px; }
+
+.property-owner {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #d5cfc4;
+}
+
+.mortgaged-badge { color: #c5392a; margin-left: 8px; }
+
+.rent-table {
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #d5cfc4;
+}
+
+.rent-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #e8e3da;
+  color: #333;
+}
+
+.rent-row:last-child { border-bottom: none; }
+.rent-total { background: #f0ebe3; font-weight: 600; }
+
+.houses-display, .hotel-display {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.property-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* ============================================
+   COUNTRY FLAGS - Large circular icons on tiles
+   ============================================ */
+.tile-flag {
+  position: absolute;
+  font-size: clamp(14px, 2.5vmin, 22px);
+  z-index: 4;
+  line-height: 1;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  width: clamp(18px, 3vmin, 26px);
+  height: clamp(18px, 3vmin, 26px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Bottom row: flag at top-left */
+.tile[data-side="bottom"] .tile-flag {
+  top: 3px;
+  left: 3px;
+}
+
+/* Top row: flag at bottom-left */
+.tile[data-side="top"] .tile-flag {
+  bottom: 3px;
+  left: 3px;
+  top: auto;
+}
+
+/* Left column: flag at top-right */
+.tile[data-side="left"] .tile-flag {
+  top: 3px;
+  right: 3px;
+  left: auto;
+}
+
+/* Right column: flag at top-left */
+.tile[data-side="right"] .tile-flag {
+  top: 3px;
+  left: 3px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 900px) {
+  .game-layout {
+    flex-direction: column;
+  }
+
+  .side-panel {
+    width: 100%;
+    height: 150px;
+    flex-direction: row;
+    border-left: none;
+    border-top: 2px solid #d5cfc4;
+  }
+
+  .player-panel {
+    width: 50%;
+    max-height: 100%;
+  }
+
+  .game-log {
+    width: 50%;
+    border-top: none;
+    border-left: 1px solid #d5cfc4;
+  }
+
+  .board {
+    width: min(96vw, 96vw);
+    height: min(96vw, 96vw);
+  }
+
+  .tile-name { font-size: clamp(4px, 1.3vw, 7px); }
+
+  .token {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+
+  .die {
+    width: 38px;
+    height: 38px;
+  }
+
+  .die-number-faded {
+    right: -16px;
+    font-size: 0.65rem;
+  }
+
+  .controls-bar { padding: 6px; gap: 4px; }
+
+  .btn-control {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .trade-columns { grid-template-columns: 1fr; }
+
+  .corner-go-text {
+    font-size: clamp(14px, 4vw, 28px);
+  }
+}
+
+@media (max-width: 480px) {
+  .board-wrapper { padding: 2px; }
+
+  .board {
+    border-width: 2px;
+  }
+
+  .tile-name { font-size: 4px; }
+
+  .top-bar { padding: 6px 8px; }
+
+  .room-code { font-size: 0.8rem; }
+
+  .side-panel { height: 120px; }
+
+  .player-card { padding: 4px; }
+
+  .player-token {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .player-name, .player-money { font-size: 0.7rem; }
+
+  .log-entries { font-size: 0.6rem; }
+
+  .token {
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
+    border-width: 1.5px;
+  }
+
+  .tile-price-edge {
+    font-size: 5px;
+    padding: 0 2px;
+  }
+
+  .die {
+    width: 32px;
+    height: 32px;
+  }
+
+  .die-number-faded {
+    right: -14px;
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-height: 500px) {
+  .side-panel { height: 100px; }
+  .board {
+    width: min(92vmin, 92vmin);
+    height: min(92vmin, 92vmin);
+  }
+}
+
+
