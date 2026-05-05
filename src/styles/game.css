@@ -372,22 +372,25 @@
   background-repeat: no-repeat;
 }
 
-/* Horizontal strips: normal cover fills perfectly */
+/* Horizontal strips: normal orientation */
 .tile[data-side="bottom"] .color-bar-img,
 .tile[data-side="top"] .color-bar-img {
-  background-size: cover;
-}
-
-/* Vertical strips: NO rotation. Scale to full strip height, 
-   let width overflow naturally. This keeps flags upright
-   with top pointing toward board top. */
-.tile[data-side="left"] .color-bar-img,
-.tile[data-side="right"] .color-bar-img {
-  background-size: auto 100%;
-  background-position: center;
   transform: none;
 }
 
+/* Left column: rotate 90° CW so flag reads bottom-to-top,
+   matching tile text rotation. Scale to fill narrow strip. */
+.tile[data-side="left"] .color-bar-img {
+  transform: rotate(90deg) scale(1.8);
+  transform-origin: center center;
+}
+
+/* Right column: rotate 90° CCW so flag reads top-to-bottom,
+   matching tile text rotation. Scale to fill narrow strip. */
+.tile[data-side="right"] .color-bar-img {
+  transform: rotate(-90deg) scale(1.8);
+  transform-origin: center center;
+}
 /* ============================================
    TILE CONTENT
    ============================================ */
