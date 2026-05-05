@@ -59,13 +59,9 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
-// Native emoji flags using regional indicator symbols — works everywhere
-function getFlagEmoji(countryCode) {
-  const codePoints = countryCode
-    .toUpperCase()
-    .split('')
-    .map(char => 127397 + char.charCodeAt());
-  return String.fromCodePoint(...codePoints);
+// Reliable open-source flag CDN — ISO country codes, always available
+function getFlagUrl(countryCode) {
+  return `https://flagcdn.com/256x192/${countryCode.toLowerCase()}.png`;
 }
 
 const TOKEN_EMOJI = {
@@ -524,7 +520,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
               const charClass = getCharClass(tile.name);
-              const flagEmoji = tile.country ? getFlagEmoji(tile.country) : null;
 
               if (isCorner) {
                 return (
@@ -568,14 +563,17 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     }
                   }}
                 >
-                  {/* Flag bar: emoji + country color gradient */}
-                  {flagEmoji && (
-                    <div className="color-bar flag-bar">
-                      <span className="flag-emoji">{flagEmoji}</span>
-                    </div>
+                  {/* Country flag fills the entire color-bar strip */}
+                  {tile.country && (
+                    <div
+                      className="color-bar"
+                      style={{
+                        backgroundImage: `url(${getFlagUrl(tile.country)})`,
+                      }}
+                    />
                   )}
-                  {/* Fallback color bar for non-country tiles */}
-                  {tile.colorGroup && !flagEmoji && (
+                  {/* Fallback solid color for non-country properties */}
+                  {tile.colorGroup && !tile.country && (
                     <div
                       className="color-bar"
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
