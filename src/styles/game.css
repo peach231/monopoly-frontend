@@ -334,7 +334,10 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  opacity: 0.35;
+  opacity: 0.45;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Bottom row (1-9): flag at TOP (outer edge) */
@@ -365,12 +368,9 @@
   border-right: 1.5px solid #1a1a1a;
 }
 
-/* The flag emoji inside the color-bar */
+/* Remove the emoji pseudo-element */
 .tile .color-bar::before {
-  content: attr(data-flag);
-  font-size: clamp(20px, 4vmin, 36px);
-  line-height: 1;
-  filter: saturate(1.5);
+  content: none;
 }
 
 /* ============================================
@@ -402,7 +402,7 @@
 .tile-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  font-size: clamp(7px, 1.4vmin, 13px);
+  font-size: clamp(6px, 1.3vmin, 12px);
   line-height: 1.05;
   color: #1a1a1a;
   text-transform: uppercase;
@@ -415,28 +415,73 @@
   max-width: 100%;
   max-height: 100%;
   text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: none;
 }
 
-/* Single-word names get larger font */
-.tile-name.single-word {
-  font-size: clamp(10px, 2.2vmin, 18px);
+/* Character-based sizing classes */
+.tile-name.chars-1-4 {
+  font-size: clamp(11px, 2.4vmin, 20px);
+  letter-spacing: 0.8px;
+}
+
+.tile-name.chars-5-7 {
+  font-size: clamp(9px, 1.9vmin, 16px);
   letter-spacing: 0.5px;
 }
 
-/* Two-word names get medium font */
-.tile-name.two-words {
-  font-size: clamp(8px, 1.7vmin, 14px);
+.tile-name.chars-8-10 {
+  font-size: clamp(7px, 1.5vmin, 13px);
+  letter-spacing: 0.3px;
 }
 
-/* Three+ word names stay smaller */
-.tile-name.multi-word {
+.tile-name.chars-11-14 {
   font-size: clamp(6px, 1.2vmin, 11px);
+  letter-spacing: 0.2px;
+}
+
+.tile-name.chars-15-plus {
+  font-size: clamp(5px, 1.0vmin, 9px);
+  letter-spacing: 0.1px;
+  line-height: 1.0;
 }
 
 /* Each word on its own line */
 .tile-name-word {
   display: block;
   white-space: nowrap;
+}
+
+/* Override for left/right columns - slightly larger since rotated */
+.tile[data-side="left"] .tile-name,
+.tile[data-side="right"] .tile-name {
+  font-size: clamp(7px, 1.6vmin, 14px);
+}
+
+.tile[data-side="left"] .tile-name.chars-1-4,
+.tile[data-side="right"] .tile-name.chars-1-4 {
+  font-size: clamp(10px, 2.2vmin, 18px);
+}
+
+.tile[data-side="left"] .tile-name.chars-5-7,
+.tile[data-side="right"] .tile-name.chars-5-7 {
+  font-size: clamp(8px, 1.7vmin, 15px);
+}
+
+.tile[data-side="left"] .tile-name.chars-8-10,
+.tile[data-side="right"] .tile-name.chars-8-10 {
+  font-size: clamp(7px, 1.4vmin, 12px);
+}
+
+.tile[data-side="left"] .tile-name.chars-11-14,
+.tile[data-side="right"] .tile-name.chars-11-14 {
+  font-size: clamp(6px, 1.1vmin, 10px);
+}
+
+.tile[data-side="left"] .tile-name.chars-15-plus,
+.tile[data-side="right"] .tile-name.chars-15-plus {
+  font-size: clamp(5px, 0.9vmin, 8px);
 }
 
 /* ============================================
@@ -488,7 +533,6 @@
 .tile[data-side="left"] .tile-name {
   transform: rotate(90deg);
   transform-origin: center center;
-  font-size: clamp(8px, 1.7vmin, 15px);
   line-height: 1.05;
   white-space: nowrap;
 }
@@ -523,7 +567,6 @@
 .tile[data-side="right"] .tile-name {
   transform: rotate(-90deg);
   transform-origin: center center;
-  font-size: clamp(8px, 1.7vmin, 15px);
   line-height: 1.05;
   white-space: nowrap;
 }
