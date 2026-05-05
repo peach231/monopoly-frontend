@@ -330,9 +330,7 @@
 .tile .color-bar {
   position: absolute;
   z-index: 1;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
+  overflow: hidden;
 }
 
 /* Bottom row (1-9): flag at TOP (outer edge) */
@@ -347,8 +345,6 @@
   top: 0; right: 0; bottom: 0;
   width: 28%;
   border-left: 1.5px solid #1a1a1a;
-  background-size: cover;
-  background-position: center;
 }
 
 /* Top row (21-29): flag at BOTTOM (outer edge) */
@@ -363,8 +359,33 @@
   top: 0; left: 0; bottom: 0;
   width: 28%;
   border-right: 1.5px solid #1a1a1a;
+}
+
+/* ============================================
+   FLAG IMAGE — fills and rotates inside the strip
+   ============================================ */
+.color-bar-img {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Horizontal bars: normal orientation */
+.tile[data-side="bottom"] .color-bar-img,
+.tile[data-side="top"] .color-bar-img {
+  transform: none;
+}
+
+/* Left column: rotate 90° CW and scale to fill narrow vertical strip */
+.tile[data-side="left"] .color-bar-img {
+  transform: rotate(90deg) scale(1.55);
+}
+
+/* Right column: rotate 90° CCW and scale to fill narrow vertical strip */
+.tile[data-side="right"] .color-bar-img {
+  transform: rotate(-90deg) scale(1.55);
 }
 
 /* ============================================
