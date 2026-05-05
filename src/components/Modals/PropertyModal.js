@@ -1,47 +1,5 @@
 import React from 'react';
  
-const BOARD_TILES = [
-  { id: 0, name: "START" },
-  { id: 1, name: "Rio de Janeiro", colorGroup: "brown", price: 60, rent: [2,10,30,90,160,250], houseCost: 50, mortgageValue: 30 },
-  { id: 2, name: "Treasure" },
-  { id: 3, name: "Sao Paulo", colorGroup: "brown", price: 60, rent: [4,20,60,180,320,450], houseCost: 50, mortgageValue: 30 },
-  { id: 4, name: "Earnings Tax" },
-  { id: 5, name: "YYZ Airport", price: 200, mortgageValue: 100 },
-  { id: 6, name: "Montreal", colorGroup: "lightblue", price: 100, rent: [6,30,90,270,400,550], houseCost: 50, mortgageValue: 50 },
-  { id: 7, name: "Surprise" },
-  { id: 8, name: "Vancouver", colorGroup: "lightblue", price: 100, rent: [6,30,90,270,400,550], houseCost: 50, mortgageValue: 50 },
-  { id: 9, name: "Toronto", colorGroup: "lightblue", price: 120, rent: [8,40,100,300,450,600], houseCost: 50, mortgageValue: 60 },
-  { id: 10, name: "Prison" },
-  { id: 11, name: "Venice", colorGroup: "pink", price: 140, rent: [10,50,150,450,625,750], houseCost: 100, mortgageValue: 70 },
-  { id: 12, name: "Electric Co", price: 150, mortgageValue: 75 },
-  { id: 13, name: "Milan", colorGroup: "pink", price: 140, rent: [10,50,150,450,625,750], houseCost: 100, mortgageValue: 70 },
-  { id: 14, name: "Rome", colorGroup: "pink", price: 160, rent: [12,60,180,500,700,900], houseCost: 100, mortgageValue: 80 },
-  { id: 15, name: "CDG Airport", price: 200, mortgageValue: 100 },
-  { id: 16, name: "Nice", colorGroup: "orange", price: 180, rent: [14,70,200,550,750,950], houseCost: 100, mortgageValue: 90 },
-  { id: 17, name: "Treasure" },
-  { id: 18, name: "Lyon", colorGroup: "orange", price: 180, rent: [14,70,200,550,750,950], houseCost: 100, mortgageValue: 90 },
-  { id: 19, name: "Paris", colorGroup: "orange", price: 200, rent: [16,80,220,600,800,1000], houseCost: 100, mortgageValue: 100 },
-  { id: 20, name: "Vacation" },
-  { id: 21, name: "Manchester", colorGroup: "red", price: 220, rent: [18,90,250,700,875,1050], houseCost: 150, mortgageValue: 110 },
-  { id: 22, name: "Surprise" },
-  { id: 23, name: "Birmingham", colorGroup: "red", price: 220, rent: [18,90,250,700,875,1050], houseCost: 150, mortgageValue: 110 },
-  { id: 24, name: "London", colorGroup: "red", price: 240, rent: [20,100,300,750,925,1100], houseCost: 150, mortgageValue: 120 },
-  { id: 25, name: "HND Airport", price: 200, mortgageValue: 100 },
-  { id: 26, name: "Kyoto", colorGroup: "yellow", price: 260, rent: [22,110,330,800,975,1150], houseCost: 150, mortgageValue: 130 },
-  { id: 27, name: "Osaka", colorGroup: "yellow", price: 260, rent: [22,110,330,800,975,1150], houseCost: 150, mortgageValue: 130 },
-  { id: 28, name: "Water Works", price: 150, mortgageValue: 75 },
-  { id: 29, name: "Tokyo", colorGroup: "yellow", price: 280, rent: [24,120,360,850,1025,1200], houseCost: 150, mortgageValue: 140 },
-  { id: 30, name: "Go to Prison" },
-  { id: 31, name: "Chongqing", colorGroup: "green", price: 300, rent: [26,130,390,900,1100,1275], houseCost: 200, mortgageValue: 150 },
-  { id: 32, name: "Shanghai", colorGroup: "green", price: 300, rent: [26,130,390,900,1100,1275], houseCost: 200, mortgageValue: 150 },
-  { id: 33, name: "Treasure" },
-  { id: 34, name: "Beijing", colorGroup: "green", price: 320, rent: [28,150,450,1000,1200,1400], houseCost: 200, mortgageValue: 160 },
-  { id: 35, name: "JFK Airport", price: 200, mortgageValue: 100 },
-  { id: 36, name: "Surprise" },
-  { id: 37, name: "Chicago", colorGroup: "darkblue", price: 350, rent: [35,175,500,1100,1300,1500], houseCost: 200, mortgageValue: 175 },
-  { id: 38, name: "Premium Tax" },
-  { id: 39, name: "New York", colorGroup: "darkblue", price: 400, rent: [50,200,600,1400,1700,2000], houseCost: 200, mortgageValue: 200 }
-];
 const COLOR_MAP = {
   brown: '#955436',
   lightblue: '#AAE0FA',
@@ -59,6 +17,10 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
   const isProperty = tile.type === 'property';
   const isRailroad = tile.type === 'railroad';
   const isUtility = tile.type === 'utility';
+  const isCorner = tile.type === 'corner';
+  const isTax = tile.type === 'tax';
+  const isChance = tile.type === 'chance';
+  const isChest = tile.type === 'chest';
  
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -72,6 +34,39 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
         </div>
  
         <div className="property-body">
+          {isCorner && (
+            <div className="tile-info-desc corner-info">
+              {tile.id === 0 && <><div className="corner-info-icon">🚀</div><div>Collect <strong>$200</strong> every time you pass or land here!</div></>}
+              {tile.id === 10 && <><div className="corner-info-icon">🚔</div><div>Just Visiting! If you're IN JAIL, you must roll doubles or pay $50 to get out.</div></>}
+              {tile.id === 20 && <><div className="corner-info-icon">🌴</div><div>Free Vacation! Collect any taxes paid into the Vacation Fund.</div></>}
+              {tile.id === 30 && <><div className="corner-info-icon">🚔</div><div>Go directly to Prison! Do not pass START, do not collect $200.</div></>}
+            </div>
+          )}
+
+          {isTax && (
+            <div className="tile-info-desc">
+              <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>{tile.id === 4 ? '💼' : '💎'}</div>
+              <div>Pay <strong>${tile.price}</strong> when you land here.</div>
+              <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#888' }}>This money goes to the Free Vacation Fund!</div>
+            </div>
+          )}
+
+          {isChance && (
+            <div className="tile-info-desc">
+              <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>❓</div>
+              <div>Draw a <strong>Surprise</strong> card!</div>
+              <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#888' }}>Follow the instructions on the card immediately.</div>
+            </div>
+          )}
+
+          {isChest && (
+            <div className="tile-info-desc">
+              <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>📦</div>
+              <div>Draw a <strong>Treasure</strong> card!</div>
+              <div style={{ marginTop: '8px', fontSize: '0.8rem', color: '#888' }}>Follow the instructions on the card immediately.</div>
+            </div>
+          )}
+
           {propertyState?.ownerId && (
             <div className="property-owner">
               Owner: <span style={{ color: owner?.color }}>{owner?.name || 'Unknown'}</span>
@@ -99,10 +94,10 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
  
           {isRailroad && (
             <div className="rent-table">
-              <div className="rent-row"><span>1 Railroad</span><span>$25</span></div>
-              <div className="rent-row"><span>2 Railroads</span><span>$50</span></div>
-              <div className="rent-row"><span>3 Railroads</span><span>$100</span></div>
-              <div className="rent-row"><span>4 Railroads</span><span>$200</span></div>
+              <div className="rent-row"><span>1 Airport</span><span>$25</span></div>
+              <div className="rent-row"><span>2 Airports</span><span>$50</span></div>
+              <div className="rent-row"><span>3 Airports</span><span>$100</span></div>
+              <div className="rent-row"><span>4 Airports</span><span>$200</span></div>
               <div className="rent-row"><span>Mortgage Value</span><span>${tile.mortgageValue}</span></div>
             </div>
           )}
