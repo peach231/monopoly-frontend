@@ -391,6 +391,14 @@
 }
 
 /* ============================================
+   SIDE FLAGS — shrink to fit full flag
+   ============================================ */
+.tile[data-side="left"] .color-bar-img,
+.tile[data-side="right"] .color-bar-img {
+  background-size: contain;
+}
+
+/* ============================================
    TILE CONTENT
    ============================================ */
 .tile-content {
