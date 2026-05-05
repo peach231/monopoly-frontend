@@ -60,3 +60,62 @@ const BOARD_TILES = [
   { id: 38, name: "Premium Tax" },
   { id: 39, name: "New York", colorGroup: "darkblue" }
 ];
+
+export default function PlayerPanel({ players, properties, currentPlayerId, myId, onPropertyClick }) {
+  return (
+    <div className="player-panel">
+      <h4>Players</h4>
+      {players.map(player => {
+        const isMe = player.id === myId;
+        const isCurrent = player.id === currentPlayerId;
+        const playerProps = properties.filter(p => p.ownerId === player.id);
+ 
+        return (
+          <div
+            key={player.id}
+            className={`player-card ${isCurrent ? 'current' : ''} ${isMe ? 'me' : ''} ${player.isBankrupt ? 'bankrupt' : ''}`}
+          >
+            <div className="player-header">
+              <span className="player-token" style={{ backgroundColor: player.color }}>
+                {TOKEN_EMOJI[player.token] || '●'}
+              </span>
+              <div className="player-info">
+                <span className="player-name">
+                  {player.name} {isMe && '(You)'}
+                  {player.isBankrupt && ' 💀'}
+                  {!player.isConnected && ' ⚠️'}
+                </span>
+                <span className="player-money">${player.money}</span>
+              </div>
+              {isCurrent && <span className="turn-badge">▶</span>}
+            </div>
+ 
+            {player.inJail && <div className="jail-badge">🔒 In Jail</div>}
+            {player.jailCards > 0 && <div className="jail-card-badge">🎫 x{player.jailCards}</div>}
+ 
+            <div className="player-properties">
+              {playerProps.map(prop => {
+                const tile = BOARD_TILES[prop.id];
+                return (
+                  <div
+                    key={prop.id}
+                    className="prop-chip"
+                    style={{
+                      backgroundColor: tile?.colorGroup ? COLOR_MAP[tile.colorGroup] : '#666',
+                      opacity: prop.isMortgaged ? 0.5 : 1
+                    }}
+                    onClick={() => onPropertyClick && onPropertyClick(prop.id)}
+                    title={tile?.name}
+                  >
+                    {prop.hotel ? '🏨' : prop.houses > 0 ? `${prop.houses}🏠` : ''}
+                    {prop.isMortgaged && ' 🔒'}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
