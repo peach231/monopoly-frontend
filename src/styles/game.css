@@ -375,13 +375,12 @@
 /* Horizontal strips: normal cover fills perfectly */
 .tile[data-side="bottom"] .color-bar-img,
 .tile[data-side="top"] .color-bar-img {
-  transform: none;
+  background-size: cover;
 }
 
-/* Vertical strips: NO rotation. Use auto-height sizing so the flag
-   scales to full strip height, cropping excess width naturally.
-   This keeps tricolor bands vertical (correct for FR/IT) and
-   fills the strip edge-to-edge without gaps. */
+/* Vertical strips: NO rotation. Scale to full strip height, 
+   let width overflow naturally. This keeps flags upright
+   with top pointing toward board top. */
 .tile[data-side="left"] .color-bar-img,
 .tile[data-side="right"] .color-bar-img {
   background-size: auto 100%;
