@@ -59,33 +59,7 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
-// Country flag images from flagcdn.com (free CDN)
-const FLAG_URLS = {
-  1: 'https://flagcdn.com/w80/br.png',   // Brazil
-  3: 'https://flagcdn.com/w80/br.png',   // Brazil
-  6: 'https://flagcdn.com/w80/ca.png',   // Canada
-  8: 'https://flagcdn.com/w80/ca.png',   // Canada
-  9: 'https://flagcdn.com/w80/ca.png',   // Canada
-  11: 'https://flagcdn.com/w80/it.png',  // Italy
-  13: 'https://flagcdn.com/w80/it.png',  // Italy
-  14: 'https://flagcdn.com/w80/it.png',  // Italy
-  16: 'https://flagcdn.com/w80/fr.png',  // France
-  18: 'https://flagcdn.com/w80/fr.png',  // France
-  19: 'https://flagcdn.com/w80/fr.png',  // France
-  21: 'https://flagcdn.com/w80/gb.png',  // UK
-  23: 'https://flagcdn.com/w80/gb.png',  // UK
-  24: 'https://flagcdn.com/w80/gb.png',  // UK
-  26: 'https://flagcdn.com/w80/jp.png',  // Japan
-  27: 'https://flagcdn.com/w80/jp.png',  // Japan
-  29: 'https://flagcdn.com/w80/jp.png',  // Japan
-  31: 'https://flagcdn.com/w80/cn.png',  // China
-  32: 'https://flagcdn.com/w80/cn.png',  // China
-  34: 'https://flagcdn.com/w80/cn.png',  // China
-  37: 'https://flagcdn.com/w80/us.png',  // USA
-  39: 'https://flagcdn.com/w80/us.png'   // USA
-};
-
-// Fallback emoji flags if images fail to load
+// Country flag emojis for property tiles
 const FLAG_EMOJI = {
   1: '🇧🇷', 3: '🇧🇷',
   6: '🇨🇦', 8: '🇨🇦', 9: '🇨🇦',
@@ -558,7 +532,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
               const charClass = getCharClass(tile.name);
-              const flagUrl = FLAG_URLS[tile.id];
+              const flagEmoji = FLAG_EMOJI[tile.id];
 
               if (isCorner) {
                 return (
@@ -602,13 +576,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     }
                   }}
                 >
-                  {flagUrl && (
-                    <div
-                      className="color-bar"
-                      style={{ backgroundImage: `url(${flagUrl})` }}
-                    />
+                  {flagEmoji && (
+                    <div className="color-bar">
+                      <span style={{ fontSize: 'clamp(14px, 3vmin, 24px)', lineHeight: 1 }}>
+                        {flagEmoji}
+                      </span>
+                    </div>
                   )}
-                  {tile.colorGroup && !flagUrl && (
+                  {tile.colorGroup && !flagEmoji && (
                     <div
                       className="color-bar"
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
@@ -616,9 +591,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   )}
 
                   <div className="tile-content">
-                    {FLAG_EMOJI[tile.id] && !tile.colorGroup && (
-                      <div className="tile-flag"><span>{FLAG_EMOJI[tile.id]}</span></div>
-                    )}
                     <div className="tile-name-wrap">
                       <span className={`tile-name ${charClass}`}>
                         {tile.name.split(' ').map((word, wi) => (
