@@ -325,39 +325,52 @@
 .tile:hover { background: #c5dfba; }
 
 /* ============================================
-   COLOR BAR — INNER edge (toward board center)
+   COUNTRY FLAG BACKGROUND — replaces color bar
    ============================================ */
 .tile .color-bar {
   position: absolute;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0.35;
 }
 
-/* Bottom row (1-9): color bar at TOP (outer edge) */
+/* Bottom row (1-9): flag at TOP (outer edge) */
 .tile[data-side="bottom"] .color-bar {
   top: 0; left: 0; right: 0;
-  height: 22%;
+  height: 28%;
   border-bottom: 1.5px solid #1a1a1a;
 }
 
-/* Left column (11-19): color bar at RIGHT (inner edge toward center) */
+/* Left column (11-19): flag at RIGHT (inner edge toward center) */
 .tile[data-side="left"] .color-bar {
   top: 0; right: 0; bottom: 0;
-  width: 22%;
+  width: 28%;
   border-left: 1.5px solid #1a1a1a;
 }
 
-/* Top row (21-29): color bar at BOTTOM (outer edge) */
+/* Top row (21-29): flag at BOTTOM (outer edge) */
 .tile[data-side="top"] .color-bar {
   bottom: 0; left: 0; right: 0;
-  height: 22%;
+  height: 28%;
   border-top: 1.5px solid #1a1a1a;
 }
 
-/* Right column (31-39): color bar at LEFT (inner edge toward center) */
+/* Right column (31-39): flag at LEFT (inner edge toward center) */
 .tile[data-side="right"] .color-bar {
   top: 0; left: 0; bottom: 0;
-  width: 22%;
+  width: 28%;
   border-right: 1.5px solid #1a1a1a;
+}
+
+/* The flag emoji inside the color-bar */
+.tile .color-bar::before {
+  content: attr(data-flag);
+  font-size: clamp(20px, 4vmin, 36px);
+  line-height: 1;
+  filter: saturate(1.5);
 }
 
 /* ============================================
@@ -389,7 +402,7 @@
 .tile-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  font-size: clamp(8px, 1.7vmin, 15px);
+  font-size: clamp(7px, 1.4vmin, 13px);
   line-height: 1.05;
   color: #1a1a1a;
   text-transform: uppercase;
@@ -402,6 +415,22 @@
   max-width: 100%;
   max-height: 100%;
   text-align: center;
+}
+
+/* Single-word names get larger font */
+.tile-name.single-word {
+  font-size: clamp(10px, 2.2vmin, 18px);
+  letter-spacing: 0.5px;
+}
+
+/* Two-word names get medium font */
+.tile-name.two-words {
+  font-size: clamp(8px, 1.7vmin, 14px);
+}
+
+/* Three+ word names stay smaller */
+.tile-name.multi-word {
+  font-size: clamp(6px, 1.2vmin, 11px);
 }
 
 /* Each word on its own line */
