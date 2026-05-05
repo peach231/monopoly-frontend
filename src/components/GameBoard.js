@@ -4,6 +4,7 @@ import CardModal from './Modals/CardModal';
 import TradeModal from './Modals/TradeModal';
 import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
+import PlayerProfileModal from './Modals/PlayerProfileModal';
 
 const BOARD_TILES = [
   { id: 0, name: "START", type: "corner" },
@@ -301,6 +302,7 @@ function CornerTile({ tile }) {
 export default function GameBoard({ gameState, playerId, emit, onStartGame, getShareLink }) {
   const [showTrade, setShowTrade] = useState(false);
   const [showProperty, setShowProperty] = useState(null);
+  const [showPlayerProfile, setShowPlayerProfile] = useState(null);
   const [copied, setCopied] = useState(false);
   const [bidAmount, setBidAmount] = useState('');
   const [hoppingTokens, setHoppingTokens] = useState({});
@@ -530,6 +532,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       gridRow: pos.gridRow,
                       gridColumn: pos.gridColumn,
                     }}
+                    onClick={() => setShowProperty(tile.id)}
                   >
                     <CornerTile tile={tile} />
                     <div className="tile-tokens corner-tokens">
@@ -557,11 +560,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     gridRow: pos.gridRow,
                     gridColumn: pos.gridColumn,
                   }}
-                  onClick={() => {
-                    if (tile.type === 'property' || tile.type === 'railroad' || tile.type === 'utility') {
-                      setShowProperty(tile.id);
-                    }
-                  }}
+                  onClick={() => setShowProperty(tile.id)}
                 >
                   {/* Country flag fills the entire color-bar strip */}
                   {tile.country && (
@@ -685,6 +684,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             currentPlayerId={gameState?.currentPlayerId}
             myId={playerId}
             onPropertyClick={setShowProperty}
+            onPlayerClick={setShowPlayerProfile}
           />
 
           <div className="game-log">
@@ -703,7 +703,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           <>
             {gameState.turnPhase === 'roll' && (
               <button className="btn-control btn-roll" onClick={handleRoll} disabled={diceAnim.isRolling}>
-                {diceAnim.isRolling ? '🎲 Rolling...' : '🎲 Roll Dice'}
+                {diceAnim.isRolling ? '🎲 Rolling...' : gameState?.extraRoll ? '🎲 Roll Again (Doubles!)' : '🎲 Roll Dice'}
               </button>
             )}
 
@@ -732,6 +732,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
             {gameState.pendingCard && (
               <CardModal
+                key={`${gameState.pendingCard.id}-${gameState.turnSequence}`}
                 card={gameState.pendingCard}
                 onResolve={handleResolveCard}
               />
@@ -829,6 +830,16 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             </div>
           </div>
         </div>
+      )}
+
+      {showPlayerProfile && (
+        <PlayerProfileModal
+          playerId={showPlayerProfile}
+          players={gameState?.players || []}
+          properties={gameState?.properties || []}
+          boardTiles={BOARD_TILES}
+          onClose={() => setShowPlayerProfile(null)}
+        />
       )}
 
       {showProperty !== null && (
