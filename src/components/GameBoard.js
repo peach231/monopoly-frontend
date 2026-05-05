@@ -7,45 +7,45 @@ import PropertyModal from './Modals/PropertyModal';
 
 const BOARD_TILES = [
   { id: 0, name: "START", type: "corner" },
-  { id: 1, name: "Rio de Janeiro", type: "property", colorGroup: "brown", price: 60 },
+  { id: 1, name: "Rio de Janeiro", type: "property", colorGroup: "brown", price: 60, country: "BR" },
   { id: 2, name: "Treasure", type: "chest" },
-  { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60 },
+  { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60, country: "BR" },
   { id: 4, name: "Earnings Tax", type: "tax", price: 200 },
   { id: 5, name: "YYZ Airport", type: "railroad", price: 200 },
-  { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100 },
+  { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100, country: "CA" },
   { id: 7, name: "Surprise", type: "chance" },
-  { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100 },
-  { id: 9, name: "Toronto", type: "property", colorGroup: "lightblue", price: 120 },
+  { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100, country: "CA" },
+  { id: 9, name: "Toronto", type: "property", colorGroup: "lightblue", price: 120, country: "CA" },
   { id: 10, name: "Prison", type: "corner" },
-  { id: 11, name: "Venice", type: "property", colorGroup: "pink", price: 140 },
+  { id: 11, name: "Venice", type: "property", colorGroup: "pink", price: 140, country: "IT" },
   { id: 12, name: "Electric Co", type: "utility", price: 150 },
-  { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140 },
-  { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160 },
+  { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140, country: "IT" },
+  { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160, country: "IT" },
   { id: 15, name: "CDG Airport", type: "railroad", price: 200 },
-  { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180 },
+  { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180, country: "FR" },
   { id: 17, name: "Treasure", type: "chest" },
-  { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180 },
-  { id: 19, name: "Paris", type: "property", colorGroup: "orange", price: 200 },
+  { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180, country: "FR" },
+  { id: 19, name: "Paris", type: "property", colorGroup: "orange", price: 200, country: "FR" },
   { id: 20, name: "Vacation", type: "corner" },
-  { id: 21, name: "Manchester", type: "property", colorGroup: "red", price: 220 },
+  { id: 21, name: "Manchester", type: "property", colorGroup: "red", price: 220, country: "GB" },
   { id: 22, name: "Surprise", type: "chance" },
-  { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220 },
-  { id: 24, name: "London", type: "property", colorGroup: "red", price: 240 },
+  { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220, country: "GB" },
+  { id: 24, name: "London", type: "property", colorGroup: "red", price: 240, country: "GB" },
   { id: 25, name: "HND Airport", type: "railroad", price: 200 },
-  { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260 },
-  { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260 },
+  { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260, country: "JP" },
+  { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260, country: "JP" },
   { id: 28, name: "Water Works", type: "utility", price: 150 },
-  { id: 29, name: "Tokyo", type: "property", colorGroup: "yellow", price: 280 },
+  { id: 29, name: "Tokyo", type: "property", colorGroup: "yellow", price: 280, country: "JP" },
   { id: 30, name: "Go To Prison", type: "corner" },
-  { id: 31, name: "Chongqing", type: "property", colorGroup: "green", price: 300 },
-  { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300 },
+  { id: 31, name: "Chongqing", type: "property", colorGroup: "green", price: 300, country: "CN" },
+  { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300, country: "CN" },
   { id: 33, name: "Treasure", type: "chest" },
-  { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320 },
+  { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320, country: "CN" },
   { id: 35, name: "JFK Airport", type: "railroad", price: 200 },
   { id: 36, name: "Surprise", type: "chance" },
-  { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350 },
+  { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350, country: "US" },
   { id: 38, name: "Premium Tax", type: "tax", price: 100 },
-  { id: 39, name: "New York", type: "property", colorGroup: "darkblue", price: 400 }
+  { id: 39, name: "New York", type: "property", colorGroup: "darkblue", price: 400, country: "US" }
 ];
 
 const COLOR_MAP = {
@@ -59,40 +59,14 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
-// Country flag image URLs (from flagcdn.io - free public domain flags)
-// Country flag SVG data URIs (guaranteed accurate, no external dependencies)
-const FLAG_URL = {
-  // Brazil — brown group
-  1:  'https://flagcdn.com/w80/br.svg',
-  3:  'https://flagcdn.com/w80/br.svg',
-  // Canada — lightblue group
-  6:  'https://flagcdn.com/w80/ca.svg',
-  8:  'https://flagcdn.com/w80/ca.svg',
-  9:  'https://flagcdn.com/w80/ca.svg',
-  // Italy — pink group
-  11: 'https://flagcdn.com/w80/it.svg',
-  13: 'https://flagcdn.com/w80/it.svg',
-  14: 'https://flagcdn.com/w80/it.svg',
-  // France — orange group
-  16: 'https://flagcdn.com/w80/fr.svg',
-  18: 'https://flagcdn.com/w80/fr.svg',
-  19: 'https://flagcdn.com/w80/fr.svg',
-  // UK — red group
-  21: 'https://flagcdn.com/w80/gb.svg',
-  23: 'https://flagcdn.com/w80/gb.svg',
-  24: 'https://flagcdn.com/w80/gb.svg',
-  // Japan — yellow group
-  26: 'https://flagcdn.com/w80/jp.svg',
-  27: 'https://flagcdn.com/w80/jp.svg',
-  29: 'https://flagcdn.com/w80/jp.svg',
-  // China — green group
-  31: 'https://flagcdn.com/w80/cn.svg',
-  32: 'https://flagcdn.com/w80/cn.svg',
-  34: 'https://flagcdn.com/w80/cn.svg',
-  // USA — darkblue group
-  37: 'https://flagcdn.com/w80/us.svg',
-  39: 'https://flagcdn.com/w80/us.svg',
-};
+// Native emoji flags using regional indicator symbols — works everywhere
+function getFlagEmoji(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
 
 const TOKEN_EMOJI = {
   backpack: '🎒',
@@ -101,7 +75,6 @@ const TOKEN_EMOJI = {
   pencil: '✏️'
 };
 
-// Helper function to get character-count based class
 function getCharClass(name) {
   const chars = name.replace(/\s/g, '').length;
   if (chars <= 4) return 'chars-1-4';
@@ -136,7 +109,7 @@ function getTileSide(tileId) {
 }
 
 /* ============================================
-   SVG ICONS for non-property tiles
+   SVG ICONS
    ============================================ */
 
 const AirplaneIcon = () => (
@@ -224,16 +197,12 @@ const TaxIcon = () => (
 
 const PalmTreeIcon = () => (
   <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
-    {/* Trunk */}
     <path d="M58 45 Q55 65 52 85 L60 88 L68 85 Q65 65 62 45 Z" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1.5"/>
-    {/* Curved trunk detail */}
     <path d="M58 45 Q52 55 54 70" fill="none" stroke="#654321" strokeWidth="2"/>
-    {/* Palm fronds */}
     <ellipse cx="60" cy="38" rx="35" ry="12" fill="#228B22" stroke="#1a1a1a" strokeWidth="1.5" transform="rotate(-15 60 38)"/>
     <ellipse cx="60" cy="38" rx="32" ry="10" fill="#32CD32" stroke="#1a1a1a" strokeWidth="1" transform="rotate(10 60 38)"/>
     <ellipse cx="60" cy="38" rx="28" ry="9" fill="#228B22" stroke="#1a1a1a" strokeWidth="1" transform="rotate(35 60 38)"/>
     <ellipse cx="60" cy="38" rx="30" ry="10" fill="#32CD32" stroke="#1a1a1a" strokeWidth="1" transform="rotate(-40 60 38)"/>
-    {/* Coconuts */}
     <circle cx="55" cy="48" r="4" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
     <circle cx="63" cy="50" r="3.5" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
     <circle cx="59" cy="53" r="3" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
@@ -555,7 +524,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
               const charClass = getCharClass(tile.name);
-              const flagUrl = FLAG_URL[tile.id];
+              const flagEmoji = tile.country ? getFlagEmoji(tile.country) : null;
 
               if (isCorner) {
                 return (
@@ -599,16 +568,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     }
                   }}
                 >
-                  {flagUrl && (
-                    <div
-                      className="color-bar"
-                      style={{
-                        backgroundImage: `url(${flagUrl})`,
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    />
+                  {/* Flag bar: emoji + country color gradient */}
+                  {flagEmoji && (
+                    <div className="color-bar flag-bar">
+                      <span className="flag-emoji">{flagEmoji}</span>
+                    </div>
                   )}
-                  {tile.colorGroup && !flagUrl && (
+                  {/* Fallback color bar for non-country tiles */}
+                  {tile.colorGroup && !flagEmoji && (
                     <div
                       className="color-bar"
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
