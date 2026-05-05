@@ -372,12 +372,6 @@
   background-repeat: no-repeat;
 }
 
-/* Horizontal strips (top/bottom): stretch to fill since aspect ratio matches */
-.tile[data-side="bottom"] .color-bar-img,
-.tile[data-side="top"] .color-bar-img {
-  background-size: 100% 100%;
-}
-
 /* Horizontal strips: normal orientation */
 .tile[data-side="bottom"] .color-bar-img,
 .tile[data-side="top"] .color-bar-img {
