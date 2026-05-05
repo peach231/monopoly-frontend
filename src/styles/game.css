@@ -367,7 +367,7 @@
 .color-bar-img {
   position: absolute;
   inset: 0;
-  background-size: cover;
+  background-size: 100% 100%; /* stretch to fill, ensuring full flag visible */
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -378,19 +378,18 @@
   transform: none;
 }
 
-/* Left column: rotate 90° CW so flag reads bottom-to-top,
-   matching tile text rotation. Scale to fill narrow strip. */
+/* Left column: rotate 90° CW so flag reads bottom-to-top */
 .tile[data-side="left"] .color-bar-img {
-  transform: rotate(90deg) scale(1.8);
+  transform: rotate(90deg);
   transform-origin: center center;
 }
 
-/* Right column: rotate 90° CCW so flag reads top-to-bottom,
-   matching tile text rotation. Scale to fill narrow strip. */
+/* Right column: rotate 90° CCW so flag reads top-to-bottom */
 .tile[data-side="right"] .color-bar-img {
-  transform: rotate(-90deg) scale(1.8);
+  transform: rotate(-90deg);
   transform-origin: center center;
 }
+
 /* ============================================
    TILE CONTENT
    ============================================ */
