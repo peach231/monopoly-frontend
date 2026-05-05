@@ -325,7 +325,7 @@
 .tile:hover { background: #c5dfba; }
 
 /* ============================================
-   COUNTRY FLAG BACKGROUND — replaces color bar
+   COUNTRY FLAG BACKGROUND
    ============================================ */
 .tile .color-bar {
   position: absolute;
@@ -334,8 +334,8 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  opacity: 0.45;
-  background-size: cover;
+  opacity: 0.85;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -368,11 +368,6 @@
   border-right: 1.5px solid #1a1a1a;
 }
 
-/* Remove the emoji pseudo-element */
-.tile .color-bar::before {
-  content: none;
-}
-
 /* ============================================
    TILE CONTENT
    ============================================ */
@@ -402,8 +397,8 @@
 .tile-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  font-size: clamp(6px, 1.3vmin, 12px);
-  line-height: 1.05;
+  font-size: clamp(5px, 1.1vmin, 10px);
+  line-height: 1.0;
   color: #1a1a1a;
   text-transform: uppercase;
   letter-spacing: 0.2px;
@@ -411,7 +406,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 0px;
   max-width: 100%;
   max-height: 100%;
   text-align: center;
@@ -420,29 +415,30 @@
   hyphens: none;
 }
 
-/* Character-based sizing classes */
+/* Character-based sizing classes - REDUCED sizes */
 .tile-name.chars-1-4 {
-  font-size: clamp(11px, 2.4vmin, 20px);
-  letter-spacing: 0.8px;
-}
-
-.tile-name.chars-5-7 {
-  font-size: clamp(9px, 1.9vmin, 16px);
+  font-size: clamp(9px, 1.8vmin, 15px);
   letter-spacing: 0.5px;
 }
 
-.tile-name.chars-8-10 {
-  font-size: clamp(7px, 1.5vmin, 13px);
+.tile-name.chars-5-7 {
+  font-size: clamp(7px, 1.4vmin, 12px);
   letter-spacing: 0.3px;
 }
 
-.tile-name.chars-11-14 {
-  font-size: clamp(6px, 1.2vmin, 11px);
+.tile-name.chars-8-10 {
+  font-size: clamp(6px, 1.1vmin, 10px);
   letter-spacing: 0.2px;
 }
 
+.tile-name.chars-11-14 {
+  font-size: clamp(5px, 0.9vmin, 8px);
+  letter-spacing: 0.1px;
+  line-height: 1.0;
+}
+
 .tile-name.chars-15-plus {
-  font-size: clamp(5px, 1.0vmin, 9px);
+  font-size: clamp(4px, 0.75vmin, 7px);
   letter-spacing: 0.1px;
   line-height: 1.0;
 }
@@ -456,32 +452,32 @@
 /* Override for left/right columns - slightly larger since rotated */
 .tile[data-side="left"] .tile-name,
 .tile[data-side="right"] .tile-name {
-  font-size: clamp(7px, 1.6vmin, 14px);
+  font-size: clamp(6px, 1.3vmin, 11px);
 }
 
 .tile[data-side="left"] .tile-name.chars-1-4,
 .tile[data-side="right"] .tile-name.chars-1-4 {
-  font-size: clamp(10px, 2.2vmin, 18px);
+  font-size: clamp(8px, 1.6vmin, 13px);
 }
 
 .tile[data-side="left"] .tile-name.chars-5-7,
 .tile[data-side="right"] .tile-name.chars-5-7 {
-  font-size: clamp(8px, 1.7vmin, 15px);
+  font-size: clamp(7px, 1.3vmin, 11px);
 }
 
 .tile[data-side="left"] .tile-name.chars-8-10,
 .tile[data-side="right"] .tile-name.chars-8-10 {
-  font-size: clamp(7px, 1.4vmin, 12px);
+  font-size: clamp(6px, 1.0vmin, 9px);
 }
 
 .tile[data-side="left"] .tile-name.chars-11-14,
 .tile[data-side="right"] .tile-name.chars-11-14 {
-  font-size: clamp(6px, 1.1vmin, 10px);
+  font-size: clamp(5px, 0.85vmin, 7px);
 }
 
 .tile[data-side="left"] .tile-name.chars-15-plus,
 .tile[data-side="right"] .tile-name.chars-15-plus {
-  font-size: clamp(5px, 0.9vmin, 8px);
+  font-size: clamp(4px, 0.7vmin, 6px);
 }
 
 /* ============================================
@@ -579,10 +575,10 @@
   z-index: 3;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: clamp(7px, 1.25vmin, 12px);
+  font-size: clamp(6px, 1.1vmin, 10px);
   color: #1a1a1a;
   background: rgba(213, 236, 204, 0.92);
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 2px;
   pointer-events: none;
   white-space: nowrap;
@@ -724,7 +720,7 @@
 .tile-utility[data-side="left"] .tile-name {
   transform: rotate(90deg);
   transform-origin: center center;
-  font-size: clamp(8px, 1.5vmin, 13px);
+  font-size: clamp(7px, 1.3vmin, 11px);
   line-height: 1.05;
   white-space: nowrap;
   width: max-content;
@@ -757,7 +753,7 @@
 .tile-utility[data-side="right"] .tile-name {
   transform: rotate(-90deg);
   transform-origin: center center;
-  font-size: clamp(8px, 1.5vmin, 13px);
+  font-size: clamp(7px, 1.3vmin, 11px);
   line-height: 1.05;
   white-space: nowrap;
   width: max-content;
@@ -1943,7 +1939,7 @@
     height: min(96vw, 96vw);
   }
 
-  .tile-name { font-size: clamp(5px, 1.6vw, 9px); }
+  .tile-name { font-size: clamp(4px, 1.3vw, 7px); }
 
   .token {
     width: 14px;
@@ -1982,7 +1978,7 @@
     border-width: 2px;
   }
 
-  .tile-name { font-size: 5px; }
+  .tile-name { font-size: 4px; }
 
   .top-bar { padding: 6px 8px; }
 
