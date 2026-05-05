@@ -12,7 +12,7 @@ const BOARD_TILES = [
   { id: 2, name: "Treasure", type: "chest" },
   { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60, country: "BR" },
   { id: 4, name: "Earnings Tax", type: "tax", price: 200 },
-  { id: 5, name: "YYZ Airport", type: "railroad", price: 200 },
+  { id: 5, name: "YYZ Airport", type: "railroad", price: 200, country: "CA" },
   { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100, country: "CA" },
   { id: 7, name: "Surprise", type: "chance" },
   { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100, country: "CA" },
@@ -22,7 +22,7 @@ const BOARD_TILES = [
   { id: 12, name: "Electric Co", type: "utility", price: 150 },
   { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140, country: "IT" },
   { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160, country: "IT" },
-  { id: 15, name: "CDG Airport", type: "railroad", price: 200 },
+  { id: 15, name: "CDG Airport", type: "railroad", price: 200, country: "FR" },
   { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180, country: "FR" },
   { id: 17, name: "Treasure", type: "chest" },
   { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180, country: "FR" },
@@ -32,7 +32,7 @@ const BOARD_TILES = [
   { id: 22, name: "Surprise", type: "chance" },
   { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220, country: "GB" },
   { id: 24, name: "London", type: "property", colorGroup: "red", price: 240, country: "GB" },
-  { id: 25, name: "HND Airport", type: "railroad", price: 200 },
+  { id: 25, name: "HND Airport", type: "railroad", price: 200, country: "JP" },
   { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260, country: "JP" },
   { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260, country: "JP" },
   { id: 28, name: "Water Works", type: "utility", price: 150 },
@@ -42,7 +42,7 @@ const BOARD_TILES = [
   { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300, country: "CN" },
   { id: 33, name: "Treasure", type: "chest" },
   { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320, country: "CN" },
-  { id: 35, name: "JFK Airport", type: "railroad", price: 200 },
+  { id: 35, name: "JFK Airport", type: "railroad", price: 200, country: "US" },
   { id: 36, name: "Surprise", type: "chance" },
   { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350, country: "US" },
   { id: 38, name: "Premium Tax", type: "tax", price: 100 },
@@ -58,6 +58,17 @@ const COLOR_MAP = {
   yellow: '#FEF200',
   green: '#1FB25A',
   darkblue: '#0072BB'
+};
+
+const COLOR_GROUPS = {
+  brown: [1, 3],
+  lightblue: [6, 8, 9],
+  pink: [11, 13, 14],
+  orange: [16, 18, 19],
+  red: [21, 23, 24],
+  yellow: [26, 27, 29],
+  green: [31, 32, 34],
+  darkblue: [37, 39]
 };
 
 // Reliable open-source flag CDN — ISO country codes, always available
@@ -103,6 +114,44 @@ function getTileSide(tileId) {
   if (tileId >= 21 && tileId <= 29) return 'top';
   if (tileId >= 31 && tileId <= 39) return 'right';
   return null;
+}
+
+/* ============================================
+   RENT CALCULATOR (frontend mirror of engine)
+   ============================================ */
+function calculateRent(tileId, properties, boardTiles, diceSum = 7) {
+  const tile = boardTiles.find(t => t.id === tileId);
+  const prop = properties.find(p => p.id === tileId);
+  if (!tile || !prop || !prop.ownerId || prop.isMortgaged) return 0;
+
+  if (tile.type === 'property' && tile.rent) {
+    if (prop.hotel) return tile.rent[5];
+    if (prop.houses > 0) return tile.rent[prop.houses];
+    const group = COLOR_GROUPS[tile.colorGroup];
+    if (group) {
+      const ownsAll = group.every(id => {
+        const p = properties.find(x => x.id === id);
+        return p && p.ownerId === prop.ownerId;
+      });
+      return ownsAll ? tile.rent[0] * 2 : tile.rent[0];
+    }
+    return tile.rent[0];
+  }
+  if (tile.type === 'railroad') {
+    const railroads = [5, 15, 25, 35].filter(id => {
+      const p = properties.find(x => x.id === id);
+      return p && p.ownerId === prop.ownerId;
+    });
+    return 25 * Math.pow(2, railroads.length - 1);
+  }
+  if (tile.type === 'utility') {
+    const utilities = [12, 28].filter(id => {
+      const p = properties.find(x => x.id === id);
+      return p && p.ownerId === prop.ownerId;
+    });
+    return utilities.length === 2 ? diceSum * 10 : diceSum * 4;
+  }
+  return 0;
 }
 
 /* ============================================
@@ -308,6 +357,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
+  
+  /* NEW: Delayed card display so token animation finishes first */
+  const [displayCard, setDisplayCard] = useState(null);
+  const cardTimerRef = useRef(null);
+  
   const prevPositionsRef = useRef({});
   const diceIntervalRef = useRef(null);
   const movingPlayersRef = useRef(new Set());
@@ -320,6 +374,22 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       }
     }
   }, [gameState?.dice, diceAnim.isRolling]);
+
+  /* NEW: 600ms delay before showing card modal */
+  useEffect(() => {
+    if (gameState?.pendingCard) {
+      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
+      cardTimerRef.current = setTimeout(() => {
+        setDisplayCard({ ...gameState.pendingCard, turnSequence: gameState.turnSequence });
+      }, 600);
+    } else {
+      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
+      setDisplayCard(null);
+    }
+    return () => {
+      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
+    };
+  }, [gameState?.pendingCard, gameState?.turnSequence]);
 
   useEffect(() => {
     if (!gameState?.players) return;
@@ -380,6 +450,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     return () => {
       if (diceIntervalRef.current) clearInterval(diceIntervalRef.current);
       timeoutsRef.current.forEach(clearTimeout);
+      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
     };
   }, []);
 
@@ -730,10 +801,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               />
             )}
 
-            {gameState.pendingCard && (
+            {/* NEW: Delayed card modal */}
+            {displayCard && (
               <CardModal
-                key={`${gameState.pendingCard.id}-${gameState.turnSequence}`}
-                card={gameState.pendingCard}
+                key={`${displayCard.id}-${displayCard.turnSequence}`}
+                card={displayCard}
                 onResolve={handleResolveCard}
               />
             )}
@@ -838,6 +910,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           players={gameState?.players || []}
           properties={gameState?.properties || []}
           boardTiles={BOARD_TILES}
+          calculateRent={(tileId, diceSum = 7) => calculateRent(tileId, gameState?.properties || [], BOARD_TILES, diceSum)}
           onClose={() => setShowPlayerProfile(null)}
         />
       )}
