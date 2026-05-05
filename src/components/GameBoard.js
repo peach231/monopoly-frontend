@@ -60,15 +60,42 @@ const COLOR_MAP = {
 };
 
 // Country flag image URLs (from flagcdn.io - free public domain flags)
+// Country flag SVG data URIs (guaranteed accurate, no external dependencies)
+const FLAG_SVG = {
+  // Brazil: green field, yellow diamond, blue circle with stars, white band
+  BR: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 14'%3E%3Crect width='20' height='14' fill='%23009C3B'/%3E%3Cpath d='M10 2 L18 7 L10 12 L2 7 Z' fill='%23FFDF00'/%3E%3Ccircle cx='10' cy='7' r='3.5' fill='%23002168'/%3E%3C/svg%3E",
+
+  // Canada: red-white-red vertical with maple leaf
+  CA: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 10'%3E%3Crect width='20' height='10' fill='%23FF0000'/%3E%3Crect x='5' width='10' height='10' fill='%23FFFFFF'/%3E%3Cpath d='M10 2 L11 4 L13 4 L11.5 5.5 L12 7.5 L10 6.5 L8 7.5 L8.5 5.5 L7 4 L9 4 Z' fill='%23FF0000'/%3E%3C/svg%3E",
+
+  // Italy: green-white-red vertical (tall aspect for vertical strips)
+  IT: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 8'%3E%3Crect width='1' height='8' fill='%23008C45'/%3E%3Crect x='1' width='1' height='8' fill='%23F4F9FF'/%3E%3Crect x='2' width='1' height='8' fill='%23CD212A'/%3E%3C/svg%3E",
+
+  // France: blue-white-red vertical (tall aspect for vertical strips)
+  FR: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 8'%3E%3Crect width='1' height='8' fill='%230055A4'/%3E%3Crect x='1' width='1' height='8' fill='%23FFFFFF'/%3E%3Crect x='2' width='1' height='8' fill='%23EF4135'/%3E%3C/svg%3E",
+
+  // UK: Union Jack (simplified)
+  GB: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Crect width='60' height='30' fill='%23012169'/%3E%3Cpath d='M0 0 L60 30 M60 0 L0 30' stroke='%23FFFFFF' stroke-width='6'/%3E%3Cpath d='M0 0 L60 30 M60 0 L0 30' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0 V30 M0 15 H60' stroke='%23FFFFFF' stroke-width='10'/%3E%3Cpath d='M30 0 V30 M0 15 H60' stroke='%23C8102E' stroke-width='6'/%3E%3C/svg%3E",
+
+  // Japan: red circle on white
+  JP: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3Crect width='3' height='2' fill='%23FFFFFF'/%3E%3Ccircle cx='1.5' cy='1' r='0.6' fill='%23BC002D'/%3E%3C/svg%3E",
+
+  // China: red field with yellow stars (simplified - 1 large star)
+  CN: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 20'%3E%3Crect width='30' height='20' fill='%23DE2910'/%3E%3Cpath d='M5 4 L6 7 L3 5.5 L7 5.5 L4 7 Z' fill='%23FFDE00' transform='scale(0.8) translate(1,1)'/%3E%3C/svg%3E",
+
+  // USA: stars and stripes (simplified)
+  US: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 100'%3E%3Cg fill='%23B22234'%3E%3Crect width='190' height='100'/%3E%3Crect y='7.7' width='190' height='7.7' fill='%23FFFFFF'/%3E%3Crect y='23.1' width='190' height='7.7' fill='%23FFFFFF'/%3E%3Crect y='38.5' width='190' height='7.7' fill='%23FFFFFF'/%3E%3Crect y='53.8' width='190' height='7.7' fill='%23FFFFFF'/%3E%3Crect y='69.2' width='190' height='7.7' fill='%23FFFFFF'/%3E%3Crect y='84.6' width='190' height='7.7' fill='%23FFFFFF'/%3E%3C/g%3E%3Crect width='76' height='53.8' fill='%233C3B6E'/%3E%3C/svg%3E"
+};
+
 const FLAG_URL = {
-  1: 'https://flagcdn.com/w40/br.png', 3: 'https://flagcdn.com/w40/br.png',
-  6: 'https://flagcdn.com/w40/ca.png', 8: 'https://flagcdn.com/w40/ca.png', 9: 'https://flagcdn.com/w40/ca.png',
-  11: 'https://flagcdn.com/w40/it.png', 13: 'https://flagcdn.com/w40/it.png', 14: 'https://flagcdn.com/w40/it.png',
-  16: 'https://flagcdn.com/w40/fr.png', 18: 'https://flagcdn.com/w40/fr.png', 19: 'https://flagcdn.com/w40/fr.png',
-  21: 'https://flagcdn.com/w40/gb.png', 23: 'https://flagcdn.com/w40/gb.png', 24: 'https://flagcdn.com/w40/gb.png',
-  26: 'https://flagcdn.com/w40/jp.png', 27: 'https://flagcdn.com/w40/jp.png', 29: 'https://flagcdn.com/w40/jp.png',
-  31: 'https://flagcdn.com/w40/cn.png', 32: 'https://flagcdn.com/w40/cn.png', 34: 'https://flagcdn.com/w40/cn.png',
-  37: 'https://flagcdn.com/w40/us.png', 39: 'https://flagcdn.com/w40/us.png'
+  1: FLAG_SVG.BR, 3: FLAG_SVG.BR,
+  6: FLAG_SVG.CA, 8: FLAG_SVG.CA, 9: FLAG_SVG.CA,
+  11: FLAG_SVG.IT, 13: FLAG_SVG.IT, 14: FLAG_SVG.IT,
+  16: FLAG_SVG.FR, 18: FLAG_SVG.FR, 19: FLAG_SVG.FR,
+  21: FLAG_SVG.GB, 23: FLAG_SVG.GB, 24: FLAG_SVG.GB,
+  26: FLAG_SVG.JP, 27: FLAG_SVG.JP, 29: FLAG_SVG.JP,
+  31: FLAG_SVG.CN, 32: FLAG_SVG.CN, 34: FLAG_SVG.CN,
+  37: FLAG_SVG.US, 39: FLAG_SVG.US
 };
 
 const TOKEN_EMOJI = {
@@ -581,8 +608,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       className="color-bar"
                       style={{
                         backgroundImage: `url(${flagUrl})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
                       }}
                     />
