@@ -89,6 +89,9 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
               <div className="rent-row">
                 <span>Mortgage Value</span><span>${tile.mortgageValue}</span>
               </div>
+              <div className="rent-row">
+                <span>Unmortgage Cost</span><span>${Math.ceil(tile.mortgageValue * 1.1)}</span>
+              </div>
             </div>
           )}
  
@@ -99,6 +102,9 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
               <div className="rent-row"><span>3 Airports</span><span>$100</span></div>
               <div className="rent-row"><span>4 Airports</span><span>$200</span></div>
               <div className="rent-row"><span>Mortgage Value</span><span>${tile.mortgageValue}</span></div>
+              <div className="rent-row">
+                <span>Unmortgage Cost</span><span>${Math.ceil(tile.mortgageValue * 1.1)}</span>
+              </div>
             </div>
           )}
  
@@ -107,6 +113,9 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
               <div className="rent-row"><span>1 Utility</span><span>4x dice roll</span></div>
               <div className="rent-row"><span>2 Utilities</span><span>10x dice roll</span></div>
               <div className="rent-row"><span>Mortgage Value</span><span>${tile.mortgageValue}</span></div>
+              <div className="rent-row">
+                <span>Unmortgage Cost</span><span>${Math.ceil(tile.mortgageValue * 1.1)}</span>
+              </div>
             </div>
           )}
  
