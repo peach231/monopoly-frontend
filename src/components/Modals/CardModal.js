@@ -3,10 +3,10 @@ import React from 'react';
 export default function CardModal({ card, onResolve }) {
   const isChance = card.deck === 'chance';
   return (
-    <div className="modal-overlay">
-      <div className={`modal card-modal ${isChance ? 'chance' : 'chest'}`}>
+    <div className="modal-overlay card-flip-overlay">
+      <div className={`modal card-modal card-flip ${isChance ? 'chance' : 'chest'}`}>
         <div className="card-header">
-          {isChance ? '🎲 Chance' : '📦 Community Chest'}
+          {isChance ? '🎲 Surprise' : '📦 Treasure'}
         </div>
         <div className="card-body">
           <p>{card.text}</p>
