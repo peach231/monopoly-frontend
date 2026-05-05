@@ -105,21 +105,12 @@ function getTileSide(tileId) {
    SVG ICONS for non-property tiles
    ============================================ */
 
-const TrainIcon = () => (
-  <svg viewBox="0 0 100 70" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    <line x1="0" y1="62" x2="100" y2="62" stroke="#1a1a1a" strokeWidth="2" />
-    <rect x="14" y="26" width="56" height="24" fill="#1a1a1a" />
-    <rect x="48" y="14" width="24" height="14" fill="#1a1a1a" />
-    <rect x="53" y="18" width="14" height="7" fill="#fff" />
-    <polygon points="2,46 14,34 14,52" fill="#1a1a1a" />
-    <rect x="22" y="8" width="7" height="20" fill="#1a1a1a" />
-    <rect x="19" y="6" width="13" height="5" fill="#1a1a1a" />
-    <circle cx="22" cy="54" r="6" fill="#1a1a1a" stroke="#888" strokeWidth="1.5" />
-    <circle cx="42" cy="54" r="6" fill="#1a1a1a" stroke="#888" strokeWidth="1.5" />
-    <circle cx="62" cy="54" r="6" fill="#1a1a1a" stroke="#888" strokeWidth="1.5" />
-    <circle cx="22" cy="54" r="2" fill="#fff" />
-    <circle cx="42" cy="54" r="2" fill="#fff" />
-    <circle cx="62" cy="54" r="2" fill="#fff" />
+const AirplaneIcon = () => (
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
+    <path d="M50 10 L60 35 L95 45 L95 55 L60 50 L55 90 L45 90 L42 50 L10 55 L10 45 L42 35 Z" 
+          fill="#1a1a1a" stroke="#1a1a1a" strokeWidth="2" strokeLinejoin="round"/>
+    <rect x="48" y="35" width="4" height="30" fill="#555" rx="1"/>
+    <path d="M35 55 L50 65 L65 55" fill="none" stroke="#888" strokeWidth="1.5"/>
   </svg>
 );
 
@@ -197,19 +188,21 @@ const TaxIcon = () => (
   </svg>
 );
 
-const CarIcon = () => (
-  <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
-    <path d="M 10 50 L 25 30 L 80 30 L 95 50 L 110 50 L 110 60 L 10 60 Z"
-          fill="#C5392A" stroke="#1a1a1a" strokeWidth="2" />
-    <path d="M 32 30 L 42 18 L 70 18 L 80 30 Z"
-          fill="#C5392A" stroke="#1a1a1a" strokeWidth="2" />
-    <path d="M 36 30 L 44 22 L 56 22 L 56 30 Z" fill="#AAE0FA" stroke="#1a1a1a" strokeWidth="1.5" />
-    <path d="M 60 30 L 60 22 L 68 22 L 76 30 Z" fill="#AAE0FA" stroke="#1a1a1a" strokeWidth="1.5" />
-    <circle cx="98" cy="44" r="3" fill="#FFE082" stroke="#1a1a1a" strokeWidth="1" />
-    <circle cx="32" cy="62" r="10" fill="#1a1a1a" />
-    <circle cx="32" cy="62" r="5" fill="#888" />
-    <circle cx="88" cy="62" r="10" fill="#1a1a1a" />
-    <circle cx="88" cy="62" r="5" fill="#888" />
+const PalmTreeIcon = () => (
+  <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
+    {/* Trunk */}
+    <path d="M58 45 Q55 65 52 85 L60 88 L68 85 Q65 65 62 45 Z" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1.5"/>
+    {/* Curved trunk detail */}
+    <path d="M58 45 Q52 55 54 70" fill="none" stroke="#654321" strokeWidth="2"/>
+    {/* Palm fronds */}
+    <ellipse cx="60" cy="38" rx="35" ry="12" fill="#228B22" stroke="#1a1a1a" strokeWidth="1.5" transform="rotate(-15 60 38)"/>
+    <ellipse cx="60" cy="38" rx="32" ry="10" fill="#32CD32" stroke="#1a1a1a" strokeWidth="1" transform="rotate(10 60 38)"/>
+    <ellipse cx="60" cy="38" rx="28" ry="9" fill="#228B22" stroke="#1a1a1a" strokeWidth="1" transform="rotate(35 60 38)"/>
+    <ellipse cx="60" cy="38" rx="30" ry="10" fill="#32CD32" stroke="#1a1a1a" strokeWidth="1" transform="rotate(-40 60 38)"/>
+    {/* Coconuts */}
+    <circle cx="55" cy="48" r="4" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
+    <circle cx="63" cy="50" r="3.5" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
+    <circle cx="59" cy="53" r="3" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
   </svg>
 );
 
@@ -248,7 +241,7 @@ function DieFace({ value }) {
 }
 
 function TileIcon({ tile }) {
-  if (tile.type === 'railroad') return <TrainIcon />;
+  if (tile.type === 'railroad') return <AirplaneIcon />;
   if (tile.type === 'utility') {
     return tile.id === 12 ? <BulbIcon /> : <FaucetIcon />;
   }
@@ -289,7 +282,7 @@ function CornerTile({ tile }) {
     return (
       <div className="corner-inner corner-parking">
         <div className="corner-parking-top">FREE</div>
-        <div className="corner-parking-icon"><CarIcon /></div>
+        <div className="corner-parking-icon"><PalmTreeIcon /></div>
         <div className="corner-parking-bottom">VACATION</div>
       </div>
     );
@@ -579,7 +572,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
                   <div className="tile-content">
                     {FLAG_EMOJI[tile.id] && (
-                      <div className="tile-flag">{FLAG_EMOJI[tile.id]}</div>
+                      <div className="tile-flag"><span>{FLAG_EMOJI[tile.id]}</span></div>
                     )}
                     <div className="tile-name-wrap">
                       <span className="tile-name">
