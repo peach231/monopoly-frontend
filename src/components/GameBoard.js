@@ -59,16 +59,16 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
-// Country flag emojis for property tiles
-const FLAG_EMOJI = {
-  1: '🇧🇷', 3: '🇧🇷',
-  6: '🇨🇦', 8: '🇨🇦', 9: '🇨🇦',
-  11: '🇮🇹', 13: '🇮🇹', 14: '🇮🇹',
-  16: '🇫🇷', 18: '🇫🇷', 19: '🇫🇷',
-  21: '🇬🇧', 23: '🇬🇧', 24: '🇬🇧',
-  26: '🇯🇵', 27: '🇯🇵', 29: '🇯🇵',
-  31: '🇨🇳', 32: '🇨🇳', 34: '🇨🇳',
-  37: '🇺🇸', 39: '🇺🇸'
+// Country flag image URLs (from flagcdn.io - free public domain flags)
+const FLAG_URL = {
+  1: 'https://flagcdn.com/w40/br.png', 3: 'https://flagcdn.com/w40/br.png',
+  6: 'https://flagcdn.com/w40/ca.png', 8: 'https://flagcdn.com/w40/ca.png', 9: 'https://flagcdn.com/w40/ca.png',
+  11: 'https://flagcdn.com/w40/it.png', 13: 'https://flagcdn.com/w40/it.png', 14: 'https://flagcdn.com/w40/it.png',
+  16: 'https://flagcdn.com/w40/fr.png', 18: 'https://flagcdn.com/w40/fr.png', 19: 'https://flagcdn.com/w40/fr.png',
+  21: 'https://flagcdn.com/w40/gb.png', 23: 'https://flagcdn.com/w40/gb.png', 24: 'https://flagcdn.com/w40/gb.png',
+  26: 'https://flagcdn.com/w40/jp.png', 27: 'https://flagcdn.com/w40/jp.png', 29: 'https://flagcdn.com/w40/jp.png',
+  31: 'https://flagcdn.com/w40/cn.png', 32: 'https://flagcdn.com/w40/cn.png', 34: 'https://flagcdn.com/w40/cn.png',
+  37: 'https://flagcdn.com/w40/us.png', 39: 'https://flagcdn.com/w40/us.png'
 };
 
 const TOKEN_EMOJI = {
@@ -532,7 +532,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
               const charClass = getCharClass(tile.name);
-              const flagEmoji = FLAG_EMOJI[tile.id];
+              const flagUrl = FLAG_URL[tile.id];
 
               if (isCorner) {
                 return (
@@ -576,14 +576,18 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     }
                   }}
                 >
-                  {flagEmoji && (
-                    <div className="color-bar">
-                      <span style={{ fontSize: 'clamp(14px, 3vmin, 24px)', lineHeight: 1 }}>
-                        {flagEmoji}
-                      </span>
-                    </div>
+                  {flagUrl && (
+                    <div
+                      className="color-bar"
+                      style={{
+                        backgroundImage: `url(${flagUrl})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    />
                   )}
-                  {tile.colorGroup && !flagEmoji && (
+                  {tile.colorGroup && !flagUrl && (
                     <div
                       className="color-bar"
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
