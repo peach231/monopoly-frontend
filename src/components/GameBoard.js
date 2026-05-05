@@ -567,15 +567,16 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     <div
                       className="color-bar"
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
+                      data-flag={FLAG_EMOJI[tile.id] || ''}
                     />
                   )}
 
                   <div className="tile-content">
-                    {FLAG_EMOJI[tile.id] && (
+                    {FLAG_EMOJI[tile.id] && !tile.colorGroup && (
                       <div className="tile-flag"><span>{FLAG_EMOJI[tile.id]}</span></div>
                     )}
                     <div className="tile-name-wrap">
-                      <span className="tile-name">
+                      <span className={`tile-name ${tile.name.split(' ').length === 1 ? 'single-word' : tile.name.split(' ').length === 2 ? 'two-words' : 'multi-word'}`}>
                         {tile.name.split(' ').map((word, wi) => (
                           <span key={wi} className="tile-name-word">{word}</span>
                         ))}
