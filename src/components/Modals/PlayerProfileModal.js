@@ -11,6 +11,17 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
+const COLOR_GROUP_TOTALS = {
+  brown: 2,
+  lightblue: 3,
+  pink: 3,
+  orange: 3,
+  red: 3,
+  yellow: 3,
+  green: 3,
+  darkblue: 2
+};
+
 const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
@@ -18,7 +29,7 @@ const TOKEN_EMOJI = {
   pencil: '✏️'
 };
 
-export default function PlayerProfileModal({ playerId, players, properties, boardTiles, onClose }) {
+export default function PlayerProfileModal({ playerId, players, properties, boardTiles, calculateRent, onClose }) {
   const player = players.find(p => p.id === playerId);
   if (!player) return null;
 
@@ -89,8 +100,11 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                       {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
                     </div>
                     <div className="profile-prop-details">
-                      {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'Base rent'}
-                      {' · '}${prop.tile.price || '-'}
+                      {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
+                      {' · '}
+                      {prop.isMortgaged 
+                        ? 'Rent: $0 (Mortgaged)' 
+                        : `Rent: $${calculateRent ? calculateRent(prop.id) : (prop.tile.rent?.[0] || 0)}`}
                     </div>
                   </div>
                 ))}
@@ -99,20 +113,30 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
           </div>
           
           <div className="profile-section">
-            <strong>Monopolies:</strong>
+            <strong>Monopoly Tracker:</strong>
             {Object.entries(colorGroupStats).length === 0 ? (
               <span> None</span>
             ) : (
-              <div className="monopoly-chips">
-                {Object.entries(colorGroupStats).map(([color, count]) => (
-                  <span 
-                    key={color} 
-                    className="monopoly-chip"
-                    style={{ backgroundColor: COLOR_MAP[color] || '#888' }}
-                  >
-                    {count}
-                  </span>
-                ))}
+              <div className="monopoly-tracker">
+                {Object.entries(colorGroupStats).map(([color, count]) => {
+                  const total = COLOR_GROUP_TOTALS[color] || 3;
+                  const isComplete = count === total;
+                  return (
+                    <div key={color} className="monopoly-tracker-item">
+                      <span 
+                        className="monopoly-chip"
+                        style={{ backgroundColor: COLOR_MAP[color] || '#888' }}
+                      >
+                        {isComplete ? '💰' : count}
+                      </span>
+                      <span className="monopoly-tracker-label">
+                        {isComplete 
+                          ? `${color.charAt(0).toUpperCase() + color.slice(1)} Monopoly!` 
+                          : `${color.charAt(0).toUpperCase() + color.slice(1)}: ${count}/${total}`}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
