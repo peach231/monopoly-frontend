@@ -362,30 +362,32 @@
 }
 
 /* ============================================
-   FLAG IMAGE — fills and rotates inside the strip
+   FLAG IMAGE — fills the color-bar strip
    ============================================ */
 .color-bar-img {
   position: absolute;
-  inset: 0;
+  inset: -20%;           /* bleed past edges to prevent gaps */
+  width: 140%;
+  height: 140%;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Horizontal bars: normal orientation */
+/* Horizontal strips: normal orientation */
 .tile[data-side="bottom"] .color-bar-img,
 .tile[data-side="top"] .color-bar-img {
   transform: none;
 }
 
-/* Left column: rotate 90° CW and scale to fill narrow vertical strip */
+/* Vertical strips: rotate flag 90° so it reads naturally along the edge.
+   The inset bleed (-20% / 140%) combined with scale ensures no gaps. */
 .tile[data-side="left"] .color-bar-img {
-  transform: rotate(90deg) scale(1.55);
+  transform: rotate(90deg);
 }
 
-/* Right column: rotate 90° CCW and scale to fill narrow vertical strip */
 .tile[data-side="right"] .color-bar-img {
-  transform: rotate(-90deg) scale(1.55);
+  transform: rotate(-90deg);
 }
 
 /* ============================================
