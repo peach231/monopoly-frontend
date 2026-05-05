@@ -61,7 +61,7 @@ const BOARD_TILES = [
   { id: 39, name: "New York", colorGroup: "darkblue" }
 ];
 
-export default function PlayerPanel({ players, properties, currentPlayerId, myId, onPropertyClick }) {
+export default function PlayerPanel({ players, properties, currentPlayerId, myId, onPropertyClick, onPlayerClick }) {
   return (
     <div className="player-panel">
       <h4>Players</h4>
@@ -74,6 +74,8 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
           <div
             key={player.id}
             className={`player-card ${isCurrent ? 'current' : ''} ${isMe ? 'me' : ''} ${player.isBankrupt ? 'bankrupt' : ''}`}
+            onClick={() => onPlayerClick && onPlayerClick(player.id)}
+            style={{ cursor: 'pointer' }}
           >
             <div className="player-header">
               <span className="player-token" style={{ backgroundColor: player.color }}>
@@ -104,7 +106,10 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                       backgroundColor: tile?.colorGroup ? COLOR_MAP[tile.colorGroup] : '#666',
                       opacity: prop.isMortgaged ? 0.5 : 1
                     }}
-                    onClick={() => onPropertyClick && onPropertyClick(prop.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPropertyClick && onPropertyClick(prop.id);
+                    }}
                     title={tile?.name}
                   >
                     {prop.hotel ? '🏨' : prop.houses > 0 ? `${prop.houses}🏠` : ''}
