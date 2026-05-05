@@ -366,28 +366,27 @@
    ============================================ */
 .color-bar-img {
   position: absolute;
-  inset: -20%;           /* bleed past edges to prevent gaps */
-  width: 140%;
-  height: 140%;
+  inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Horizontal strips: normal orientation */
+/* Horizontal strips: normal cover fills perfectly */
 .tile[data-side="bottom"] .color-bar-img,
 .tile[data-side="top"] .color-bar-img {
   transform: none;
 }
 
-/* Vertical strips: rotate flag 90° so it reads naturally along the edge.
-   The inset bleed (-20% / 140%) combined with scale ensures no gaps. */
-.tile[data-side="left"] .color-bar-img {
-  transform: rotate(90deg);
-}
-
+/* Vertical strips: NO rotation. Use auto-height sizing so the flag
+   scales to full strip height, cropping excess width naturally.
+   This keeps tricolor bands vertical (correct for FR/IT) and
+   fills the strip edge-to-edge without gaps. */
+.tile[data-side="left"] .color-bar-img,
 .tile[data-side="right"] .color-bar-img {
-  transform: rotate(-90deg);
+  background-size: auto 100%;
+  background-position: center;
+  transform: none;
 }
 
 /* ============================================
