@@ -362,14 +362,20 @@
 }
 
 /* ============================================
-   FLAG IMAGE — fills the color-bar strip
+   FLAG IMAGE — default contain, stretch only top/bottom
    ============================================ */
 .color-bar-img {
   position: absolute;
   inset: 0;
-  background-size: 100% 100%; /* stretch to fill, ensuring full flag visible */
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+/* Horizontal strips (top/bottom): stretch to fill since aspect ratio matches */
+.tile[data-side="bottom"] .color-bar-img,
+.tile[data-side="top"] .color-bar-img {
+  background-size: 100% 100%;
 }
 
 /* Horizontal strips: normal orientation */
@@ -388,14 +394,6 @@
 .tile[data-side="right"] .color-bar-img {
   transform: rotate(-90deg);
   transform-origin: center center;
-}
-
-/* ============================================
-   SIDE FLAGS — shrink to fit full flag
-   ============================================ */
-.tile[data-side="left"] .color-bar-img,
-.tile[data-side="right"] .color-bar-img {
-  background-size: contain;
 }
 
 /* ============================================
