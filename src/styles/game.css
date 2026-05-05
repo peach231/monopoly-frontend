@@ -335,7 +335,7 @@
   justify-content: center;
   overflow: hidden;
   opacity: 0.85;
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -352,6 +352,8 @@
   top: 0; right: 0; bottom: 0;
   width: 28%;
   border-left: 1.5px solid #1a1a1a;
+  background-size: cover;
+  background-position: center;
 }
 
 /* Top row (21-29): flag at BOTTOM (outer edge) */
@@ -366,6 +368,8 @@
   top: 0; left: 0; bottom: 0;
   width: 28%;
   border-right: 1.5px solid #1a1a1a;
+  background-size: cover;
+  background-position: center;
 }
 
 /* ============================================
