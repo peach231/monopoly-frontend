@@ -47,6 +47,7 @@ const BOARD_TILES = [
   { id: 38, name: "Premium Tax", type: "tax", price: 100 },
   { id: 39, name: "New York", type: "property", colorGroup: "darkblue", price: 400 }
 ];
+
 const COLOR_MAP = {
   brown: '#955436',
   lightblue: '#AAE0FA',
@@ -58,17 +59,43 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
-const FLAG_EMOJI = {
-  1: '🇧🇷', 3: '🇧🇷',      // Brazil
-  6: '🇨🇦', 8: '🇨🇦', 9: '🇨🇦',  // Canada
-  11: '🇮🇹', 13: '🇮🇹', 14: '🇮🇹', // Italy
-  16: '🇫🇷', 18: '🇫🇷', 19: '🇫🇷', // France
-  21: '🇬🇧', 23: '🇬🇧', 24: '🇬🇧', // UK
-  26: '🇯🇵', 27: '🇯🇵', 29: '🇯🇵', // Japan
-  31: '🇨🇳', 32: '🇨🇳', 34: '🇨🇳', // China
-  37: '🇺🇸', 39: '🇺🇸'      // USA
+// Country flag images from flagcdn.com (free CDN)
+const FLAG_URLS = {
+  1: 'https://flagcdn.com/w80/br.png',   // Brazil
+  3: 'https://flagcdn.com/w80/br.png',   // Brazil
+  6: 'https://flagcdn.com/w80/ca.png',   // Canada
+  8: 'https://flagcdn.com/w80/ca.png',   // Canada
+  9: 'https://flagcdn.com/w80/ca.png',   // Canada
+  11: 'https://flagcdn.com/w80/it.png',  // Italy
+  13: 'https://flagcdn.com/w80/it.png',  // Italy
+  14: 'https://flagcdn.com/w80/it.png',  // Italy
+  16: 'https://flagcdn.com/w80/fr.png',  // France
+  18: 'https://flagcdn.com/w80/fr.png',  // France
+  19: 'https://flagcdn.com/w80/fr.png',  // France
+  21: 'https://flagcdn.com/w80/gb.png',  // UK
+  23: 'https://flagcdn.com/w80/gb.png',  // UK
+  24: 'https://flagcdn.com/w80/gb.png',  // UK
+  26: 'https://flagcdn.com/w80/jp.png',  // Japan
+  27: 'https://flagcdn.com/w80/jp.png',  // Japan
+  29: 'https://flagcdn.com/w80/jp.png',  // Japan
+  31: 'https://flagcdn.com/w80/cn.png',  // China
+  32: 'https://flagcdn.com/w80/cn.png',  // China
+  34: 'https://flagcdn.com/w80/cn.png',  // China
+  37: 'https://flagcdn.com/w80/us.png',  // USA
+  39: 'https://flagcdn.com/w80/us.png'   // USA
 };
 
+// Fallback emoji flags if images fail to load
+const FLAG_EMOJI = {
+  1: '🇧🇷', 3: '🇧🇷',
+  6: '🇨🇦', 8: '🇨🇦', 9: '🇨🇦',
+  11: '🇮🇹', 13: '🇮🇹', 14: '🇮🇹',
+  16: '🇫🇷', 18: '🇫🇷', 19: '🇫🇷',
+  21: '🇬🇧', 23: '🇬🇧', 24: '🇬🇧',
+  26: '🇯🇵', 27: '🇯🇵', 29: '🇯🇵',
+  31: '🇨🇳', 32: '🇨🇳', 34: '🇨🇳',
+  37: '🇺🇸', 39: '🇺🇸'
+};
 
 const TOKEN_EMOJI = {
   backpack: '🎒',
@@ -76,6 +103,16 @@ const TOKEN_EMOJI = {
   'graduation-hat': '🎓',
   pencil: '✏️'
 };
+
+// Helper function to get character-count based class
+function getCharClass(name) {
+  const chars = name.replace(/\s/g, '').length;
+  if (chars <= 4) return 'chars-1-4';
+  if (chars <= 7) return 'chars-5-7';
+  if (chars <= 10) return 'chars-8-10';
+  if (chars <= 14) return 'chars-11-14';
+  return 'chars-15-plus';
+}
 
 function getGridPos(tileId) {
   if (tileId >= 20 && tileId <= 30) {
@@ -520,6 +557,8 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               const side = getTileSide(tile.id);
               const isProperty = tile.type === 'property';
               const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
+              const charClass = getCharClass(tile.name);
+              const flagUrl = FLAG_URLS[tile.id];
 
               if (isCorner) {
                 return (
@@ -563,11 +602,16 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     }
                   }}
                 >
-                  {tile.colorGroup && (
+                  {flagUrl && (
+                    <div
+                      className="color-bar"
+                      style={{ backgroundImage: `url(${flagUrl})` }}
+                    />
+                  )}
+                  {tile.colorGroup && !flagUrl && (
                     <div
                       className="color-bar"
                       style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
-                      data-flag={FLAG_EMOJI[tile.id] || ''}
                     />
                   )}
 
@@ -576,7 +620,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       <div className="tile-flag"><span>{FLAG_EMOJI[tile.id]}</span></div>
                     )}
                     <div className="tile-name-wrap">
-                      <span className={`tile-name ${tile.name.split(' ').length === 1 ? 'single-word' : tile.name.split(' ').length === 2 ? 'two-words' : 'multi-word'}`}>
+                      <span className={`tile-name ${charClass}`}>
                         {tile.name.split(' ').map((word, wi) => (
                           <span key={wi} className="tile-name-word">{word}</span>
                         ))}
