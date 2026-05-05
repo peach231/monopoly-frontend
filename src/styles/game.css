@@ -2187,3 +2187,38 @@
     height: min(92vmin, 92vmin);
   }
 }
+
+/* ============================================
+   MONOPOLY TRACKER
+   ============================================ */
+.monopoly-tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.monopoly-tracker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.monopoly-tracker-label {
+  color: #333;
+  font-weight: 600;
+}
+
+/* ============================================
+   MORTGAGE BADGE IN MODAL
+   ============================================ */
+.mortgaged-badge {
+  background: #c5392a;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 8px;
+}
