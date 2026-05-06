@@ -359,6 +359,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
+
+  // NEW: Jail notification overlay state
+  const [jailNotification, setJailNotification] = useState(null);
   
   // NEW: Auction countdown timer state
   const [auctionTimer, setAuctionTimer] = useState(10);
@@ -456,7 +459,25 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         return;
       }
 
-      if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
+            if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
+        
+        // INSTANT TELEPORT for Go To Jail (position 30 -> 10)
+        const isGoToJail = prevPos === 30 && currPos === 10;
+        // Also check for card-based jail sends (any -> 10 when inJail)
+        const wasSentToJail = currPos === 10 && player.inJail && 
+          gameState.log?.some(log => log.includes(player.name) && log.includes('Jail'));
+        
+        if (isGoToJail || wasSentToJail) {
+          // Instant update - no animation
+          prevPositionsRef.current[player.id] = currPos;
+          setAnimatedPositions(prev => {
+            const next = { ...prev };
+            delete next[player.id];
+            return next;
+          });
+          return;
+        }
+        
         movingPlayersRef.current.add(player.id);
 
         const path = [];
@@ -509,6 +530,33 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     
     const latestLog = gameState.log[gameState.log.length - 1];
     if (!latestLog) return;
+
+    // NEW: Jail notification effect
+  useEffect(() => {
+    if (!gameState?.players || !gameState?.log) return;
+    
+    const latestLog = gameState.log[gameState.log.length - 1];
+    if (!latestLog) return;
+    
+    // Check if someone was sent to jail
+    const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
+    if (jailMatch) {
+      const playerName = jailMatch[1];
+      const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
+      
+      setJailNotification({
+        name: playerName,
+        isMe: isMe
+      });
+      
+      // Auto-dismiss after 3 seconds
+      const timer = setTimeout(() => {
+        setJailNotification(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [gameState?.log, gameState?.players, playerId]);
     
     // Parse rent payment from log: "{payer} paid ${amount} rent to {receiver}."
     const rentMatch = latestLog.match(/(.+?) paid \\$(\\d+) rent to (.+?)\\./);
@@ -686,6 +734,17 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
   return (
     <div className="game-container">
+          {/* Jail Notification Overlay */}
+      {jailNotification && (
+        <div className="jail-notification-overlay">
+          <div className="jail-notification">
+            <div className="jail-notification-icon">🚔</div>
+            <div className="jail-notification-text">
+              {jailNotification.isMe ? 'YOU ARE GOING TO JAIL' : `${jailNotification.name} IS GOING TO JAIL`}
+            </div>
+          </div>
+        </div>
+      )}
       <div className="top-bar">
         <div className="room-info">
           <span className="room-code">Room: {gameState?.roomCode}</span>
