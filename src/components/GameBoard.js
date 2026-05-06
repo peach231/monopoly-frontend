@@ -359,6 +359,8 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
+  // FIX 4: Transaction Visual Feedback state
+  const [floatingTexts, setFloatingTexts] = useState([]);
 
   // FIX 3: Track when token animation completes
   const [displayCard, setDisplayCard] = useState(null);
@@ -544,6 +546,69 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('useJailCard', { roomCode, playerId });
   };
+
+  // FIX 4: Trigger floating text for transaction feedback
+  const triggerTransactionFeedback = (amount, fromPlayerId, toPlayerId, propertyTileId) => {
+    const id = Date.now() + Math.random();
+
+    // Find positions for floating text
+    const fromPlayer = gameState?.players.find(p => p.id === fromPlayerId);
+    const propertyTile = BOARD_TILES[propertyTileId];
+
+    // Get player token position
+    const fromPos = fromPlayer?.position ?? 0;
+    const pos = getGridPos(fromPos);
+    const boardEl = document.querySelector('.board');
+    if (!boardEl) return;
+
+    const boardRect = boardEl.getBoundingClientRect();
+    const cellSize = boardRect.width / 11;
+
+    // Calculate pixel position for payer (near player token)
+    const payerX = boardRect.left + (pos.gridColumn * cellSize) - 40;
+    const payerY = boardRect.top + (pos.gridRow * cellSize) - 60;
+
+    // Calculate pixel position for receiver (near property tile)
+    const propPos = getGridPos(propertyTileId);
+    const receiverX = boardRect.left + (propPos.gridColumn * cellSize) + 40;
+    const receiverY = boardRect.top + (propPos.gridRow * cellSize) - 60;
+
+    // Add floating texts
+    setFloatingTexts(prev => [
+      ...prev,
+      {
+        id,
+        amount: -amount,
+        type: 'payer',
+        x: payerX,
+        y: payerY,
+        toPlayerId,
+        propertyTileId
+      },
+      {
+        id: id + 1,
+        amount: amount,
+        type: 'receiver',
+        x: receiverX,
+        y: receiverY,
+        fromPlayerId,
+        propertyTileId
+      }
+    ]);
+
+    // Remove after animation (2 seconds)
+    setTimeout(() => {
+      setFloatingTexts(prev => prev.filter(t => t.id !== id && t.id !== id + 1));
+    }, 2000);
+  };
+
+  // Expose trigger function to parent via ref callback (for server-side updates)
+  useEffect(() => {
+    if (gameState?.lastTransaction) {
+      const { amount, fromPlayerId, toPlayerId, propertyTileId } = gameState.lastTransaction;
+      triggerTransactionFeedback(amount, fromPlayerId, toPlayerId, propertyTileId);
+    }
+  }, [gameState?.lastTransaction]);
 
   const handleResolveCard = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
@@ -951,6 +1016,25 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             await emit('unmortgageProperty', { roomCode, playerId, propertyId: showProperty });
           }}
         />
+      )}
+
+      {/* FIX 4: Floating Transaction Feedback */}
+      {floatingTexts.length > 0 && (
+        <div className="floating-text-container">
+          {floatingTexts.map(ft => (
+            <div
+              key={ft.id}
+              className={`floating-text ${ft.type}`}
+              style={{
+                left: ft.x,
+                top: ft.y,
+                position: 'fixed'
+              }}
+            >
+              {ft.amount > 0 ? '+' : ''}${Math.abs(ft.amount)}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
