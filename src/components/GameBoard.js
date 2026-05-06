@@ -6,9 +6,6 @@ import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
 import PlayerProfileModal from './Modals/PlayerProfileModal';
 
-// ============================================
-// COMPLETE BOARD DATA (merged from data.js)
-// ============================================
 const BOARD_TILES = [
   { id: 0, name: "START", type: "corner" },
   { id: 1, name: "Rio de Janeiro", type: "property", colorGroup: "brown", price: 60, country: "BR", rent: [2, 10, 30, 90, 160, 250], houseCost: 50, mortgageValue: 30 },
@@ -118,9 +115,6 @@ function getTileSide(tileId) {
   return null;
 }
 
-// ============================================
-// RENT CALCULATOR - uses enriched BOARD_TILES
-// ============================================
 function calculateRent(tileId, properties, diceSum = 7) {
   const tile = BOARD_TILES[tileId];
   const prop = properties.find(p => p.id === tileId);
@@ -155,10 +149,6 @@ function calculateRent(tileId, properties, diceSum = 7) {
   }
   return 0;
 }
-
-/* ============================================
-   SVG ICONS
-   ============================================ */
 
 const AirplaneIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
@@ -423,7 +413,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             // Timer expired - auto-end auction
             clearInterval(auctionTimerRef.current);
             auctionTimerRef.current = null;
-            
+
             // Only the current player triggers the server call to avoid race conditions
             if (isCurrentPlayer) {
               const roomCode = sessionStorage.getItem('roomCode');
@@ -446,6 +436,33 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     };
   }, [gameState?.turnPhase, gameState?.auction?.propertyId]);
 
+  // NEW: Jail notification effect
+  useEffect(() => {
+    if (!gameState?.players || !gameState?.log) return;
+    
+    const latestLog = gameState.log[gameState.log.length - 1];
+    if (!latestLog) return;
+    
+    // Check if someone was sent to jail
+    const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
+    if (jailMatch) {
+      const playerName = jailMatch[1];
+      const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
+      
+      setJailNotification({
+        name: playerName,
+        isMe: isMe
+      });
+      
+      // Auto-dismiss after 3 seconds
+      const timer = setTimeout(() => {
+        setJailNotification(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [gameState?.log, gameState?.players, playerId]);
+
   // Token animation effect
   useEffect(() => {
     if (!gameState?.players) return;
@@ -460,13 +477,13 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       }
 
       if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
-        
+
         // INSTANT TELEPORT for Go To Jail (position 30 -> 10)
         const isGoToJail = prevPos === 30 && currPos === 10;
         // Also check for card-based jail sends (any -> 10 when inJail)
         const wasSentToJail = currPos === 10 && player.inJail && 
           gameState.log?.some(log => log.includes(player.name) && log.includes('Jail'));
-        
+
         if (isGoToJail || wasSentToJail) {
           // Instant update - no animation
           prevPositionsRef.current[player.id] = currPos;
@@ -477,7 +494,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           });
           return;
         }
-        
+
         movingPlayersRef.current.add(player.id);
 
         const path = [];
@@ -531,8 +548,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     const latestLog = gameState.log[gameState.log.length - 1];
     if (!latestLog) return;
     
-    // Parse rent payment from log: "{payer} paid ${amount} rent to {receiver}."
-    const rentMatch = latestLog.match(/(.+?) paid \$(\d+) rent to (.+?)\./);
+    const rentMatch = latestLog.match(/(.+?) paid \\$(\\d+) rent to (.+?)\\./);
     if (rentMatch) {
       const [, payerName, amountStr, receiverName] = rentMatch;
       const amount = parseInt(amountStr);
@@ -576,31 +592,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           }, 2000);
         }
       }
-    }
-  }, [gameState?.log, gameState?.players, playerId]);
-
-  // NEW: Jail notification effect - SEPARATE HOOK
-  useEffect(() => {
-    if (!gameState?.players || !gameState?.log) return;
-    
-    const latestLog = gameState.log[gameState.log.length - 1];
-    if (!latestLog) return;
-    
-    const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
-    if (jailMatch) {
-      const playerName = jailMatch[1];
-      const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
-      
-      setJailNotification({
-        name: playerName,
-        isMe: isMe
-      });
-      
-      const timer = setTimeout(() => {
-        setJailNotification(null);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
     }
   }, [gameState?.log, gameState?.players, playerId]);
 
@@ -663,7 +654,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     await emit('startAuction', { roomCode, playerId });
   };
 
-  // NEW: Fixed bid amounts
   const handleBidFixed = async (amount) => {
     const roomCode = sessionStorage.getItem('roomCode');
     const auction = gameState?.auction;
@@ -683,6 +673,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     if (!amount || amount <= 0) return;
     await emit('placeBid', { roomCode, playerId, amount });
     setBidAmount('');
+  };
+
+  const handleEndTurn = async () => {
+    const roomCode = sessionStorage.getItem('roomCode');
+    await emit('endTurn', { roomCode, playerId });
   };
 
   const handlePayJail = async () => {
@@ -733,6 +728,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </div>
         </div>
       )}
+
       <div className="top-bar">
         <div className="room-info">
           <span className="room-code">Room: {gameState?.roomCode}</span>
@@ -874,7 +870,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               );
             })}
 
-            {/* NEW: Floating transaction texts */}
             {floatingTexts.map(float => (
               <div
                 key={float.id}
@@ -1007,7 +1002,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     </button>
                   </div>
                 )}
-                
               </div>
             )}
 
