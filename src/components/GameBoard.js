@@ -459,7 +459,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         return;
       }
 
-            if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
+      if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
         
         // INSTANT TELEPORT for Go To Jail (position 30 -> 10)
         const isGoToJail = prevPos === 30 && currPos === 10;
@@ -530,36 +530,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     
     const latestLog = gameState.log[gameState.log.length - 1];
     if (!latestLog) return;
-
-    // NEW: Jail notification effect
-  useEffect(() => {
-    if (!gameState?.players || !gameState?.log) return;
-    
-    const latestLog = gameState.log[gameState.log.length - 1];
-    if (!latestLog) return;
-    
-    // Check if someone was sent to jail
-    const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
-    if (jailMatch) {
-      const playerName = jailMatch[1];
-      const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
-      
-      setJailNotification({
-        name: playerName,
-        isMe: isMe
-      });
-      
-      // Auto-dismiss after 3 seconds
-      const timer = setTimeout(() => {
-        setJailNotification(null);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [gameState?.log, gameState?.players, playerId]);
     
     // Parse rent payment from log: "{payer} paid ${amount} rent to {receiver}."
-    const rentMatch = latestLog.match(/(.+?) paid \\$(\\d+) rent to (.+?)\\./);
+    const rentMatch = latestLog.match(/(.+?) paid \$(\d+) rent to (.+?)\./);
     if (rentMatch) {
       const [, payerName, amountStr, receiverName] = rentMatch;
       const amount = parseInt(amountStr);
@@ -568,14 +541,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       const receiver = gameState.players.find(p => p.name === receiverName);
       
       if (payer && receiver) {
-        // Find the property tile where receiver is (the property being paid for)
         const receiverPos = receiver.position;
         const tilePos = getGridPos(receiverPos);
         
-        // Create floating text elements
         const newFloats = [];
         
-        // Red text for payer (near their token)
         if (payer.id === playerId) {
           newFloats.push({
             id: `payer-${Date.now()}`,
@@ -587,7 +557,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           });
         }
         
-        // Green text for receiver (near the property)
         if (receiver.id === playerId) {
           newFloats.push({
             id: `receiver-${Date.now()}`,
@@ -602,12 +571,36 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         if (newFloats.length > 0) {
           setFloatingTexts(prev => [...prev, ...newFloats]);
           
-          // Remove after animation
           setTimeout(() => {
             setFloatingTexts(prev => prev.filter(f => !newFloats.find(nf => nf.id === f.id)));
           }, 2000);
         }
       }
+    }
+  }, [gameState?.log, gameState?.players, playerId]);
+
+  // NEW: Jail notification effect - SEPARATE HOOK
+  useEffect(() => {
+    if (!gameState?.players || !gameState?.log) return;
+    
+    const latestLog = gameState.log[gameState.log.length - 1];
+    if (!latestLog) return;
+    
+    const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
+    if (jailMatch) {
+      const playerName = jailMatch[1];
+      const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
+      
+      setJailNotification({
+        name: playerName,
+        isMe: isMe
+      });
+      
+      const timer = setTimeout(() => {
+        setJailNotification(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
     }
   }, [gameState?.log, gameState?.players, playerId]);
 
@@ -692,11 +685,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     setBidAmount('');
   };
 
-  const handleEndAuction = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('endAuction', { roomCode, playerId });
-  };
-
   const handlePayJail = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('payJailFine', { roomCode, playerId });
@@ -734,7 +722,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
   return (
     <div className="game-container">
-          {/* Jail Notification Overlay */}
+      {/* Jail Notification Overlay */}
       {jailNotification && (
         <div className="jail-notification-overlay">
           <div className="jail-notification">
