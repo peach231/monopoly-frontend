@@ -62,56 +62,61 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
             <span className="player-profile-money">${player.money}</span>
           </div>
         </div>
-        
+
         <div className="player-profile-body">
           <div className="profile-section">
             <strong>Current Position:</strong> {currentTile?.name || 'Unknown'}
           </div>
-          
+
           {player.inJail && (
             <div className="profile-section jail-section">
               🔒 In Jail (Turn {player.jailTurns + 1}/3)
             </div>
           )}
-          
+
           {player.jailCards > 0 && (
             <div className="profile-section">
               🎫 Get Out of Jail Cards: {player.jailCards}
             </div>
           )}
-          
+
           <div className="profile-section">
             <strong>Properties ({playerProps.length}):</strong>
             {playerProps.length === 0 ? (
               <p className="no-properties">No properties owned</p>
             ) : (
               <div className="profile-properties-list">
-                {playerProps.map(prop => (
-                  <div 
-                    key={prop.id} 
-                    className="profile-property-item"
-                    style={{ 
-                      borderLeft: `4px solid ${prop.tile.colorGroup ? COLOR_MAP[prop.tile.colorGroup] : '#888'}`,
-                      opacity: prop.isMortgaged ? 0.6 : 1
-                    }}
-                  >
-                    <div className="profile-prop-name">
-                      {prop.tile.name}
-                      {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
+                {playerProps.map(prop => {
+                  // FIX: Calculate actual rent using the passed calculateRent function
+                  const rentValue = calculateRent ? calculateRent(prop.id) : 0;
+
+                  return (
+                    <div 
+                      key={prop.id} 
+                      className="profile-property-item"
+                      style={{ 
+                        borderLeft: `4px solid ${prop.tile.colorGroup ? COLOR_MAP[prop.tile.colorGroup] : '#888'}`,
+                        opacity: prop.isMortgaged ? 0.6 : 1
+                      }}
+                    >
+                      <div className="profile-prop-name">
+                        {prop.tile.name}
+                        {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
+                      </div>
+                      <div className="profile-prop-details">
+                        {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
+                        {' · '}
+                        {prop.isMortgaged 
+                          ? 'Rent: $0 (Mortgaged)' 
+                          : `Rent: $${rentValue}`}
+                      </div>
                     </div>
-                    <div className="profile-prop-details">
-                      {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
-                      {' · '}
-                      {prop.isMortgaged 
-                        ? 'Rent: $0 (Mortgaged)' 
-                        : `Rent: $${calculateRent ? calculateRent(prop.id) : (prop.tile.rent?.[0] || 0)}`}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
-          
+
           <div className="profile-section">
             <strong>Monopoly Tracker:</strong>
             {Object.entries(colorGroupStats).length === 0 ? (
@@ -141,7 +146,7 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
             )}
           </div>
         </div>
-        
+
         <button className="btn-close" onClick={onClose}>Close</button>
       </div>
     </div>
