@@ -407,7 +407,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     };
   }, [gameState?.pendingCard, gameState?.turnSequence]);
 
-  // NEW: Auction countdown timer effect
+  // NEW: Auction countdown timer effect - AUTO-END ONLY
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction) {
       setAuctionTimer(10);
@@ -417,8 +417,15 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       auctionTimerRef.current = setInterval(() => {
         setAuctionTimer(prev => {
           if (prev <= 1) {
-            // Timer expired - auto-end auction if I'm current player
+            // Timer expired - auto-end auction
             clearInterval(auctionTimerRef.current);
+            auctionTimerRef.current = null;
+            
+            // Only the current player triggers the server call to avoid race conditions
+            if (isCurrentPlayer) {
+              const roomCode = sessionStorage.getItem('roomCode');
+              emit('endAuction', { roomCode, playerId });
+            }
             return 0;
           }
           return prev - 1;
@@ -434,14 +441,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     return () => {
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
     };
-  }, [gameState?.turnPhase, gameState?.auction?.highestBid, gameState?.auction?.highestBidder]);
-
-  // NEW: Reset timer when bid changes
-  useEffect(() => {
-    if (gameState?.turnPhase === 'auction') {
-      setAuctionTimer(10);
-    }
-  }, [gameState?.auction?.highestBid, gameState?.auction?.highestBidder]);
+  }, [gameState?.turnPhase, gameState?.auction?.propertyId]);
 
   // Token animation effect
   useEffect(() => {
@@ -647,11 +647,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const handleEndAuction = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('endAuction', { roomCode, playerId });
-  };
-
-  const handleEndTurn = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('endTurn', { roomCode, playerId });
   };
 
   const handlePayJail = async () => {
@@ -966,11 +961,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   </div>
                 )}
                 
-                {isCurrentPlayer && (
-                  <button className="btn-control btn-end" onClick={handleEndAuction}>
-                    End Auction
-                  </button>
-                )}
               </div>
             )}
 
