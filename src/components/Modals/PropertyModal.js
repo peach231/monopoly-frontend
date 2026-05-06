@@ -1,5 +1,5 @@
 import React from 'react';
- 
+
 const COLOR_MAP = {
   brown: '#955436',
   lightblue: '#AAE0FA',
@@ -10,10 +10,10 @@ const COLOR_MAP = {
   green: '#1FB25A',
   darkblue: '#0072BB'
 };
- 
+
 export default function PropertyModal({ tileId, tile, propertyState, owner, isMine, isMyTurn, onClose, onBuild, onSell, onMortgage, onUnmortgage }) {
   if (!tile) return null;
- 
+
   const isProperty = tile.type === 'property';
   const isRailroad = tile.type === 'railroad';
   const isUtility = tile.type === 'utility';
@@ -21,7 +21,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
   const isTax = tile.type === 'tax';
   const isChance = tile.type === 'chance';
   const isChest = tile.type === 'chest';
- 
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal property-modal" onClick={(e) => e.stopPropagation()}>
@@ -32,7 +32,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
           <h3>{tile.name}</h3>
           {tile.price && <span className="property-price">${tile.price}</span>}
         </div>
- 
+
         <div className="property-body">
           {isCorner && (
             <div className="tile-info-desc corner-info">
@@ -67,16 +67,22 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-          {propertyState?.ownerId && (
+          {/* Owner info visible to ALL players */}
+          {propertyState?.ownerId ? (
             <div className="property-owner">
               Owner: <span style={{ color: owner?.color }}>{owner?.name || 'Unknown'}</span>
               {propertyState.isMortgaged && <span className="mortgaged-badge">🔒 Mortgaged</span>}
             </div>
+          ) : (
+            <div className="property-owner">
+              <span style={{ color: '#888' }}>Unowned — Available for purchase</span>
+            </div>
           )}
- 
+
+          {/* Property rent table — visible to ALL players */}
           {isProperty && tile.rent && (
             <div className="rent-table">
-              <div className="rent-row"><span>Base Rent</span><span>${tile.rent[0]}</span></div>
+              <div className="rent-row rent-total"><span>Base Rent</span><span>${tile.rent[0]}</span></div>
               <div className="rent-row"><span>With Monopoly</span><span>${tile.rent[0] * 2}</span></div>
               <div className="rent-row"><span>1 House</span><span>${tile.rent[1]}</span></div>
               <div className="rent-row"><span>2 Houses</span><span>${tile.rent[2]}</span></div>
@@ -94,7 +100,8 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
               </div>
             </div>
           )}
- 
+
+          {/* Railroad rent table — visible to ALL players */}
           {isRailroad && (
             <div className="rent-table">
               <div className="rent-row"><span>1 Airport</span><span>$25</span></div>
@@ -107,7 +114,8 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
               </div>
             </div>
           )}
- 
+
+          {/* Utility rent table — visible to ALL players */}
           {isUtility && (
             <div className="rent-table">
               <div className="rent-row"><span>1 Utility</span><span>4x dice roll</span></div>
@@ -118,7 +126,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
               </div>
             </div>
           )}
- 
+
           {propertyState?.houses > 0 && (
             <div className="houses-display">
               Houses: {Array(propertyState.houses).fill('🏠').join('')}
@@ -128,7 +136,8 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             <div className="hotel-display">🏨 Hotel Built</div>
           )}
         </div>
- 
+
+        {/* Action buttons ONLY for owner */}
         {isMine && (
           <div className="property-actions">
             {isProperty && !propertyState.isMortgaged && (
@@ -147,7 +156,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             )}
           </div>
         )}
- 
+
         <button className="btn-close" onClick={onClose}>Close</button>
       </div>
     </div>
