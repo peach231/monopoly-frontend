@@ -2188,6 +2188,31 @@
   }
 }
 
+
+/* ============================================
+   FLAG FADE OVERLAY — Fixes all sides
+   ============================================ */
+
+/* Add semi-transparent overlay on top of ALL flag color-bars */
+.tile .color-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(213, 236, 204, 0.50);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Ensure the flag image stays behind the overlay */
+.color-bar-img {
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
 /* ============================================
    MONOPOLY TRACKER
    ============================================ */
