@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import PlayerPanel from './PlayerPanel';
 import CardModal from './Modals/CardModal';
 import TradeModal from './Modals/TradeModal';
@@ -359,19 +359,25 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
-  // FIX 4: Transaction Visual Feedback state
+  
+  // NEW: Auction countdown timer state
+  const [auctionTimer, setAuctionTimer] = useState(10);
+  const auctionTimerRef = useRef(null);
+  
+  // NEW: Floating text for transaction feedback
   const [floatingTexts, setFloatingTexts] = useState([]);
-
+  
   // FIX 3: Track when token animation completes
   const [displayCard, setDisplayCard] = useState(null);
   const cardTimerRef = useRef(null);
-  const animCompletionRef = useRef(Date.now()); // timestamp when animation ends
+  const animCompletionRef = useRef(Date.now());
 
   const prevPositionsRef = useRef({});
   const diceIntervalRef = useRef(null);
   const movingPlayersRef = useRef(new Set());
   const timeoutsRef = useRef([]);
 
+  // Keep dice in sync
   useEffect(() => {
     if (gameState?.dice) {
       if (!diceAnim.isRolling) {
@@ -401,6 +407,43 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     };
   }, [gameState?.pendingCard, gameState?.turnSequence]);
 
+  // NEW: Auction countdown timer effect
+  useEffect(() => {
+    if (gameState?.turnPhase === 'auction' && gameState?.auction) {
+      setAuctionTimer(10);
+      
+      if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
+      
+      auctionTimerRef.current = setInterval(() => {
+        setAuctionTimer(prev => {
+          if (prev <= 1) {
+            // Timer expired - auto-end auction if I'm current player
+            clearInterval(auctionTimerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (auctionTimerRef.current) {
+        clearInterval(auctionTimerRef.current);
+        auctionTimerRef.current = null;
+      }
+    }
+    
+    return () => {
+      if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
+    };
+  }, [gameState?.turnPhase, gameState?.auction?.highestBid, gameState?.auction?.highestBidder]);
+
+  // NEW: Reset timer when bid changes
+  useEffect(() => {
+    if (gameState?.turnPhase === 'auction') {
+      setAuctionTimer(10);
+    }
+  }, [gameState?.auction?.highestBid, gameState?.auction?.highestBidder]);
+
+  // Token animation effect
   useEffect(() => {
     if (!gameState?.players) return;
 
@@ -423,9 +466,8 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           path.push(p);
         }
 
-        // FIX 3: Calculate exact animation end time
         const stepDuration = 280;
-        const totalDuration = path.length * stepDuration + 100; // +100ms buffer
+        const totalDuration = path.length * stepDuration + 100;
         animCompletionRef.current = Date.now() + totalDuration;
 
         const animateStep = (step) => {
@@ -461,11 +503,72 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     });
   }, [gameState?.players, gameState?.turnSequence]);
 
+  // NEW: Listen for rent payments to show floating text
+  useEffect(() => {
+    if (!gameState?.log || !gameState?.players) return;
+    
+    const latestLog = gameState.log[gameState.log.length - 1];
+    if (!latestLog) return;
+    
+    // Parse rent payment from log: "{payer} paid ${amount} rent to {receiver}."
+    const rentMatch = latestLog.match(/(.+?) paid \\$(\\d+) rent to (.+?)\\./);
+    if (rentMatch) {
+      const [, payerName, amountStr, receiverName] = rentMatch;
+      const amount = parseInt(amountStr);
+      
+      const payer = gameState.players.find(p => p.name === payerName);
+      const receiver = gameState.players.find(p => p.name === receiverName);
+      
+      if (payer && receiver) {
+        // Find the property tile where receiver is (the property being paid for)
+        const receiverPos = receiver.position;
+        const tilePos = getGridPos(receiverPos);
+        
+        // Create floating text elements
+        const newFloats = [];
+        
+        // Red text for payer (near their token)
+        if (payer.id === playerId) {
+          newFloats.push({
+            id: `payer-${Date.now()}`,
+            text: `-$${amount}`,
+            color: '#ff4444',
+            gridRow: tilePos.gridRow,
+            gridColumn: tilePos.gridColumn,
+            type: 'payer'
+          });
+        }
+        
+        // Green text for receiver (near the property)
+        if (receiver.id === playerId) {
+          newFloats.push({
+            id: `receiver-${Date.now()}`,
+            text: `+$${amount}`,
+            color: '#44ff44',
+            gridRow: tilePos.gridRow,
+            gridColumn: tilePos.gridColumn,
+            type: 'receiver'
+          });
+        }
+        
+        if (newFloats.length > 0) {
+          setFloatingTexts(prev => [...prev, ...newFloats]);
+          
+          // Remove after animation
+          setTimeout(() => {
+            setFloatingTexts(prev => prev.filter(f => !newFloats.find(nf => nf.id === f.id)));
+          }, 2000);
+        }
+      }
+    }
+  }, [gameState?.log, gameState?.players, playerId]);
+
   useEffect(() => {
     return () => {
       if (diceIntervalRef.current) clearInterval(diceIntervalRef.current);
       timeoutsRef.current.forEach(clearTimeout);
       if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
+      if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
     };
   }, []);
 
@@ -519,6 +622,20 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     await emit('startAuction', { roomCode, playerId });
   };
 
+  // NEW: Fixed bid amounts
+  const handleBidFixed = async (amount) => {
+    const roomCode = sessionStorage.getItem('roomCode');
+    const auction = gameState?.auction;
+    if (!auction) return;
+    
+    const minBid = auction.highestBid + 1;
+    const actualBid = Math.max(minBid, auction.highestBid + amount);
+    
+    if (me?.money >= actualBid) {
+      await emit('placeBid', { roomCode, playerId, amount: actualBid });
+    }
+  };
+
   const handleBid = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     const amount = parseInt(bidAmount);
@@ -546,69 +663,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     const roomCode = sessionStorage.getItem('roomCode');
     await emit('useJailCard', { roomCode, playerId });
   };
-
-  // FIX 4: Trigger floating text for transaction feedback
-  const triggerTransactionFeedback = (amount, fromPlayerId, toPlayerId, propertyTileId) => {
-    const id = Date.now() + Math.random();
-
-    // Find positions for floating text
-    const fromPlayer = gameState?.players.find(p => p.id === fromPlayerId);
-    const propertyTile = BOARD_TILES[propertyTileId];
-
-    // Get player token position
-    const fromPos = fromPlayer?.position ?? 0;
-    const pos = getGridPos(fromPos);
-    const boardEl = document.querySelector('.board');
-    if (!boardEl) return;
-
-    const boardRect = boardEl.getBoundingClientRect();
-    const cellSize = boardRect.width / 11;
-
-    // Calculate pixel position for payer (near player token)
-    const payerX = boardRect.left + (pos.gridColumn * cellSize) - 40;
-    const payerY = boardRect.top + (pos.gridRow * cellSize) - 60;
-
-    // Calculate pixel position for receiver (near property tile)
-    const propPos = getGridPos(propertyTileId);
-    const receiverX = boardRect.left + (propPos.gridColumn * cellSize) + 40;
-    const receiverY = boardRect.top + (propPos.gridRow * cellSize) - 60;
-
-    // Add floating texts
-    setFloatingTexts(prev => [
-      ...prev,
-      {
-        id,
-        amount: -amount,
-        type: 'payer',
-        x: payerX,
-        y: payerY,
-        toPlayerId,
-        propertyTileId
-      },
-      {
-        id: id + 1,
-        amount: amount,
-        type: 'receiver',
-        x: receiverX,
-        y: receiverY,
-        fromPlayerId,
-        propertyTileId
-      }
-    ]);
-
-    // Remove after animation (2 seconds)
-    setTimeout(() => {
-      setFloatingTexts(prev => prev.filter(t => t.id !== id && t.id !== id + 1));
-    }, 2000);
-  };
-
-  // Expose trigger function to parent via ref callback (for server-side updates)
-  useEffect(() => {
-    if (gameState?.lastTransaction) {
-      const { amount, fromPlayerId, toPlayerId, propertyTileId } = gameState.lastTransaction;
-      triggerTransactionFeedback(amount, fromPlayerId, toPlayerId, propertyTileId);
-    }
-  }, [gameState?.lastTransaction]);
 
   const handleResolveCard = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
@@ -778,6 +832,21 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               );
             })}
 
+            {/* NEW: Floating transaction texts */}
+            {floatingTexts.map(float => (
+              <div
+                key={float.id}
+                className={`floating-text ${float.type}`}
+                style={{
+                  gridRow: float.gridRow,
+                  gridColumn: float.gridColumn,
+                  color: float.color,
+                }}
+              >
+                {float.text}
+              </div>
+            ))}
+
             <div className="board-center">
               <span className="board-center-title">WORLD MONOPOLY</span>
 
@@ -866,15 +935,43 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             )}
 
             {gameState.turnPhase === 'auction' && gameState.auction && (
-              <AuctionModal
-                auction={gameState.auction}
-                players={gameState.players}
-                myId={playerId}
-                bidAmount={bidAmount}
-                setBidAmount={setBidAmount}
-                onBid={handleBid}
-                onEnd={handleEndAuction}
-              />
+              <div className="auction-bar">
+                <div className="auction-info">
+                  <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
+                  <span className="auction-bid">
+                    Highest: ${gameState.auction.highestBid} {gameState.auction.highestBidder ? `by ${gameState.players.find(p => p.id === gameState.auction.highestBidder)?.name}` : '(No bids)'}
+                  </span>
+                  <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>
+                    ⏱️ {auctionTimer}s
+                  </span>
+                </div>
+                
+                {gameState.auction.activeBidders.includes(playerId) && (
+                  <div className="auction-controls">
+                    <button className="btn-bid" onClick={() => handleBidFixed(1)}>+$1</button>
+                    <button className="btn-bid" onClick={() => handleBidFixed(10)}>+$10</button>
+                    <button className="btn-bid" onClick={() => handleBidFixed(100)}>+$100</button>
+                    <input
+                      type="number"
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      placeholder={`Min $${gameState.auction.highestBid + 1}`}
+                      min={gameState.auction.highestBid + 1}
+                      max={me?.money || 0}
+                      className="bid-input"
+                    />
+                    <button className="btn-control" onClick={handleBid} disabled={!bidAmount || parseInt(bidAmount) <= gameState.auction.highestBid}>
+                      Bid
+                    </button>
+                  </div>
+                )}
+                
+                {isCurrentPlayer && (
+                  <button className="btn-control btn-end" onClick={handleEndAuction}>
+                    End Auction
+                  </button>
+                )}
+              </div>
             )}
 
             {displayCard && (
@@ -911,7 +1008,41 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           </>
         )}
 
-        {gameState?.status === 'playing' && !isCurrentPlayer && (
+        {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase === 'auction' && gameState?.auction && (
+          <div className="auction-bar">
+            <div className="auction-info">
+              <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
+              <span className="auction-bid">
+                Highest: ${gameState.auction.highestBid} {gameState.auction.highestBidder ? `by ${gameState.players.find(p => p.id === gameState.auction.highestBidder)?.name}` : '(No bids)'}
+              </span>
+              <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>
+                ⏱️ {auctionTimer}s
+              </span>
+            </div>
+            
+            {gameState.auction.activeBidders.includes(playerId) && (
+              <div className="auction-controls">
+                <button className="btn-bid" onClick={() => handleBidFixed(1)}>+$1</button>
+                <button className="btn-bid" onClick={() => handleBidFixed(10)}>+$10</button>
+                <button className="btn-bid" onClick={() => handleBidFixed(100)}>+$100</button>
+                <input
+                  type="number"
+                  value={bidAmount}
+                  onChange={(e) => setBidAmount(e.target.value)}
+                  placeholder={`Min $${gameState.auction.highestBid + 1}`}
+                  min={gameState.auction.highestBid + 1}
+                  max={me?.money || 0}
+                  className="bid-input"
+                />
+                <button className="btn-control" onClick={handleBid} disabled={!bidAmount || parseInt(bidAmount) <= gameState.auction.highestBid}>
+                  Bid
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase !== 'auction' && (
           <div className="waiting-msg">
             Waiting for {currentPlayer?.name}...
           </div>
@@ -1016,25 +1147,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             await emit('unmortgageProperty', { roomCode, playerId, propertyId: showProperty });
           }}
         />
-      )}
-
-      {/* FIX 4: Floating Transaction Feedback */}
-      {floatingTexts.length > 0 && (
-        <div className="floating-text-container">
-          {floatingTexts.map(ft => (
-            <div
-              key={ft.id}
-              className={`floating-text ${ft.type}`}
-              style={{
-                left: ft.x,
-                top: ft.y,
-                position: 'fixed'
-              }}
-            >
-              {ft.amount > 0 ? '+' : ''}${Math.abs(ft.amount)}
-            </div>
-          ))}
-        </div>
       )}
     </div>
   );
