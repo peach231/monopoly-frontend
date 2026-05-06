@@ -122,7 +122,7 @@ export default function TradeModal({ players, myId, myProperties, allProperties,
                     type="number"
                     value={offerMoney}
                     onChange={(e) => setOfferMoney(e.target.value)}
-                    placeholder="$0"
+                    placeholder="\$0"
                     min="0"
                     max={me.money}
                   />
@@ -170,7 +170,7 @@ export default function TradeModal({ players, myId, myProperties, allProperties,
                     type="number"
                     value={requestMoney}
                     onChange={(e) => setRequestMoney(e.target.value)}
-                    placeholder="$0"
+                    placeholder="\$0"
                     min="0"
                     max={targetPlayer.money}
                   />
