@@ -6,47 +6,50 @@ import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
 import PlayerProfileModal from './Modals/PlayerProfileModal';
 
+// ============================================
+// COMPLETE BOARD DATA (merged from data.js)
+// ============================================
 const BOARD_TILES = [
   { id: 0, name: "START", type: "corner" },
-  { id: 1, name: "Rio de Janeiro", type: "property", colorGroup: "brown", price: 60, country: "BR" },
+  { id: 1, name: "Rio de Janeiro", type: "property", colorGroup: "brown", price: 60, country: "BR", rent: [2, 10, 30, 90, 160, 250], houseCost: 50, mortgageValue: 30 },
   { id: 2, name: "Treasure", type: "chest" },
-  { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60, country: "BR" },
-  { id: 4, name: "Earnings Tax", type: "tax", price: 200 },
-  { id: 5, name: "YYZ Airport", type: "railroad", price: 200, country: "CA" },
-  { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100, country: "CA" },
+  { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60, country: "BR", rent: [4, 20, 60, 180, 320, 450], houseCost: 50, mortgageValue: 30 },
+  { id: 4, name: "Earnings Tax", type: "tax", price: 200, amount: 200 },
+  { id: 5, name: "YYZ Airport", type: "railroad", price: 200, country: "CA", mortgageValue: 100 },
+  { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100, country: "CA", rent: [6, 30, 90, 270, 400, 550], houseCost: 50, mortgageValue: 50 },
   { id: 7, name: "Surprise", type: "chance" },
-  { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100, country: "CA" },
-  { id: 9, name: "Toronto", type: "property", colorGroup: "lightblue", price: 120, country: "CA" },
+  { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100, country: "CA", rent: [6, 30, 90, 270, 400, 550], houseCost: 50, mortgageValue: 50 },
+  { id: 9, name: "Toronto", type: "property", colorGroup: "lightblue", price: 120, country: "CA", rent: [8, 40, 100, 300, 450, 600], houseCost: 50, mortgageValue: 60 },
   { id: 10, name: "Prison", type: "corner" },
-  { id: 11, name: "Venice", type: "property", colorGroup: "pink", price: 140, country: "IT" },
-  { id: 12, name: "Electric Co", type: "utility", price: 150 },
-  { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140, country: "IT" },
-  { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160, country: "IT" },
-  { id: 15, name: "CDG Airport", type: "railroad", price: 200, country: "FR" },
-  { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180, country: "FR" },
+  { id: 11, name: "Venice", type: "property", colorGroup: "pink", price: 140, country: "IT", rent: [10, 50, 150, 450, 625, 750], houseCost: 100, mortgageValue: 70 },
+  { id: 12, name: "Electric Co", type: "utility", price: 150, mortgageValue: 75 },
+  { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140, country: "IT", rent: [10, 50, 150, 450, 625, 750], houseCost: 100, mortgageValue: 70 },
+  { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160, country: "IT", rent: [12, 60, 180, 500, 700, 900], houseCost: 100, mortgageValue: 80 },
+  { id: 15, name: "CDG Airport", type: "railroad", price: 200, country: "FR", mortgageValue: 100 },
+  { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180, country: "FR", rent: [14, 70, 200, 550, 750, 950], houseCost: 100, mortgageValue: 90 },
   { id: 17, name: "Treasure", type: "chest" },
-  { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180, country: "FR" },
-  { id: 19, name: "Paris", type: "property", colorGroup: "orange", price: 200, country: "FR" },
+  { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180, country: "FR", rent: [14, 70, 200, 550, 750, 950], houseCost: 100, mortgageValue: 90 },
+  { id: 19, name: "Paris", type: "property", colorGroup: "orange", price: 200, country: "FR", rent: [16, 80, 220, 600, 800, 1000], houseCost: 100, mortgageValue: 100 },
   { id: 20, name: "Vacation", type: "corner" },
-  { id: 21, name: "Manchester", type: "property", colorGroup: "red", price: 220, country: "GB" },
+  { id: 21, name: "Manchester", type: "property", colorGroup: "red", price: 220, country: "GB", rent: [18, 90, 250, 700, 875, 1050], houseCost: 150, mortgageValue: 110 },
   { id: 22, name: "Surprise", type: "chance" },
-  { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220, country: "GB" },
-  { id: 24, name: "London", type: "property", colorGroup: "red", price: 240, country: "GB" },
-  { id: 25, name: "HND Airport", type: "railroad", price: 200, country: "JP" },
-  { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260, country: "JP" },
-  { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260, country: "JP" },
-  { id: 28, name: "Water Works", type: "utility", price: 150 },
-  { id: 29, name: "Tokyo", type: "property", colorGroup: "yellow", price: 280, country: "JP" },
+  { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220, country: "GB", rent: [18, 90, 250, 700, 875, 1050], houseCost: 150, mortgageValue: 110 },
+  { id: 24, name: "London", type: "property", colorGroup: "red", price: 240, country: "GB", rent: [20, 100, 300, 750, 925, 1100], houseCost: 150, mortgageValue: 120 },
+  { id: 25, name: "HND Airport", type: "railroad", price: 200, country: "JP", mortgageValue: 100 },
+  { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260, country: "JP", rent: [22, 110, 330, 800, 975, 1150], houseCost: 150, mortgageValue: 130 },
+  { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260, country: "JP", rent: [22, 110, 330, 800, 975, 1150], houseCost: 150, mortgageValue: 130 },
+  { id: 28, name: "Water Works", type: "utility", price: 150, mortgageValue: 75 },
+  { id: 29, name: "Tokyo", type: "property", colorGroup: "yellow", price: 280, country: "JP", rent: [24, 120, 360, 850, 1025, 1200], houseCost: 150, mortgageValue: 140 },
   { id: 30, name: "Go To Prison", type: "corner" },
-  { id: 31, name: "Chongqing", type: "property", colorGroup: "green", price: 300, country: "CN" },
-  { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300, country: "CN" },
+  { id: 31, name: "Chongqing", type: "property", colorGroup: "green", price: 300, country: "CN", rent: [26, 130, 390, 900, 1100, 1275], houseCost: 200, mortgageValue: 150 },
+  { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300, country: "CN", rent: [26, 130, 390, 900, 1100, 1275], houseCost: 200, mortgageValue: 150 },
   { id: 33, name: "Treasure", type: "chest" },
-  { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320, country: "CN" },
-  { id: 35, name: "JFK Airport", type: "railroad", price: 200, country: "US" },
+  { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320, country: "CN", rent: [28, 150, 450, 1000, 1200, 1400], houseCost: 200, mortgageValue: 160 },
+  { id: 35, name: "JFK Airport", type: "railroad", price: 200, country: "US", mortgageValue: 100 },
   { id: 36, name: "Surprise", type: "chance" },
-  { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350, country: "US" },
-  { id: 38, name: "Premium Tax", type: "tax", price: 100 },
-  { id: 39, name: "New York", type: "property", colorGroup: "darkblue", price: 400, country: "US" }
+  { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350, country: "US", rent: [35, 175, 500, 1100, 1300, 1500], houseCost: 200, mortgageValue: 175 },
+  { id: 38, name: "Premium Tax", type: "tax", price: 100, amount: 100 },
+  { id: 39, name: "New York", type: "property", colorGroup: "darkblue", price: 400, country: "US", rent: [50, 200, 600, 1400, 1700, 2000], houseCost: 200, mortgageValue: 200 }
 ];
 
 const COLOR_MAP = {
@@ -71,7 +74,6 @@ const COLOR_GROUPS = {
   darkblue: [37, 39]
 };
 
-// Reliable open-source flag CDN — ISO country codes, always available
 function getFlagUrl(countryCode) {
   return `https://flagcdn.com/256x192/${countryCode.toLowerCase()}.png`;
 }
@@ -116,11 +118,11 @@ function getTileSide(tileId) {
   return null;
 }
 
-/* ============================================
-   RENT CALCULATOR (frontend mirror of engine)
-   ============================================ */
-function calculateRent(tileId, properties, boardTiles, diceSum = 7) {
-  const tile = boardTiles.find(t => t.id === tileId);
+// ============================================
+// RENT CALCULATOR - uses enriched BOARD_TILES
+// ============================================
+function calculateRent(tileId, properties, diceSum = 7) {
+  const tile = BOARD_TILES[tileId];
   const prop = properties.find(p => p.id === tileId);
   if (!tile || !prop || !prop.ownerId || prop.isMortgaged) return 0;
 
@@ -357,11 +359,12 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
-  
-  /* NEW: Delayed card display so token animation finishes first */
+
+  // FIX 3: Track when token animation completes
   const [displayCard, setDisplayCard] = useState(null);
   const cardTimerRef = useRef(null);
-  
+  const animCompletionRef = useRef(Date.now()); // timestamp when animation ends
+
   const prevPositionsRef = useRef({});
   const diceIntervalRef = useRef(null);
   const movingPlayersRef = useRef(new Set());
@@ -375,13 +378,18 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     }
   }, [gameState?.dice, diceAnim.isRolling]);
 
-  /* NEW: 600ms delay before showing card modal */
+  // FIX 3: Card display delayed until AFTER animation completes
   useEffect(() => {
     if (gameState?.pendingCard) {
       if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
+
+      const now = Date.now();
+      const animDone = animCompletionRef.current;
+      const delay = Math.max(0, animDone - now);
+
       cardTimerRef.current = setTimeout(() => {
         setDisplayCard({ ...gameState.pendingCard, turnSequence: gameState.turnSequence });
-      }, 600);
+      }, delay);
     } else {
       if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
       setDisplayCard(null);
@@ -413,6 +421,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           path.push(p);
         }
 
+        // FIX 3: Calculate exact animation end time
+        const stepDuration = 280;
+        const totalDuration = path.length * stepDuration + 100; // +100ms buffer
+        animCompletionRef.current = Date.now() + totalDuration;
+
         const animateStep = (step) => {
           if (step >= path.length) {
             movingPlayersRef.current.delete(player.id);
@@ -437,7 +450,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           }, 260);
           timeoutsRef.current.push(t1);
 
-          const t2 = setTimeout(() => animateStep(step + 1), 280);
+          const t2 = setTimeout(() => animateStep(step + 1), stepDuration);
           timeoutsRef.current.push(t2);
         };
 
@@ -633,7 +646,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   }}
                   onClick={() => setShowProperty(tile.id)}
                 >
-                  {/* Country flag fills the entire color-bar strip */}
                   {tile.country && (
                     <div className="color-bar">
                       <div
@@ -644,7 +656,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       />
                     </div>
                   )}
-                  {/* Fallback solid color for non-country properties */}
                   {tile.colorGroup && !tile.country && (
                     <div
                       className="color-bar"
@@ -801,7 +812,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               />
             )}
 
-            {/* NEW: Delayed card modal */}
             {displayCard && (
               <CardModal
                 key={`${displayCard.id}-${displayCard.turnSequence}`}
@@ -910,7 +920,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           players={gameState?.players || []}
           properties={gameState?.properties || []}
           boardTiles={BOARD_TILES}
-          calculateRent={(tileId, diceSum = 7) => calculateRent(tileId, gameState?.properties || [], BOARD_TILES, diceSum)}
+          calculateRent={(tileId, diceSum = 7) => calculateRent(tileId, gameState?.properties || [], diceSum)}
           onClose={() => setShowPlayerProfile(null)}
         />
       )}
