@@ -1307,13 +1307,18 @@
   line-height: 1;
 }
 
-.card-back-icon {
-  font-family: 'Fredoka', 'Arial Black', sans-serif;
-  font-size: clamp(28px, 5.5vmin, 52px);
-  font-weight: 900;
-  color: #1a1a1a;
-  line-height: 1;
-  margin-top: 6px;
+.card-back-icon-chest {
+  width: 100%;
+  max-width: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back-icon-chest svg {
+  width: 90%;
+  height: 90%;
+  max-height: 52px;
 }
 
 /* Chest cards */
