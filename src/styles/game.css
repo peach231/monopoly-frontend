@@ -2236,168 +2236,345 @@
 }
 
 /* ============================================
+   ENHANCED CARD ANIMATION — Scale-in/Fade-in
+   ============================================ */
+
+.card-flip-overlay {
+  perspective: 1200px;
+}
+
+.card-flip {
+  animation: cardFlipIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+@keyframes cardFlipIn {
+  0% {
+    transform: scale(0.2) rotateY(-180deg) translateZ(-300px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotateY(-30deg) translateZ(100px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotateY(0deg) translateZ(0);
+    opacity: 1;
+  }
+}
+
+/* NEW: Scale-in animation for card modal */
+@keyframes cardScaleIn {
+  0% {
+    transform: scale(0.5) translateY(40px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05) translateY(-5px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.card-modal {
+  animation: cardScaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ============================================
+   AUCTION ENHANCEMENTS
+   ============================================ */
+
+.auction-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: #f5f0e8;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d5cfc4;
+  color: #1a1a1a;
+  max-width: 100%;
+}
+
+.auction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.auction-bid {
+  color: #e8920e;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.auction-timer {
+  font-family: 'Fredoka', monospace;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2b5b3c;
+  background: rgba(43, 91, 60, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.auction-timer.urgent {
+  color: #c5392a;
+  background: rgba(197, 57, 42, 0.15);
+  animation: timerPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes timerPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+.auction-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-bid {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #e8e3da;
+  color: #333;
+  border: 1px solid #d5cfc4;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+  min-height: 32px;
+}
+
+.btn-bid:hover {
+  background: #d5cfc4;
+  transform: translateY(-1px);
+}
+
+.btn-bid:active {
+  transform: translateY(0);
+}
+
+.bid-input {
+  width: 70px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #d5cfc4;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.85rem;
+  font-family: 'Outfit', sans-serif;
+  text-align: center;
+}
+
+/* ============================================
    FLOATING TRANSACTION TEXT
    ============================================ */
-.floating-text-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 500;
-}
 
 .floating-text {
   position: absolute;
+  z-index: 10;
   font-family: 'Fredoka', 'Arial Black', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: clamp(14px, 2.5vmin, 24px);
+  font-weight: 900;
+  pointer-events: none;
+  text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
   animation: floatUp 2s ease-out forwards;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  white-space: nowrap;
-}
-
-.floating-text.receiver {
-  color: #1FB25A;
-  text-shadow:
-    0 0 10px rgba(31, 178, 90, 0.8),
-    0 0 20px rgba(31, 178, 90, 0.5),
-    0 0 30px rgba(31, 178, 90, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  grid-row: var(--row);
+  grid-column: var(--col);
 }
 
 .floating-text.payer {
-  color: #c5392a;
-  text-shadow:
-    0 0 10px rgba(197, 57, 42, 0.8),
-    0 0 20px rgba(197, 57, 42, 0.5),
-    0 0 30px rgba(197, 57, 42, 0.3);
+  color: #ff4444;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.8), 0 0 20px rgba(255, 68, 68, 0.4);
+}
+
+.floating-text.receiver {
+  color: #44ff44;
+  text-shadow: 0 0 10px rgba(68, 255, 68, 0.8), 0 0 20px rgba(68, 255, 68, 0.4);
 }
 
 @keyframes floatUp {
   0% {
-    opacity: 1;
-    transform: translateY(0) scale(0.8);
+    transform: translateY(20px) scale(0.5);
+    opacity: 0;
   }
-  20% {
+  15% {
+    transform: translateY(-5px) scale(1.2);
     opacity: 1;
-    transform: translateY(-15px) scale(1.1);
+  }
+  30% {
+    transform: translateY(-15px) scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(-30px) scale(1);
+    opacity: 0.8;
   }
   100% {
+    transform: translateY(-50px) scale(0.8);
     opacity: 0;
-    transform: translateY(-80px) scale(1);
   }
 }
 
 /* ============================================
-   AUCTION TIMER STYLES
+   TRADE MODAL ENHANCEMENTS
    ============================================ */
-.auction-timer {
+
+.trade-modal {
+  max-width: 520px;
+  width: 100%;
+}
+
+.trade-section {
+  margin-bottom: 16px;
+}
+
+.trade-section label {
+  display: block;
+  margin-bottom: 6px;
+  color: #555;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #2b5b3c;
-  margin-top: 2px;
 }
 
-.auction-timer.timer-warning {
-  color: #c5392a;
-  animation: timerPulse 0.5s ease-in-out infinite;
-}
-
-@keyframes timerPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* ============================================
-   QUICK BID BUTTONS
-   ============================================ */
-.quick-bid-buttons {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 4px;
-}
-
-.btn-quick-bid {
-  padding: 6px 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  background: #e8920e;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btn-quick-bid:hover:not(:disabled) {
-  background: #d5830d;
-  transform: translateY(-1px);
-}
-
-.btn-quick-bid:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.manual-bid-input {
-  display: flex;
-  gap: 4px;
-}
-
-.manual-bid-input input {
-  width: 80px;
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #d5cfc4;
+.trade-section select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 2px solid #d5cfc4;
   background: #fff;
   color: #1a1a1a;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-family: 'Outfit', sans-serif;
+  cursor: pointer;
 }
 
-/* ============================================
-   TRADE MODAL STYLES
-   ============================================ */
-.trade-cash-input {
+.trade-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.trade-col {
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e8e3da;
+}
+
+.trade-col h4 {
+  margin: 0 0 10px 0;
+  color: #c5392a;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+}
+
+.trade-money-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
-.trade-cash-input label {
+.trade-money-row label {
   font-size: 0.8rem;
-  color: #555;
+  color: #666;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.trade-cash-input input {
-  width: 100px;
-  padding: 6px;
-  border-radius: 4px;
+.trade-money-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid #d5cfc4;
-  background: #fff;
+  background: #fafafa;
   color: #1a1a1a;
+  font-size: 0.9rem;
   font-family: 'Outfit', sans-serif;
+  max-width: 100px;
 }
 
-.prop-color-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
-  border: 1px solid rgba(0,0,0,0.2);
+.prop-list {
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid #e8e3da;
+  border-radius: 6px;
+  padding: 4px;
+  background: #fafafa;
+}
+
+.prop-item {
+  padding: 8px 10px;
+  margin-bottom: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  background: #fff;
+  transition: all 0.15s;
+  color: #333;
+  border-left: 4px solid #888;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.prop-item:hover {
+  background: #f0ebe3;
+  transform: translateX(2px);
+}
+
+.prop-item.selected {
+  background: #e8e3da;
+  border: 1px solid #c5392a;
+  border-left: 4px solid #c5392a;
+  font-weight: 600;
+}
+
+.prop-item.mortgaged {
+  opacity: 0.6;
+}
+
+.prop-item.empty {
+  color: #999;
+  font-style: italic;
+  cursor: default;
+  text-align: center;
+  justify-content: center;
 }
 
 .trade-summary {
   background: #fff;
-  border: 1px solid #e8e3da;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 16px;
-  font-size: 0.85rem;
+  border: 1px solid #e8e3da;
 }
 
 .trade-summary-item {
+  font-size: 0.85rem;
+  color: #555;
   margin-bottom: 4px;
 }
 
@@ -2405,39 +2582,41 @@
   margin-bottom: 0;
 }
 
-.trade-summary-item strong {
-  color: #555;
-}
-
-.btn-propose {
-  width: 100%;
-  padding: 12px;
-  font-size: 1rem;
-}
-
 /* ============================================
-   CARD SCALE-IN ANIMATION
+   RESPONSIVE AUCTION
    ============================================ */
-.card-scale-in {
-  opacity: 0;
-  transform: scale(0.5);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+@media (max-width: 900px) {
+  .auction-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .auction-info {
+    min-width: auto;
+  }
+  
+  .auction-controls {
+    justify-content: center;
+  }
+  
+  .trade-columns {
+    grid-template-columns: 1fr;
+  }
 }
 
-.card-scale-in.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* ============================================
-   MORTGAGE BADGE IN MODAL
-   ============================================ */
-.mortgaged-badge {
-  background: #c5392a;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin-left: 8px;
+@media (max-width: 480px) {
+  .btn-bid {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .bid-input {
+    width: 60px;
+    padding: 5px;
+  }
+  
+  .floating-text {
+    font-size: 12px;
+  }
 }
