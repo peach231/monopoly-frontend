@@ -67,7 +67,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-                    {/* Owner info visible to ALL players - HIDDEN for non-purchasable tiles */}
+          {/* Owner info visible to ALL players - HIDDEN for non-purchasable tiles */}
           {(isProperty || isRailroad || isUtility) && (
             propertyState?.ownerId ? (
               <div className="property-owner">
