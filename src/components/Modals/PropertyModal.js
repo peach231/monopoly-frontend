@@ -67,16 +67,18 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-          {/* Owner info visible to ALL players */}
-          {propertyState?.ownerId ? (
-            <div className="property-owner">
-              Owner: <span style={{ color: owner?.color }}>{owner?.name || 'Unknown'}</span>
-              {propertyState.isMortgaged && <span className="mortgaged-badge">🔒 Mortgaged</span>}
-            </div>
-          ) : (
-            <div className="property-owner">
-              <span style={{ color: '#888' }}>Unowned — Available for purchase</span>
-            </div>
+                    {/* Owner info visible to ALL players - HIDDEN for non-purchasable tiles */}
+          {(isProperty || isRailroad || isUtility) && (
+            propertyState?.ownerId ? (
+              <div className="property-owner">
+                Owner: <span style={{ color: owner?.color }}>{owner?.name || 'Unknown'}</span>
+                {propertyState.isMortgaged && <span className="mortgaged-badge">🔒 Mortgaged</span>}
+              </div>
+            ) : (
+              <div className="property-owner">
+                <span style={{ color: '#888' }}>Unowned — Available for purchase</span>
+              </div>
+            )
           )}
 
           {/* Property rent table — visible to ALL players */}
