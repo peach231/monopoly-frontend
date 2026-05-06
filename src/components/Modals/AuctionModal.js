@@ -81,21 +81,21 @@ export default function AuctionModal({ auction, players, myId, bidAmount, setBid
               onClick={() => handleQuickBid(1)}
               disabled={auction.highestBid + 1 > me?.money}
             >
-              +$1
+              +\$1
             </button>
             <button
               className="btn-quick-bid"
               onClick={() => handleQuickBid(10)}
               disabled={auction.highestBid + 10 > me?.money}
             >
-              +$10
+              +\$10
             </button>
             <button
               className="btn-quick-bid"
               onClick={() => handleQuickBid(100)}
               disabled={auction.highestBid + 100 > me?.money}
             >
-              +$100
+              +\$100
             </button>
           </div>
 
