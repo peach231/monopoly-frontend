@@ -7,13 +7,19 @@ export function useSocket() {
   const socketRef = useRef(null);
   const [connected, setConnected] = useState(false);
   const [gameState, setGameState] = useState(null);
+  const keepaliveRef = useRef(null);
 
   useEffect(() => {
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 10000,
+      randomizationFactor: 0.5,
+      timeout: 30000,
+      withCredentials: true,
+      autoConnect: true,
     });
     socketRef.current = socket;
 
@@ -21,31 +27,40 @@ export function useSocket() {
       setConnected(true);
       console.log('Socket connected:', socket.id);
 
-      // Try to rejoin if we have a room and playerId
       const roomCode = sessionStorage.getItem('roomCode');
       const playerId = sessionStorage.getItem('playerId');
       if (roomCode && playerId) {
-        socket.emit('joinRoom', { roomCode, playerId, playerName: sessionStorage.getItem('playerName') || 'Player' },
-          (res) => {
-            if (!res.success) {
-              sessionStorage.removeItem('roomCode');
-              sessionStorage.removeItem('playerId');
-            }
+        socket.emit('joinRoom', {
+          roomCode,
+          playerId,
+          playerName: sessionStorage.getItem('playerName') || 'Player'
+        }, (res) => {
+          if (!res.success) {
+            sessionStorage.removeItem('roomCode');
+            sessionStorage.removeItem('playerId');
           }
-        );
+        });
       }
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
       setConnected(false);
-      console.log('Socket disconnected');
+      console.log('Socket disconnected:', reason);
     });
 
     socket.on('gameState', (state) => {
       setGameState(state);
     });
 
+    // Keepalive to prevent mobile browsers / proxies from dropping idle sockets
+    keepaliveRef.current = setInterval(() => {
+      if (socket.connected) {
+        socket.emit('clientPing');
+      }
+    }, 15000);
+
     return () => {
+      if (keepaliveRef.current) clearInterval(keepaliveRef.current);
       socket.disconnect();
     };
   }, []);
