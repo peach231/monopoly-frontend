@@ -350,17 +350,10 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
 
-  // NEW: Jail notification overlay state
   const [jailNotification, setJailNotification] = useState(null);
-  
-  // NEW: Auction countdown timer state
   const [auctionTimer, setAuctionTimer] = useState(10);
   const auctionTimerRef = useRef(null);
-  
-  // NEW: Floating text for transaction feedback
   const [floatingTexts, setFloatingTexts] = useState([]);
-  
-  // FIX 3: Track when token animation completes
   const [displayCard, setDisplayCard] = useState(null);
   const cardTimerRef = useRef(null);
   const animCompletionRef = useRef(Date.now());
@@ -370,7 +363,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const movingPlayersRef = useRef(new Set());
   const timeoutsRef = useRef([]);
 
-  // Keep dice in sync
   useEffect(() => {
     if (gameState?.dice) {
       if (!diceAnim.isRolling) {
@@ -379,7 +371,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     }
   }, [gameState?.dice, diceAnim.isRolling]);
 
-  // FIX 3: Card display delayed until AFTER animation completes
   useEffect(() => {
     if (gameState?.pendingCard) {
       if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
@@ -400,25 +391,21 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     };
   }, [gameState?.pendingCard, gameState?.turnSequence]);
 
-  // NEW: Auction countdown timer effect - AUTO-END ONLY
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction) {
       setAuctionTimer(10);
-      
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
       
       auctionTimerRef.current = setInterval(() => {
         setAuctionTimer(prev => {
           if (prev <= 1) {
-            // Timer expired - auto-end auction
             clearInterval(auctionTimerRef.current);
             auctionTimerRef.current = null;
-
-            // Only the current player triggers the server call to avoid race conditions
-            if (isCurrentPlayer) {
+            // Any client can trigger end auction to prevent stuck games when current player disconnects
+            setTimeout(() => {
               const roomCode = sessionStorage.getItem('roomCode');
               emit('endAuction', { roomCode, playerId });
-            }
+            }, Math.random() * 800);
             return 0;
           }
           return prev - 1;
@@ -430,40 +417,25 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         auctionTimerRef.current = null;
       }
     }
-    
     return () => {
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
     };
   }, [gameState?.turnPhase, gameState?.auction?.propertyId]);
 
-  // NEW: Jail notification effect
   useEffect(() => {
     if (!gameState?.players || !gameState?.log) return;
-    
     const latestLog = gameState.log[gameState.log.length - 1];
     if (!latestLog) return;
-    
-    // Check if someone was sent to jail
     const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
     if (jailMatch) {
       const playerName = jailMatch[1];
       const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
-      
-      setJailNotification({
-        name: playerName,
-        isMe: isMe
-      });
-      
-      // Auto-dismiss after 3 seconds
-      const timer = setTimeout(() => {
-        setJailNotification(null);
-      }, 3000);
-      
+      setJailNotification({ name: playerName, isMe: isMe });
+      const timer = setTimeout(() => setJailNotification(null), 3000);
       return () => clearTimeout(timer);
     }
   }, [gameState?.log, gameState?.players, playerId]);
 
-  // Token animation effect
   useEffect(() => {
     if (!gameState?.players) return;
 
@@ -477,15 +449,11 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       }
 
       if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
-
-        // INSTANT TELEPORT for Go To Jail (position 30 -> 10)
         const isGoToJail = prevPos === 30 && currPos === 10;
-        // Also check for card-based jail sends (any -> 10 when inJail)
         const wasSentToJail = currPos === 10 && player.inJail && 
           gameState.log?.some(log => log.includes(player.name) && log.includes('Jail'));
 
         if (isGoToJail || wasSentToJail) {
-          // Instant update - no animation
           prevPositionsRef.current[player.id] = currPos;
           setAnimatedPositions(prev => {
             const next = { ...prev };
@@ -541,27 +509,20 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     });
   }, [gameState?.players, gameState?.turnSequence]);
 
-  // NEW: Listen for rent payments to show floating text
   useEffect(() => {
     if (!gameState?.log || !gameState?.players) return;
-    
     const latestLog = gameState.log[gameState.log.length - 1];
     if (!latestLog) return;
-    
-    const rentMatch = latestLog.match(/(.+?) paid \\$(\\d+) rent to (.+?)\\./);
+    const rentMatch = latestLog.match(/(.+?) paid \$(\d+) rent to (.+?)\./);
     if (rentMatch) {
       const [, payerName, amountStr, receiverName] = rentMatch;
       const amount = parseInt(amountStr);
-      
       const payer = gameState.players.find(p => p.name === payerName);
       const receiver = gameState.players.find(p => p.name === receiverName);
-      
       if (payer && receiver) {
         const receiverPos = receiver.position;
         const tilePos = getGridPos(receiverPos);
-        
         const newFloats = [];
-        
         if (payer.id === playerId) {
           newFloats.push({
             id: `payer-${Date.now()}`,
@@ -572,7 +533,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             type: 'payer'
           });
         }
-        
         if (receiver.id === playerId) {
           newFloats.push({
             id: `receiver-${Date.now()}`,
@@ -583,10 +543,8 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             type: 'receiver'
           });
         }
-        
         if (newFloats.length > 0) {
           setFloatingTexts(prev => [...prev, ...newFloats]);
-          
           setTimeout(() => {
             setFloatingTexts(prev => prev.filter(f => !newFloats.find(nf => nf.id === f.id)));
           }, 2000);
@@ -615,7 +573,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
-
     setDiceAnim({ isRolling: true, values: [1, 1] });
     diceIntervalRef.current = setInterval(() => {
       setDiceAnim(prev => ({
@@ -658,10 +615,8 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     const roomCode = sessionStorage.getItem('roomCode');
     const auction = gameState?.auction;
     if (!auction) return;
-    
     const minBid = auction.highestBid + 1;
     const actualBid = Math.max(minBid, auction.highestBid + amount);
-    
     if (me?.money >= actualBid) {
       await emit('placeBid', { roomCode, playerId, amount: actualBid });
     }
@@ -695,6 +650,16 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     await emit('resolveCard', { roomCode, playerId });
   };
 
+  const handleSkipTurn = async () => {
+    const roomCode = sessionStorage.getItem('roomCode');
+    await emit('forceEndTurn', { roomCode, playerId });
+  };
+
+  const handleEndAuction = async () => {
+    const roomCode = sessionStorage.getItem('roomCode');
+    await emit('endAuction', { roomCode, playerId });
+  };
+
   const copyLink = () => {
     const link = getShareLink();
     navigator.clipboard.writeText(link).then(() => {
@@ -717,7 +682,6 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
   return (
     <div className="game-container">
-      {/* Jail Notification Overlay */}
       {jailNotification && (
         <div className="jail-notification-overlay">
           <div className="jail-notification">
@@ -769,15 +733,12 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   <div
                     key={tile.id}
                     className={`tile tile-corner tile-corner-${tile.id}`}
-                    style={{
-                      gridRow: pos.gridRow,
-                      gridColumn: pos.gridColumn,
-                    }}
+                    style={{ gridRow: pos.gridRow, gridColumn: pos.gridColumn }}
                     onClick={() => setShowProperty(tile.id)}
                   >
                     <CornerTile tile={tile} />
                     <div className="tile-tokens corner-tokens">
-                      {playersHere.map((p, i) => (
+                      {playersHere.map((p) => (
                         <span
                           key={p.id}
                           className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
@@ -797,27 +758,19 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                   key={tile.id}
                   className={`tile tile-${tile.type}`}
                   data-side={side || undefined}
-                  style={{
-                    gridRow: pos.gridRow,
-                    gridColumn: pos.gridColumn,
-                  }}
+                  style={{ gridRow: pos.gridRow, gridColumn: pos.gridColumn }}
                   onClick={() => setShowProperty(tile.id)}
                 >
                   {tile.country && (
                     <div className="color-bar">
                       <div
                         className="color-bar-img"
-                        style={{
-                          backgroundImage: `url(${getFlagUrl(tile.country)})`,
-                        }}
+                        style={{ backgroundImage: `url(${getFlagUrl(tile.country)})` }}
                       />
                     </div>
                   )}
                   {tile.colorGroup && !tile.country && (
-                    <div
-                      className="color-bar"
-                      style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
-                    />
+                    <div className="color-bar" style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }} />
                   )}
 
                   <div className="tile-content">
@@ -836,10 +789,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     )}
 
                     {propState?.ownerId && (
-                      <div
-                        className="owner-dot"
-                        style={{ backgroundColor: owner?.color || '#999' }}
-                      />
+                      <div className="owner-dot" style={{ backgroundColor: owner?.color || '#999' }} />
                     )}
 
                     {propState?.houses > 0 && (
@@ -850,7 +800,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     {propState?.hotel && <div className="hotel-indicator">🏨</div>}
 
                     <div className="tile-tokens">
-                      {playersHere.map((p, i) => (
+                      {playersHere.map((p) => (
                         <span
                           key={p.id}
                           className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
@@ -1002,6 +952,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     </button>
                   </div>
                 )}
+                <button className="btn-control btn-end" onClick={handleEndAuction}>
+                  End Auction
+                </button>
               </div>
             )}
 
@@ -1070,13 +1023,23 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </button>
               </div>
             )}
+            <button className="btn-control btn-end" onClick={handleEndAuction}>
+              End Auction
+            </button>
           </div>
         )}
 
         {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase !== 'auction' && (
-          <div className="waiting-msg">
-            Waiting for {currentPlayer?.name}...
-          </div>
+          <>
+            <div className="waiting-msg">
+              Waiting for {currentPlayer?.name}...
+            </div>
+            {currentPlayer && !currentPlayer.isConnected && (
+              <button className="btn-control btn-skip" onClick={handleSkipTurn}>
+                ⏭️ Skip Turn
+              </button>
+            )}
+          </>
         )}
 
         {gameState?.status === 'ended' && (
