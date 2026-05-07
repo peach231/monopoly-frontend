@@ -2718,3 +2718,17 @@
     font-size: 20px;
   }
 }
+
+/* ============================================
+   SKIP TURN BUTTON
+   ============================================ */
+.btn-skip {
+  background: #666;
+  color: #fff;
+  border: none;
+}
+
+.btn-skip:hover:not(:disabled) {
+  background: #444;
+  transform: translateY(-1px);
+}
