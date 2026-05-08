@@ -316,7 +316,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
   const [jailNotification, setJailNotification] = useState(null);
-  const [auctionTimer, setAuctionTimer] = useState(10);
+  const [auctionTimer, setAuctionTimer] = useState(5);
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [displayCard, setDisplayCard] = useState(null);
   // ISSUE #5: blocks all post-roll UI until token visually lands
@@ -375,7 +375,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   // ISSUE #4: auction timer resets whenever highestBid changes (a bid was placed)
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction) {
-      setAuctionTimer(10);
+      setAuctionTimer(5);  // was 10
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
       auctionTimerRef.current = setInterval(() => {
         setAuctionTimer(prev => {
