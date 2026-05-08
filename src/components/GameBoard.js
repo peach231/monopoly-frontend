@@ -937,7 +937,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
                   <div className="auction-info">
                     <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
                     <span className="auction-bid">Highest: ${gameState.auction.highestBid}{hbName ? ` by ${hbName}` : ' (No bids)'}</span>
-                    <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1️ {auctionTimer}s</span>
+                    <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>⏱️ {auctionTimer}s</span>
                   </div>
                   {gameState.auction.activeBidders.includes(playerId) && (
                     <div className="auction-controls">
@@ -990,7 +990,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               <div className="auction-info">
                 <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
                 <span className="auction-bid">Highest: ${gameState.auction.highestBid}{hbName ? ` by ${hbName}` : ' (No bids)'}</span>
-                <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1️ {auctionTimer}s</span>
+                <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>⏱️ {auctionTimer}s</span>
               </div>
               {gameState.auction.activeBidders.includes(playerId) && (
                 <div className="auction-controls">
