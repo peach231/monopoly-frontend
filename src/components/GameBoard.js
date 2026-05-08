@@ -375,8 +375,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   // ISSUE #4: auction timer resets whenever highestBid changes (a bid was placed)
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction) {
-      const resetTime = gameState?.auction?.highestBid > 0 ? 5 : 10;
-setAuctionTimer(resetTime);
+      setAuctionTimer(10);
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
       auctionTimerRef.current = setInterval(() => {
         setAuctionTimer(prev => {
@@ -398,6 +397,32 @@ setAuctionTimer(resetTime);
     return () => { if (auctionTimerRef.current) clearInterval(auctionTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.turnPhase, gameState?.auction?.propertyId, gameState?.auction?.highestBid]);
+
+  // ISSUE #3 (reconnect recovery): whenever the server pushes a fresh gameState
+  // (e.g. after a socket disconnect/reconnect), if no token animation is actually
+  // running any more, clear any stale currentPlayerMoving and dice-rolling locks
+  // so the active player can interact with their turn normally.
+  useEffect(() => {
+    if (!gameState) return;
+    // Give any in-flight animation a 700ms window to register before we check.
+    const t = setTimeout(() => {
+      const animActive = movingPlayersRef.current.size > 0 || movingCurrentPlayerRef.current !== null;
+      if (!animActive) {
+        if (currentPlayerMovingRef.current) {
+          setCurrentPlayerMoving(false);
+          currentPlayerMovingRef.current = false;
+        }
+        if (diceIntervalRef.current) {
+          clearInterval(diceIntervalRef.current);
+          diceIntervalRef.current = null;
+          setDiceAnim(prev => ({ ...prev, isRolling: false, values: gameState.dice || prev.values }));
+        }
+      }
+    }, 700);
+    return () => clearTimeout(t);
+  // turnSequence and currentPlayerId change at turn boundaries AND on reconnect broadcasts
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.turnSequence, gameState?.currentPlayerId]);
 
   // Jail notification
   useEffect(() => {
@@ -890,7 +915,7 @@ setAuctionTimer(resetTime);
 
             {gameState.turnPhase === 'end' && (
               <>
-                <button className="btn-control btn-end" onClick={handleEndTurn}>\u2705 End Turn</button>
+                <button className="btn-control btn-end" onClick={handleEndTurn}>✅ End Turn</button>
                 <button className="btn-control" onClick={() => setShowTrade(true)}>🤝 Trade</button>
               </>
             )}
