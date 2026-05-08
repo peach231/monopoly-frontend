@@ -11,6 +11,42 @@ const COLOR_MAP = {
   darkblue: '#0072BB'
 };
 
+// Country code for each property tile
+const TILE_COUNTRY = {
+  1: 'BR', 3: 'BR',
+  5: 'CA', 6: 'CA', 8: 'CA', 9: 'CA',
+  11: 'IT', 13: 'IT', 14: 'IT', 15: 'FR',
+  16: 'FR', 18: 'FR', 19: 'FR',
+  21: 'GB', 23: 'GB', 24: 'GB', 25: 'JP',
+  26: 'JP', 27: 'JP', 29: 'JP',
+  31: 'CN', 32: 'CN', 34: 'CN', 35: 'US',
+  37: 'US', 39: 'US'
+};
+
+// Country names for display
+const COUNTRY_NAMES = {
+  BR: 'Brazil',
+  CA: 'Canada',
+  IT: 'Italy',
+  FR: 'France',
+  GB: 'United Kingdom',
+  JP: 'Japan',
+  CN: 'China',
+  US: 'United States'
+};
+
+// Color group → country code mapping (for monopoly tracker)
+const COLOR_GROUP_COUNTRY = {
+  brown: 'BR',
+  lightblue: 'CA',
+  pink: 'IT',
+  orange: 'FR',
+  red: 'GB',
+  yellow: 'JP',
+  green: 'CN',
+  darkblue: 'US'
+};
+
 const COLOR_GROUP_TOTALS = {
   brown: 2,
   lightblue: 3,
@@ -28,6 +64,10 @@ const TOKEN_EMOJI = {
   'graduation-hat': '🎓',
   pencil: '✏️'
 };
+
+function getFlagUrl(countryCode) {
+  return `https://flagcdn.com/256x192/${countryCode.toLowerCase()}.png`;
+}
 
 export default function PlayerProfileModal({ playerId, players, properties, boardTiles, calculateRent, onClose }) {
   const player = players.find(p => p.id === playerId);
@@ -87,8 +127,8 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
             ) : (
               <div className="profile-properties-list">
                 {playerProps.map(prop => {
-                  // FIX: Calculate actual rent using the passed calculateRent function
                   const rentValue = calculateRent ? calculateRent(prop.id) : 0;
+                  const countryCode = TILE_COUNTRY[prop.id];
 
                   return (
                     <div 
@@ -100,6 +140,14 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                       }}
                     >
                       <div className="profile-prop-name">
+                        {countryCode && (
+                          <img 
+                            src={getFlagUrl(countryCode)} 
+                            alt="" 
+                            className="prop-flag-inline"
+                            style={{ width: 18, height: 14, marginRight: 6, borderRadius: 2, objectFit: 'cover', verticalAlign: 'middle', border: '1px solid rgba(0,0,0,0.15)' }}
+                          />
+                        )}
                         {prop.tile.name}
                         {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
                       </div>
@@ -126,18 +174,29 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                 {Object.entries(colorGroupStats).map(([color, count]) => {
                   const total = COLOR_GROUP_TOTALS[color] || 3;
                   const isComplete = count === total;
+                  const countryCode = COLOR_GROUP_COUNTRY[color];
+                  const countryName = countryCode ? COUNTRY_NAMES[countryCode] : color;
                   return (
                     <div key={color} className="monopoly-tracker-item">
                       <span 
                         className="monopoly-chip"
-                        style={{ backgroundColor: COLOR_MAP[color] || '#888' }}
+                        style={{ 
+                          backgroundImage: countryCode ? `url(${getFlagUrl(countryCode)})` : 'none',
+                          backgroundColor: countryCode ? 'transparent' : (COLOR_MAP[color] || '#888'),
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center',
+                          color: '#000',
+                          fontWeight: 900,
+                          textShadow: '0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff',
+                          border: '1px solid rgba(0,0,0,0.25)'
+                        }}
                       >
                         {isComplete ? '💰' : count}
                       </span>
                       <span className="monopoly-tracker-label">
                         {isComplete 
-                          ? `${color.charAt(0).toUpperCase() + color.slice(1)} Monopoly!` 
-                          : `${color.charAt(0).toUpperCase() + color.slice(1)}: ${count}/${total}`}
+                          ? `${countryName} Monopoly!` 
+                          : `${countryName}: ${count}/${total}`}
                       </span>
                     </div>
                   );
