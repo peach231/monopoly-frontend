@@ -954,16 +954,16 @@
   left: 0;
   right: 0;
 }
-/* Left: inner edge is RIGHT */
+/* Left: outer edge is LEFT — tokens sit on the outer board edge, not on the flag */
 .tile[data-side="left"] .tile-tokens {
-  right: 14%;
+  left: 6%;
   top: 0;
   bottom: 0;
   flex-direction: column;
 }
-/* Right: inner edge is LEFT */
+/* Right: outer edge is RIGHT — tokens sit on the outer board edge, not on the flag */
 .tile[data-side="right"] .tile-tokens {
-  left: 14%;
+  right: 6%;
   top: 0;
   bottom: 0;
   flex-direction: column;
