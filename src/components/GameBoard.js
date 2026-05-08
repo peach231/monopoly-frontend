@@ -373,30 +373,29 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   }, [gameState?.pendingCard, gameState?.turnSequence]);
 
   // ISSUE #4: auction timer resets whenever highestBid changes (a bid was placed)
-  useEffect(() => {
-    if (gameState?.turnPhase === 'auction' && gameState?.auction) {
-      setAuctionTimer(5);  // was 10
+    useEffect(() => {
+    if (gameState?.turnPhase === 'auction' && gameState?.auction?.endTime) {
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
+      
       auctionTimerRef.current = setInterval(() => {
-        setAuctionTimer(prev => {
-          if (prev <= 1) {
-            clearInterval(auctionTimerRef.current);
-            auctionTimerRef.current = null;
-            if (isCurrentPlayerRef.current) {
-              const roomCode = sessionStorage.getItem('roomCode');
-              emit('endAuction', { roomCode, playerId });
-            }
-            return 0;
+        const remaining = Math.ceil((gameState.auction.endTime - Date.now()) / 1000);
+        setAuctionTimer(Math.max(0, remaining));
+        
+        if (remaining <= 0) {
+          clearInterval(auctionTimerRef.current);
+          auctionTimerRef.current = null;
+          if (isCurrentPlayerRef.current) {
+            const roomCode = sessionStorage.getItem('roomCode');
+            emit('endAuction', { roomCode, playerId });
           }
-          return prev - 1;
-        });
-      }, 1000);
+        }
+      }, 200);
     } else {
       if (auctionTimerRef.current) { clearInterval(auctionTimerRef.current); auctionTimerRef.current = null; }
     }
     return () => { if (auctionTimerRef.current) clearInterval(auctionTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState?.turnPhase, gameState?.auction?.propertyId, gameState?.auction?.highestBid]);
+  }, [gameState?.turnPhase, gameState?.auction?.endTime]);
 
   // Reconnect recovery: fires when the socket comes back (connected flips true)
   // AND at every natural turn boundary. Clears any stuck currentPlayerMoving or
