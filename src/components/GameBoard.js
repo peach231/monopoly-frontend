@@ -361,11 +361,9 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction?.endTime) {
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
-      
       auctionTimerRef.current = setInterval(() => {
         const remaining = Math.ceil((gameState.auction.endTime - Date.now()) / 1000);
         setAuctionTimer(Math.max(0, remaining));
-        
         if (remaining <= 0) {
           clearInterval(auctionTimerRef.current);
           auctionTimerRef.current = null;
@@ -433,9 +431,8 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
       if (m) {
         const amt = parseInt(m[2]);
         const payer = gameState.players.find(p => p.name === m[1]);
-        const recv  = gameState.players.find(p => p.name === m[3]);
         if (payer) newFloats.push(mkFloat('p', `-$${amt}`, '#ff4444', payer.position));
-        if (recv)  newFloats.push(mkFloat('r', `+$${amt}`, '#44ee44', payer.position));
+        if (payer) newFloats.push(mkFloat('r', `+$${amt}`, '#44ee44', payer.position));
         return;
       }
       m = entry.match(/^(.+?) paid \$(\d+) in taxes\.$/);
