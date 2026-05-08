@@ -117,7 +117,6 @@ function calculateRent(tileId, properties, diceSum = 7) {
   return 0;
 }
 
-// ISSUE #3 — float direction: toward board center from each edge
 function getFloatDirection(tileId) {
   if (tileId >= 0  && tileId <= 10) return 'float-up';
   if (tileId >= 11 && tileId <= 19) return 'float-right';
@@ -241,7 +240,6 @@ function TileIcon({ tile }) {
   return null;
 }
 
-// ISSUE #1: CornerTile now accepts jail zone props; JUST+VISITING text removed
 function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
   if (tile.id === 0) {
     return (
@@ -256,9 +254,7 @@ function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
     return (
       <div className="corner-inner corner-jail">
         <div className="jail-cell">
-          {/* IN PRISON banner at top of cell */}
           <div className="jail-in-label">IN PRISON</div>
-          {/* Jailed tokens sit BEHIND bars (z-index 2, bars are z-index 3) */}
           <div className="jail-tokens-behind-bars">
             {(jailedPlayers || []).map(p => (
               <span key={p.id} className={`token ${hoppingTokens?.[p.id] ? 'hopping' : ''}`}
@@ -271,9 +267,7 @@ function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
             <span/><span/><span/><span/><span/>
           </div>
         </div>
-        {/* Diagonal: from outer board corner (bottom-left of tile) to bottom-left of jail-cell */}
         <div className="jail-diagonal"/>
-        {/* Visiting tokens in L-shaped outer area */}
         <div className="jail-visiting-tokens">
           {(visitingPlayers || []).map(p => (
             <span key={p.id} className={`token ${hoppingTokens?.[p.id] ? 'hopping' : ''}`}
@@ -316,10 +310,9 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
   const [jailNotification, setJailNotification] = useState(null);
-  const [auctionTimer, setAuctionTimer] = useState(5);
+  const [auctionTimer, setAuctionTimer] = useState(10);
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [displayCard, setDisplayCard] = useState(null);
-  // ISSUE #5: blocks all post-roll UI until token visually lands
   const [currentPlayerMoving, setCurrentPlayerMoving] = useState(false);
 
   const prevPositionsRef = useRef({});
@@ -327,11 +320,8 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   const movingPlayersRef = useRef(new Set());
   const timeoutsRef = useRef([]);
   const auctionTimerRef = useRef(null);
-  // ISSUE #5: which player id is currently animating (gates interactions)
   const movingCurrentPlayerRef = useRef(null);
-  // ISSUE #4: avoids stale closure inside setInterval
   const isCurrentPlayerRef = useRef(false);
-  // ISSUE #3: log cursor (null = not yet initialised) and pending-float buffer
   const prevLogLengthRef = useRef(null);
   const pendingFloatsRef = useRef([]);
   const currentPlayerMovingRef = useRef(false);
@@ -340,7 +330,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   const me = gameState?.players.find(p => p.id === playerId);
   const currentPlayer = gameState?.players.find(p => p.id === gameState?.currentPlayerId);
 
-  // Keep refs in sync every render (before any effect runs)
   isCurrentPlayerRef.current = isCurrentPlayer;
   currentPlayerMovingRef.current = currentPlayerMoving;
 
@@ -349,7 +338,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     return gameState.properties.filter(p => p.ownerId === playerId);
   }, [gameState, playerId]);
 
-  // ISSUE #3: stable helper — add floats to state + schedule removal
   const showFloats = useCallback((floats) => {
     if (!floats.length) return;
     setFloatingTexts(prev => [...prev, ...floats]);
@@ -357,13 +345,11 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     setTimeout(() => setFloatingTexts(prev => prev.filter(f => !ids.has(f.id))), 2200);
   }, []);
 
-  // Sync dice display
   useEffect(() => {
     if (gameState?.dice && !diceAnim.isRolling)
       setDiceAnim(prev => ({ ...prev, values: gameState.dice }));
   }, [gameState?.dice, diceAnim.isRolling]);
 
-  // ISSUE #5: simplified card tracking — render is gated by !currentPlayerMoving
   useEffect(() => {
     if (gameState?.pendingCard) {
       setDisplayCard({ ...gameState.pendingCard, turnSequence: gameState.turnSequence });
@@ -372,8 +358,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     }
   }, [gameState?.pendingCard, gameState?.turnSequence]);
 
-  // ISSUE #4: auction timer resets whenever highestBid changes (a bid was placed)
-    useEffect(() => {
+  useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction?.endTime) {
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
       
@@ -394,16 +379,10 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
       if (auctionTimerRef.current) { clearInterval(auctionTimerRef.current); auctionTimerRef.current = null; }
     }
     return () => { if (auctionTimerRef.current) clearInterval(auctionTimerRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.turnPhase, gameState?.auction?.endTime]);
 
-  // Reconnect recovery: fires when the socket comes back (connected flips true)
-  // AND at every natural turn boundary. Clears any stuck currentPlayerMoving or
-  // dice-rolling locks so the active player can always interact after a reconnect,
-  // even when the turn sequence and current player haven't changed.
   useEffect(() => {
     if (!connected || !gameState) return;
-    // 700 ms grace period so any in-flight animation can register first.
     const t = setTimeout(() => {
       const animActive = movingPlayersRef.current.size > 0 || movingCurrentPlayerRef.current !== null;
       if (!animActive) {
@@ -419,12 +398,8 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
       }
     }, 700);
     return () => clearTimeout(t);
-  // `connected` is the key dep: it flips false→true on every reconnect regardless
-  // of whether the turn or sequence changed, guaranteeing the recovery always runs.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected, gameState?.turnSequence, gameState?.currentPlayerId]);
 
-  // Jail notification
   useEffect(() => {
     if (!gameState?.players || !gameState?.log) return;
     const latestLog = gameState.log[gameState.log.length - 1];
@@ -438,7 +413,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     }
   }, [gameState?.log, gameState?.players, playerId]);
 
-  // ISSUE #3: comprehensive floating money — buffers during local animation
   useEffect(() => {
     if (!gameState?.log || !gameState?.players) return;
     const currentLength = gameState.log.length;
@@ -455,54 +429,45 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
 
     newEntries.forEach(entry => {
       let m;
-      // rent
       m = entry.match(/^(.+?) paid \$(\d+) rent to (.+?)\.$/);
       if (m) {
         const amt = parseInt(m[2]);
         const payer = gameState.players.find(p => p.name === m[1]);
         const recv  = gameState.players.find(p => p.name === m[3]);
-        // FIX #3: both floats appear at the PROPERTY tile (where the rent was paid),
-        // not at wherever the receiver happens to be standing.
         if (payer) newFloats.push(mkFloat('p', `-$${amt}`, '#ff4444', payer.position));
         if (recv)  newFloats.push(mkFloat('r', `+$${amt}`, '#44ee44', payer.position));
         return;
       }
-      // tax
       m = entry.match(/^(.+?) paid \$(\d+) in taxes\.$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
         if (p) newFloats.push(mkFloat('t', `-$${parseInt(m[2])}`, '#ff4444', p.position));
         return;
       }
-      // card collect
       m = entry.match(/^(.+?) collected \$(\d+) from card\.$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
         if (p) newFloats.push(mkFloat('cc', `+$${parseInt(m[2])}`, '#44ee44', p.position));
         return;
       }
-      // card pay
       m = entry.match(/^(.+?) paid \$(\d+) from card\.$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
         if (p) newFloats.push(mkFloat('cp', `-$${parseInt(m[2])}`, '#ff4444', p.position));
         return;
       }
-      // passed go
       m = entry.match(/^(.+?) passed Go and collected \$(\d+)$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
-        if (p) newFloats.push(mkFloat('g', `+$${parseInt(m[2])}`, '#44ee44', 0)); // tile 0 = Go
+        if (p) newFloats.push(mkFloat('g', `+$${parseInt(m[2])}`, '#44ee44', 0));
         return;
       }
-      // free vacation
       m = entry.match(/^(.+?) collected \$(\d+) from Free Vacation!$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
         if (p) newFloats.push(mkFloat('fv', `+$${parseInt(m[2])}`, '#44ee44', p.position));
         return;
       }
-      // pay each
       m = entry.match(/^(.+?) paid \$(\d+) to each player\.$/);
       if (m) {
         const payer = gameState.players.find(pl => pl.name === m[1]);
@@ -512,7 +477,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         }
         return;
       }
-      // collect each
       m = entry.match(/^(.+?) collected \$(\d+) from each player\.$/);
       if (m) {
         const recv = gameState.players.find(pl => pl.name === m[1]);
@@ -522,14 +486,12 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         }
         return;
       }
-      // jail fine
       m = entry.match(/^(.+?) paid \$(\d+) to leave Jail\.$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
         if (p) newFloats.push(mkFloat('jf', `-$${parseInt(m[2])}`, '#ff4444', p.position));
         return;
       }
-      // repairs
       m = entry.match(/^(.+?) paid \$(\d+) for repairs\.$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
@@ -539,9 +501,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     });
 
     if (!newFloats.length) return;
-    // FIX #2: Buffer if ANY player's token is animating (not just local player),
-    // so the float always appears after landing, not during movement.
-    // Use a small delay so the animation effect can register moving players first.
     const delayedCheck = setTimeout(() => {
       if (movingPlayersRef.current.size > 0 || currentPlayerMovingRef.current) {
         pendingFloatsRef.current.push(...newFloats);
@@ -552,7 +511,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     timeoutsRef.current.push(delayedCheck);
   }, [gameState?.log?.length, gameState?.players, showFloats]);
 
-  // ISSUE #5: token animation — sets/clears currentPlayerMoving, flushes pending floats on landing
   useEffect(() => {
     if (!gameState?.players) return;
     gameState.players.forEach(player => {
@@ -583,19 +541,17 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         return;
       }
 
-           movingPlayersRef.current.add(player.id);
+      movingPlayersRef.current.add(player.id);
       if (player.id === gameState?.currentPlayerId) {
         movingCurrentPlayerRef.current = player.id;
         setCurrentPlayerMoving(true); currentPlayerMovingRef.current = true;
       }
 
-      // Detect backwards movement (e.g. "Go Back 3 Spaces") and jump instead of looping forward
       const forwardSteps = (currPos - prevPos + 40) % 40;
       const backwardSteps = (prevPos - currPos + 40) % 40;
       const isMovingBackwards = backwardSteps < forwardSteps;
 
       if (isMovingBackwards) {
-        // Instant backwards jump — no long forward-loop animation
         setAnimatedPositions(prev => ({ ...prev, [player.id]: currPos }));
         const t = setTimeout(() => {
           movingPlayersRef.current.delete(player.id);
@@ -636,8 +592,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
           movingPlayersRef.current.delete(player.id);
           setAnimatedPositions(prev => { const n = { ...prev }; delete n[player.id]; return n; });
           prevPositionsRef.current[player.id] = currPos;
-          // FIX #2: flush pending floats when all animations finish
-          // (covers other-player movements where currentPlayerMoving is not involved)
           if (movingPlayersRef.current.size === 0 && movingCurrentPlayerRef.current === null) {
             const ft = setTimeout(() => {
               if (pendingFloatsRef.current.length > 0) {
@@ -673,25 +627,42 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     });
   }, [gameState?.players, gameState?.turnSequence, showFloats]);
 
-  // Cleanup
   useEffect(() => {
     return () => {
-      if (diceIntervalRef.current) clearInterval(diceIntervalRef.current);
+      if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
       timeoutsRef.current.forEach(clearTimeout);
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
     };
   }, []);
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (currentPlayerMoving && gameState?.currentPlayerId !== movingCurrentPlayerRef.current) {
+      setCurrentPlayerMoving(false);
+      currentPlayerMovingRef.current = false;
+      movingCurrentPlayerRef.current = null;
+      if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
+      if (pendingFloatsRef.current.length > 0) {
+        const toShow = [...pendingFloatsRef.current];
+        pendingFloatsRef.current = [];
+        showFloats(toShow);
+      }
+    }
+  }, [gameState?.currentPlayerId, currentPlayerMoving, showFloats]);
 
   const handleRoll = async () => {
+    if (diceAnim.isRolling) return;
     const roomCode = sessionStorage.getItem('roomCode');
+    if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
     setDiceAnim({ isRolling: true, values: [1, 1] });
     diceIntervalRef.current = setInterval(() => {
       setDiceAnim(prev => ({ ...prev, values: [Math.floor(Math.random()*6)+1, Math.floor(Math.random()*6)+1] }));
     }, 120);
     const startTime = Date.now();
-    await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
+    try {
+      await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
+    } catch (err) {
+      console.error('Roll error:', err);
+    }
     const remaining = Math.max(0, 1200 - (Date.now() - startTime));
     setTimeout(() => {
       if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
@@ -731,8 +702,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   }) || [];
 
   const getPropertyState = (tileId) => gameState?.properties.find(p => p.id === tileId);
-
-  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <div className="game-container">
@@ -776,7 +745,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               const charClass  = getCharClass(tile.name);
 
               if (isCorner) {
-                // ISSUE #1: jail tile gets split token zones
                 if (tile.id === 10) {
                   const jailedHere   = playersHere.filter(p => p.inJail);
                   const visitingHere = playersHere.filter(p => !p.inJail);
@@ -832,8 +800,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
                     {propState?.houses > 0 && <div className="houses-indicator">{Array(propState.houses).fill('🏠').join('')}</div>}
                     {propState?.hotel && <div className="hotel-indicator">🏨</div>}
                   </div>
-                  {/* Tokens outside tile-content: direct child of .tile so z-index
-                      is resolved against the tile's stacking context, not tile-content's */}
                   <div className="tile-tokens">
                     {playersHere.map(p => (
                       <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
@@ -847,7 +813,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               );
             })}
 
-            {/* ISSUE #3: directional floating money overlays */}
             {floatingTexts.map(float => (
               <div key={float.id} className={`floating-money ${float.direction}`}
                    style={{ gridRow: float.gridRow, gridColumn: float.gridColumn, color: float.color }}>
@@ -909,10 +874,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         </div>
       </div>
 
-      {/* ── Controls bar ─────────────────────────────────────────────────────── */}
       <div className="controls-bar">
-
-        {/* ISSUE #5: ALL current-player controls gated behind !currentPlayerMoving */}
         {gameState?.status === 'playing' && isCurrentPlayer && !currentPlayerMoving && (
           <>
             {gameState.turnPhase === 'roll' && (
@@ -954,7 +916,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               );
             })()}
 
-            {/* ISSUE #5: card modal only appears after currentPlayerMoving = false */}
             {displayCard && (
               <CardModal key={`${displayCard.id}-${displayCard.turnSequence}`}
                          card={displayCard} onResolve={handleResolveCard}/>
@@ -970,17 +931,25 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
                 )}
               </>
             )}
-
-            {gameState.turnPhase === 'end' && (
-              <>
-                <button className="btn-control btn-end" onClick={handleEndTurn}>✅ End Turn</button>
-                <button className="btn-control" onClick={() => setShowTrade(true)}>🤝 Trade</button>
-              </>
-            )}
           </>
         )}
 
-        {/* Non-current-player auction UI (always visible — no movement gating) */}
+        {gameState?.status === 'playing' && isCurrentPlayer && gameState.turnPhase === 'end' && (
+          <>
+            <button className="btn-control btn-end" onClick={handleEndTurn}>✅ End Turn</button>
+            <button className="btn-control" onClick={() => setShowTrade(true)}>🤝 Trade</button>
+          </>
+        )}
+
+        {gameState?.status === 'playing' && isCurrentPlayer && currentPlayerMoving && gameState.turnPhase === 'end' && (
+          <button className="btn-control btn-end" onClick={() => {
+            setCurrentPlayerMoving(false);
+            currentPlayerMovingRef.current = false;
+            movingCurrentPlayerRef.current = null;
+            if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
+          }}>🔄 Unlock Controls</button>
+        )}
+
         {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase === 'auction' && gameState?.auction && (() => {
           const hb = gameState.auction.highestBidder;
           const hbName = hb ? gameState.players.find(p => p.id === hb)?.name : null;
@@ -1016,7 +985,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         )}
       </div>
 
-      {/* ── Modals ───────────────────────────────────────────────────────────── */}
       {showTrade && (
         <TradeModal players={gameState?.players || []} myId={playerId} myProperties={myProperties}
                     allProperties={gameState?.properties || []} boardTiles={BOARD_TILES}
