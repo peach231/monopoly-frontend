@@ -27,6 +27,11 @@ export function useSocket() {
       setConnected(true);
       console.log('Socket connected:', socket.id);
 
+      if (keepaliveRef.current) clearInterval(keepaliveRef.current);
+      keepaliveRef.current = setInterval(() => {
+        socket.emit('clientPing');
+      }, 15000);
+
       const roomCode = sessionStorage.getItem('roomCode');
       const playerId = sessionStorage.getItem('playerId');
       if (roomCode && playerId) {
@@ -46,18 +51,12 @@ export function useSocket() {
     socket.on('disconnect', (reason) => {
       setConnected(false);
       console.log('Socket disconnected:', reason);
+      if (keepaliveRef.current) clearInterval(keepaliveRef.current);
     });
 
     socket.on('gameState', (state) => {
       setGameState(state);
     });
-
-    // Keepalive to prevent mobile browsers / proxies from dropping idle sockets
-    keepaliveRef.current = setInterval(() => {
-      if (socket.connected) {
-        socket.emit('clientPing');
-      }
-    }, 15000);
 
     return () => {
       if (keepaliveRef.current) clearInterval(keepaliveRef.current);
