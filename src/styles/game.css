@@ -2910,47 +2910,77 @@
    FLAG STYLES — Sidebar & Profile Modal
    ============================================ */
 
-/* PlayerPanel: flag chips */
+/* PlayerPanel: clean flag chips - no border, no box */
 .prop-chip {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Ensure the img inside prop-chip fills cleanly */
+.prop-chip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  outline: none;
 }
 
 /* PlayerProfileModal: inline flag next to property name */
 .prop-flag-inline {
   display: inline-block;
   vertical-align: middle;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
-/* Monopoly tracker chip with flag background */
-.monopoly-chip {
-  width: 28px;
-  height: 22px;
-  border-radius: 3px;
+/* Monopoly tracker: clean flag chip with no border box */
+.monopoly-chip-wrapper {
+  position: relative;
+  width: 32px;
+  height: 24px;
+  border-radius: 2px;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  font-family: 'Fredoka', 'Arial Black', sans-serif;
-  overflow: hidden;
-  position: relative;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
-/* Ensure text is readable over flag backgrounds */
-.monopoly-chip::after {
-  content: '';
+.monopoly-chip-flag {
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.25);
-  pointer-events: none;
-  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+  outline: none;
+  display: block;
 }
 
-.monopoly-chip {
+.monopoly-chip-text {
   position: relative;
   z-index: 2;
+  font-family: 'Fredoka', 'Arial Black', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #000;
+  text-shadow:
+    0 0 3px #fff,
+    0 0 6px #fff,
+    0 0 9px #fff,
+    0 0 12px #fff;
+  line-height: 1;
 }
 
 /* Profile property item: tighter with flag */
