@@ -1,5 +1,5 @@
 import React from 'react';
- 
+
 const COLOR_MAP = {
   brown: '#955436',
   lightblue: '#AAE0FA',
@@ -23,17 +23,18 @@ const TILE_COUNTRY = {
   37: 'US', 39: 'US'
 };
 
+// SVG flags - vector, always crisp at any size
 function getFlagUrl(countryCode) {
-  return `https://flagcdn.com/256x192/${countryCode.toLowerCase()}.png`;
+  return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
 }
- 
+
 const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
   'graduation-hat': '🎓',
   pencil: '✏️'
 };
- 
+
 const BOARD_TILES = [
   { id: 0, name: "START" },
   { id: 1, name: "Rio de Janeiro", colorGroup: "brown" },
@@ -85,7 +86,7 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
         const isMe = player.id === myId;
         const isCurrent = player.id === currentPlayerId;
         const playerProps = properties.filter(p => p.ownerId === player.id);
- 
+
         return (
           <div
             key={player.id}
@@ -107,10 +108,10 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
               </div>
               {isCurrent && <span className="turn-badge">▶</span>}
             </div>
- 
+
             {player.inJail && <div className="jail-badge">🔒 In Jail</div>}
             {player.jailCards > 0 && <div className="jail-card-badge">🎫 x{player.jailCards}</div>}
- 
+
             <div className="player-properties">
               {playerProps.map(prop => {
                 const tile = BOARD_TILES[prop.id];
@@ -122,10 +123,9 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                     style={{
                       backgroundColor: countryCode ? 'transparent' : (tile?.colorGroup ? COLOR_MAP[tile.colorGroup] : '#666'),
                       opacity: prop.isMortgaged ? 0.5 : 1,
-                      backgroundImage: countryCode ? `url(${getFlagUrl(countryCode)})` : 'none',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      border: countryCode ? '1px solid rgba(0,0,0,0.2)' : 'none'
+                      border: 'none',
+                      borderRadius: '2px',
+                      overflow: 'hidden'
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -133,8 +133,18 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                     }}
                     title={tile?.name}
                   >
-                    {prop.hotel ? '🏨' : prop.houses > 0 ? `${prop.houses}🏠` : ''}
-                    {prop.isMortgaged && ' 🔒'}
+                    {countryCode ? (
+                      <img 
+                        src={getFlagUrl(countryCode)} 
+                        alt="" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
+                    ) : (
+                      <>
+                        {prop.hotel ? '🏨' : prop.houses > 0 ? `${prop.houses}🏠` : ''}
+                        {prop.isMortgaged && ' 🔒'}
+                      </>
+                    )}
                   </div>
                 );
               })}
