@@ -462,8 +462,10 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         const amt = parseInt(m[2]);
         const payer = gameState.players.find(p => p.name === m[1]);
         const recv  = gameState.players.find(p => p.name === m[3]);
+        // FIX #3: both floats appear at the PROPERTY tile (where the rent was paid),
+        // not at wherever the receiver happens to be standing.
         if (payer) newFloats.push(mkFloat('p', `-$${amt}`, '#ff4444', payer.position));
-        if (recv)  newFloats.push(mkFloat('r', `+$${amt}`, '#44ee44', recv.position));
+        if (recv)  newFloats.push(mkFloat('r', `+$${amt}`, '#44ee44', payer.position));
         return;
       }
       // tax
@@ -491,7 +493,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
       m = entry.match(/^(.+?) passed Go and collected \$(\d+)$/);
       if (m) {
         const p = gameState.players.find(pl => pl.name === m[1]);
-        if (p) newFloats.push(mkFloat('g', `+$${parseInt(m[2])}`, '#44ee44', p.position));
+        if (p) newFloats.push(mkFloat('g', `+$${parseInt(m[2])}`, '#44ee44', 0)); // tile 0 = Go
         return;
       }
       // free vacation
@@ -538,12 +540,17 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     });
 
     if (!newFloats.length) return;
-    // Buffer if local player is mid-animation; otherwise show immediately
-    if (currentPlayerMovingRef.current) {
-      pendingFloatsRef.current.push(...newFloats);
-    } else {
-      showFloats(newFloats);
-    }
+    // FIX #2: Buffer if ANY player's token is animating (not just local player),
+    // so the float always appears after landing, not during movement.
+    // Use a small delay so the animation effect can register moving players first.
+    const delayedCheck = setTimeout(() => {
+      if (movingPlayersRef.current.size > 0 || currentPlayerMovingRef.current) {
+        pendingFloatsRef.current.push(...newFloats);
+      } else {
+        showFloats(newFloats);
+      }
+    }, 80);
+    timeoutsRef.current.push(delayedCheck);
   }, [gameState?.log?.length, gameState?.players, showFloats]);
 
   // ISSUE #5: token animation — sets/clears currentPlayerMoving, flushes pending floats on landing
@@ -593,6 +600,18 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
           movingPlayersRef.current.delete(player.id);
           setAnimatedPositions(prev => { const n = { ...prev }; delete n[player.id]; return n; });
           prevPositionsRef.current[player.id] = currPos;
+          // FIX #2: flush pending floats when all animations finish
+          // (covers other-player movements where currentPlayerMoving is not involved)
+          if (movingPlayersRef.current.size === 0 && movingCurrentPlayerRef.current === null) {
+            const ft = setTimeout(() => {
+              if (pendingFloatsRef.current.length > 0) {
+                const toShow = [...pendingFloatsRef.current];
+                pendingFloatsRef.current = [];
+                showFloats(toShow);
+              }
+            }, 200);
+            timeoutsRef.current.push(ft);
+          }
           if (player.id === movingCurrentPlayerRef.current) {
             const st = setTimeout(() => {
               setCurrentPlayerMoving(false); currentPlayerMovingRef.current = false;
@@ -776,14 +795,16 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
                     {propState?.ownerId && <div className="owner-dot" style={{ backgroundColor: owner?.color || '#999' }}/>}
                     {propState?.houses > 0 && <div className="houses-indicator">{Array(propState.houses).fill('🏠').join('')}</div>}
                     {propState?.hotel && <div className="hotel-indicator">🏨</div>}
-                    <div className="tile-tokens">
-                      {playersHere.map(p => (
-                        <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
-                              style={{ backgroundColor: p.color }} title={p.name}>
-                          {TOKEN_EMOJI[p.token] || '●'}
-                        </span>
-                      ))}
-                    </div>
+                  </div>
+                  {/* Tokens outside tile-content: direct child of .tile so z-index
+                      is resolved against the tile's stacking context, not tile-content's */}
+                  <div className="tile-tokens">
+                    {playersHere.map(p => (
+                      <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
+                            style={{ backgroundColor: p.color }} title={p.name}>
+                        {TOKEN_EMOJI[p.token] || '●'}
+                      </span>
+                    ))}
                   </div>
                   {tile.price && <div className="tile-price-edge">${tile.price}</div>}
                 </div>
