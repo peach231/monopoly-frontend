@@ -22,6 +22,8 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
   const isChance = tile.type === 'chance';
   const isChest = tile.type === 'chest';
 
+  const hasBuildings = propertyState?.houses > 0 || propertyState?.hotel;
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal property-modal" onClick={(e) => e.stopPropagation()}>
@@ -67,7 +69,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-          {/* Owner info visible to ALL players - HIDDEN for non-purchasable tiles */}
+          {/* Owner info visible to ALL players */}
           {(isProperty || isRailroad || isUtility) && (
             propertyState?.ownerId ? (
               <div className="property-owner">
@@ -81,7 +83,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             )
           )}
 
-          {/* Property rent table — visible to ALL players */}
+          {/* Property rent table */}
           {isProperty && tile.rent && (
             <div className="rent-table">
               <div className="rent-row rent-total"><span>Base Rent</span><span>${tile.rent[0]}</span></div>
@@ -103,7 +105,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-          {/* Railroad rent table — visible to ALL players */}
+          {/* Railroad rent table */}
           {isRailroad && (
             <div className="rent-table">
               <div className="rent-row"><span>1 Airport</span><span>$25</span></div>
@@ -117,7 +119,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-          {/* Utility rent table — visible to ALL players */}
+          {/* Utility rent table */}
           {isUtility && (
             <div className="rent-table">
               <div className="rent-row"><span>1 Utility</span><span>4x dice roll</span></div>
@@ -145,14 +147,28 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             {isProperty && !propertyState.isMortgaged && (
               <>
                 <button className="btn-action" onClick={onBuild}>🏗️ Build House/Hotel</button>
-                {(propertyState.houses > 0 || propertyState.hotel) && (
-                  <button className="btn-action btn-sell" onClick={onSell}>💰 Sell House</button>
+                {hasBuildings && (
+                  <button className="btn-action btn-sell" onClick={onSell}>
+                    💰 Sell {propertyState.hotel ? 'Hotel' : 'House'}
+                    {tile.houseCost ? ` (+$${tile.houseCost / 2})` : ''}
+                  </button>
                 )}
               </>
             )}
-            {!propertyState.isMortgaged && !propertyState.houses && !propertyState.hotel && (
-              <button className="btn-action btn-mortgage" onClick={onMortgage}>🔒 Mortgage</button>
+
+            {/* Mortgage section */}
+            {!propertyState.isMortgaged && (
+              <>
+                {hasBuildings ? (
+                  <button className="btn-action btn-mortgage btn-disabled" disabled title="Sell all houses/hotel first">
+                    🔒 Mortgage — Sell buildings first
+                  </button>
+                ) : (
+                  <button className="btn-action btn-mortgage" onClick={onMortgage}>🔒 Mortgage</button>
+                )}
+              </>
             )}
+
             {propertyState.isMortgaged && (
               <button className="btn-action btn-unmortgage" onClick={onUnmortgage}>🔓 Unmortgage (${Math.ceil(tile.mortgageValue * 1.1)})</button>
             )}
