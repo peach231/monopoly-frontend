@@ -64,7 +64,7 @@ function getFlagUrl(countryCode) {
 }
 
 const TOKEN_EMOJI = {
-  backpack: '\u{1F392}', textbooks: '\u{1F4DA}', 'graduation-hat': '\u{1F393}', pencil: '\u{270F}\uFE0F'
+  backpack: '🎒', textbooks: '📚', 'graduation-hat': '🎓', pencil: '✏️'
 };
 
 function getCharClass(name) {
@@ -263,7 +263,7 @@ function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
             {(jailedPlayers || []).map(p => (
               <span key={p.id} className={`token ${hoppingTokens?.[p.id] ? 'hopping' : ''}`}
                     style={{ backgroundColor: p.color }} title={p.name}>
-                {TOKEN_EMOJI[p.token] || '\u25CF'}
+                {TOKEN_EMOJI[p.token] || '●'}
               </span>
             ))}
           </div>
@@ -278,7 +278,7 @@ function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
           {(visitingPlayers || []).map(p => (
             <span key={p.id} className={`token ${hoppingTokens?.[p.id] ? 'hopping' : ''}`}
                   style={{ backgroundColor: p.color }} title={p.name}>
-              {TOKEN_EMOJI[p.token] || '\u25CF'}
+              {TOKEN_EMOJI[p.token] || '●'}
             </span>
           ))}
         </div>
@@ -375,7 +375,8 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   // ISSUE #4: auction timer resets whenever highestBid changes (a bid was placed)
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction) {
-      setAuctionTimer(10);
+      const resetTime = gameState?.auction?.highestBid > 0 ? 5 : 10;
+setAuctionTimer(resetTime);
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
       auctionTimerRef.current = setInterval(() => {
         setAuctionTimer(prev => {
@@ -657,7 +658,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       {jailNotification && (
         <div className="jail-notification-overlay">
           <div className="jail-notification">
-            <div className="jail-notification-icon">\u{1F694}</div>
+            <div className="jail-notification-icon">🚔</div>
             <div className="jail-notification-text">
               {jailNotification.isMe ? 'YOU ARE GOING TO JAIL' : `${jailNotification.name} IS GOING TO JAIL`}
             </div>
@@ -716,7 +717,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                       {playersHere.map(p => (
                         <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
                               style={{ backgroundColor: p.color }} title={p.name}>
-                          {TOKEN_EMOJI[p.token] || '\u25CF'}
+                          {TOKEN_EMOJI[p.token] || '●'}
                         </span>
                       ))}
                     </div>
@@ -747,13 +748,13 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                     </div>
                     {hasIcon && <div className="tile-icon-wrap"><TileIcon tile={tile}/></div>}
                     {propState?.ownerId && <div className="owner-dot" style={{ backgroundColor: owner?.color || '#999' }}/>}
-                    {propState?.houses > 0 && <div className="houses-indicator">{Array(propState.houses).fill('\u{1F3E0}').join('')}</div>}
-                    {propState?.hotel && <div className="hotel-indicator">\u{1F3E8}</div>}
+                    {propState?.houses > 0 && <div className="houses-indicator">{Array(propState.houses).fill('🏠').join('')}</div>}
+                    {propState?.hotel && <div className="hotel-indicator">🏨</div>}
                     <div className="tile-tokens">
                       {playersHere.map(p => (
                         <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
                               style={{ backgroundColor: p.color }} title={p.name}>
-                          {TOKEN_EMOJI[p.token] || '\u25CF'}
+                          {TOKEN_EMOJI[p.token] || '●'}
                         </span>
                       ))}
                     </div>
@@ -806,7 +807,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                 </div>
               </div>
               <div className="free-parking">
-                \u{1F4B0} Vacation Fund: ${gameState?.freeParkingMoney || 0}
+                💰 Vacation Fund: ${gameState?.freeParkingMoney || 0}
               </div>
             </div>
           </div>
@@ -833,14 +834,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           <>
             {gameState.turnPhase === 'roll' && (
               <button className="btn-control btn-roll" onClick={handleRoll} disabled={diceAnim.isRolling}>
-                {diceAnim.isRolling ? '\u{1F3B2} Rolling...' : gameState?.extraRoll ? '\u{1F3B2} Roll Again (Doubles!)' : '\u{1F3B2} Roll Dice'}
+                {diceAnim.isRolling ? '🎲 Rolling...' : gameState?.extraRoll ? '🎲 Roll Again (Doubles!)' : '🎲 Roll Dice'}
               </button>
             )}
 
             {gameState.turnPhase === 'buy' && (
               <>
-                <button className="btn-control btn-buy" onClick={handleBuy}>\u{1F4B0} Buy Property</button>
-                <button className="btn-control btn-auction" onClick={handleAuction}>\u{1F4E2} Auction</button>
+                <button className="btn-control btn-buy" onClick={handleBuy}>💰 Buy Property</button>
+                <button className="btn-control btn-auction" onClick={handleAuction}>📢 Auction</button>
               </>
             )}
 
@@ -850,9 +851,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               return (
                 <div className="auction-bar">
                   <div className="auction-info">
-                    <span>\u{1F4E2} Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
+                    <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
                     <span className="auction-bid">Highest: ${gameState.auction.highestBid}{hbName ? ` by ${hbName}` : ' (No bids)'}</span>
-                    <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1\uFE0F {auctionTimer}s</span>
+                    <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1️ {auctionTimer}s</span>
                   </div>
                   {gameState.auction.activeBidders.includes(playerId) && (
                     <div className="auction-controls">
@@ -878,10 +879,10 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
             {currentPlayer?.inJail && gameState.turnPhase === 'roll' && (
               <>
-                <button className="btn-control" onClick={handlePayJail}>\u{1F4B5} Pay $50 Fine</button>
+                <button className="btn-control" onClick={handlePayJail}>💵 Pay $50 Fine</button>
                 {me?.jailCards > 0 && (
                   <button className="btn-control" onClick={handleUseJailCard}>
-                    \u{1F3AB} Use Jail Card ({me.jailCards})
+                    🎫 Use Jail Card ({me.jailCards})
                   </button>
                 )}
               </>
@@ -890,7 +891,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
             {gameState.turnPhase === 'end' && (
               <>
                 <button className="btn-control btn-end" onClick={handleEndTurn}>\u2705 End Turn</button>
-                <button className="btn-control" onClick={() => setShowTrade(true)}>\u{1F91D} Trade</button>
+                <button className="btn-control" onClick={() => setShowTrade(true)}>🤝 Trade</button>
               </>
             )}
           </>
@@ -903,9 +904,9 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
           return (
             <div className="auction-bar">
               <div className="auction-info">
-                <span>\u{1F4E2} Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
+                <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
                 <span className="auction-bid">Highest: ${gameState.auction.highestBid}{hbName ? ` by ${hbName}` : ' (No bids)'}</span>
-                <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1\uFE0F {auctionTimer}s</span>
+                <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1️ {auctionTimer}s</span>
               </div>
               {gameState.auction.activeBidders.includes(playerId) && (
                 <div className="auction-controls">
@@ -928,7 +929,7 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         )}
 
         {gameState?.status === 'ended' && (
-          <div className="game-over">\u{1F389} {gameState.players.find(p => !p.isBankrupt)?.name} Wins!</div>
+          <div className="game-over">🎉 {gameState.players.find(p => !p.isBankrupt)?.name} Wins!</div>
         )}
       </div>
 
