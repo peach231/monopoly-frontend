@@ -584,10 +584,47 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         return;
       }
 
-      movingPlayersRef.current.add(player.id);
+           movingPlayersRef.current.add(player.id);
       if (player.id === gameState?.currentPlayerId) {
         movingCurrentPlayerRef.current = player.id;
         setCurrentPlayerMoving(true); currentPlayerMovingRef.current = true;
+      }
+
+      // Detect backwards movement (e.g. "Go Back 3 Spaces") and jump instead of looping forward
+      const forwardSteps = (currPos - prevPos + 40) % 40;
+      const backwardSteps = (prevPos - currPos + 40) % 40;
+      const isMovingBackwards = backwardSteps < forwardSteps;
+
+      if (isMovingBackwards) {
+        // Instant backwards jump — no long forward-loop animation
+        setAnimatedPositions(prev => ({ ...prev, [player.id]: currPos }));
+        const t = setTimeout(() => {
+          movingPlayersRef.current.delete(player.id);
+          setAnimatedPositions(prev => { const n = { ...prev }; delete n[player.id]; return n; });
+          prevPositionsRef.current[player.id] = currPos;
+          if (movingPlayersRef.current.size === 0 && movingCurrentPlayerRef.current === null) {
+            const ft = setTimeout(() => {
+              if (pendingFloatsRef.current.length > 0) {
+                const toShow = [...pendingFloatsRef.current];
+                pendingFloatsRef.current = [];
+                showFloats(toShow);
+              }
+            }, 200);
+            timeoutsRef.current.push(ft);
+          }
+          if (player.id === movingCurrentPlayerRef.current) {
+            const st = setTimeout(() => {
+              setCurrentPlayerMoving(false); currentPlayerMovingRef.current = false;
+              movingCurrentPlayerRef.current = null;
+              if (pendingFloatsRef.current.length > 0) {
+                const s = [...pendingFloatsRef.current]; pendingFloatsRef.current = []; showFloats(s);
+              }
+            }, 150);
+            timeoutsRef.current.push(st);
+          }
+        }, 300);
+        timeoutsRef.current.push(t);
+        return;
       }
 
       const path = [];
