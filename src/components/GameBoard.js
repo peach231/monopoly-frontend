@@ -50,25 +50,13 @@ const BOARD_TILES = [
 ];
 
 const COLOR_MAP = {
-  brown: '#955436',
-  lightblue: '#AAE0FA',
-  pink: '#D93A96',
-  orange: '#F7941D',
-  red: '#ED1B24',
-  yellow: '#FEF200',
-  green: '#1FB25A',
-  darkblue: '#0072BB'
+  brown: '#955436', lightblue: '#AAE0FA', pink: '#D93A96', orange: '#F7941D',
+  red: '#ED1B24', yellow: '#FEF200', green: '#1FB25A', darkblue: '#0072BB'
 };
 
 const COLOR_GROUPS = {
-  brown: [1, 3],
-  lightblue: [6, 8, 9],
-  pink: [11, 13, 14],
-  orange: [16, 18, 19],
-  red: [21, 23, 24],
-  yellow: [26, 27, 29],
-  green: [31, 32, 34],
-  darkblue: [37, 39]
+  brown: [1, 3], lightblue: [6, 8, 9], pink: [11, 13, 14], orange: [16, 18, 19],
+  red: [21, 23, 24], yellow: [26, 27, 29], green: [31, 32, 34], darkblue: [37, 39]
 };
 
 function getFlagUrl(countryCode) {
@@ -76,10 +64,7 @@ function getFlagUrl(countryCode) {
 }
 
 const TOKEN_EMOJI = {
-  backpack: '🎒',
-  textbooks: '📚',
-  'graduation-hat': '🎓',
-  pencil: '✏️'
+  backpack: '\u{1F392}', textbooks: '\u{1F4DA}', 'graduation-hat': '\u{1F393}', pencil: '\u{270F}\uFE0F'
 };
 
 function getCharClass(name) {
@@ -92,23 +77,15 @@ function getCharClass(name) {
 }
 
 function getGridPos(tileId) {
-  if (tileId >= 20 && tileId <= 30) {
-    return { gridRow: 1, gridColumn: tileId - 19 };
-  }
-  if (tileId >= 31 && tileId <= 39) {
-    return { gridRow: tileId - 29, gridColumn: 11 };
-  }
-  if (tileId >= 0 && tileId <= 10) {
-    return { gridRow: 11, gridColumn: 11 - tileId };
-  }
-  if (tileId >= 11 && tileId <= 19) {
-    return { gridRow: 21 - tileId, gridColumn: 1 };
-  }
+  if (tileId >= 20 && tileId <= 30) return { gridRow: 1, gridColumn: tileId - 19 };
+  if (tileId >= 31 && tileId <= 39) return { gridRow: tileId - 29, gridColumn: 11 };
+  if (tileId >= 0  && tileId <= 10) return { gridRow: 11, gridColumn: 11 - tileId };
+  if (tileId >= 11 && tileId <= 19) return { gridRow: 21 - tileId, gridColumn: 1 };
   return { gridRow: 1, gridColumn: 1 };
 }
 
 function getTileSide(tileId) {
-  if (tileId >= 1 && tileId <= 9) return 'bottom';
+  if (tileId >= 1  && tileId <= 9)  return 'bottom';
   if (tileId >= 11 && tileId <= 19) return 'left';
   if (tileId >= 21 && tileId <= 29) return 'top';
   if (tileId >= 31 && tileId <= 39) return 'right';
@@ -119,124 +96,111 @@ function calculateRent(tileId, properties, diceSum = 7) {
   const tile = BOARD_TILES[tileId];
   const prop = properties.find(p => p.id === tileId);
   if (!tile || !prop || !prop.ownerId || prop.isMortgaged) return 0;
-
   if (tile.type === 'property' && tile.rent) {
     if (prop.hotel) return tile.rent[5];
     if (prop.houses > 0) return tile.rent[prop.houses];
     const group = COLOR_GROUPS[tile.colorGroup];
     if (group) {
-      const ownsAll = group.every(id => {
-        const p = properties.find(x => x.id === id);
-        return p && p.ownerId === prop.ownerId;
-      });
+      const ownsAll = group.every(id => { const p = properties.find(x => x.id === id); return p && p.ownerId === prop.ownerId; });
       return ownsAll ? tile.rent[0] * 2 : tile.rent[0];
     }
     return tile.rent[0];
   }
   if (tile.type === 'railroad') {
-    const railroads = [5, 15, 25, 35].filter(id => {
-      const p = properties.find(x => x.id === id);
-      return p && p.ownerId === prop.ownerId;
-    });
-    return 25 * Math.pow(2, railroads.length - 1);
+    const rr = [5,15,25,35].filter(id => { const p = properties.find(x => x.id === id); return p && p.ownerId === prop.ownerId; });
+    return 25 * Math.pow(2, rr.length - 1);
   }
   if (tile.type === 'utility') {
-    const utilities = [12, 28].filter(id => {
-      const p = properties.find(x => x.id === id);
-      return p && p.ownerId === prop.ownerId;
-    });
-    return utilities.length === 2 ? diceSum * 10 : diceSum * 4;
+    const ut = [12,28].filter(id => { const p = properties.find(x => x.id === id); return p && p.ownerId === prop.ownerId; });
+    return ut.length === 2 ? diceSum * 10 : diceSum * 4;
   }
   return 0;
 }
 
+// ISSUE #3 — float direction: toward board center from each edge
+function getFloatDirection(tileId) {
+  if (tileId >= 0  && tileId <= 10) return 'float-up';
+  if (tileId >= 11 && tileId <= 19) return 'float-right';
+  if (tileId >= 20 && tileId <= 30) return 'float-down';
+  if (tileId >= 31 && tileId <= 39) return 'float-left';
+  return 'float-up';
+}
+
 const AirplaneIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    <path d="M50 10 L60 35 L95 45 L95 55 L60 50 L55 90 L45 90 L42 50 L10 55 L10 45 L42 35 Z" 
+    <path d="M50 10 L60 35 L95 45 L95 55 L60 50 L55 90 L45 90 L42 50 L10 55 L10 45 L42 35 Z"
           fill="#1a1a1a" stroke="#1a1a1a" strokeWidth="2" strokeLinejoin="round"/>
     <rect x="48" y="35" width="4" height="30" fill="#555" rx="1"/>
     <path d="M35 55 L50 65 L65 55" fill="none" stroke="#888" strokeWidth="1.5"/>
   </svg>
 );
-
 const BulbIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     <g stroke="#FFB300" strokeWidth="4" strokeLinecap="round">
-      <line x1="50" y1="3" x2="50" y2="13" />
-      <line x1="18" y1="20" x2="25" y2="27" />
-      <line x1="82" y1="20" x2="75" y2="27" />
-      <line x1="5" y1="50" x2="15" y2="50" />
-      <line x1="85" y1="50" x2="95" y2="50" />
+      <line x1="50" y1="3" x2="50" y2="13"/><line x1="18" y1="20" x2="25" y2="27"/>
+      <line x1="82" y1="20" x2="75" y2="27"/><line x1="5" y1="50" x2="15" y2="50"/>
+      <line x1="85" y1="50" x2="95" y2="50"/>
     </g>
-    <ellipse cx="50" cy="50" rx="24" ry="28" fill="#FFE082" stroke="#1a1a1a" strokeWidth="2.5" />
-    <path d="M 42 48 Q 50 56 58 48" stroke="#FF6F00" strokeWidth="2" fill="none" />
-    <line x1="42" y1="48" x2="42" y2="40" stroke="#1a1a1a" strokeWidth="1.5" />
-    <line x1="58" y1="48" x2="58" y2="40" stroke="#1a1a1a" strokeWidth="1.5" />
-    <rect x="38" y="76" width="24" height="5" fill="#888" stroke="#1a1a1a" strokeWidth="1" />
-    <rect x="40" y="81" width="20" height="4" fill="#888" stroke="#1a1a1a" strokeWidth="1" />
-    <rect x="42" y="85" width="16" height="4" fill="#666" stroke="#1a1a1a" strokeWidth="1" />
+    <ellipse cx="50" cy="50" rx="24" ry="28" fill="#FFE082" stroke="#1a1a1a" strokeWidth="2.5"/>
+    <path d="M 42 48 Q 50 56 58 48" stroke="#FF6F00" strokeWidth="2" fill="none"/>
+    <line x1="42" y1="48" x2="42" y2="40" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <line x1="58" y1="48" x2="58" y2="40" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <rect x="38" y="76" width="24" height="5" fill="#888" stroke="#1a1a1a" strokeWidth="1"/>
+    <rect x="40" y="81" width="20" height="4" fill="#888" stroke="#1a1a1a" strokeWidth="1"/>
+    <rect x="42" y="85" width="16" height="4" fill="#666" stroke="#1a1a1a" strokeWidth="1"/>
   </svg>
 );
-
 const FaucetIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    <circle cx="40" cy="18" r="9" fill="#666" stroke="#1a1a1a" strokeWidth="2" />
-    <line x1="32" y1="18" x2="48" y2="18" stroke="#1a1a1a" strokeWidth="2" />
-    <line x1="40" y1="10" x2="40" y2="26" stroke="#1a1a1a" strokeWidth="2" />
-    <rect x="36" y="26" width="8" height="14" fill="#888" stroke="#1a1a1a" strokeWidth="1.5" />
-    <rect x="20" y="40" width="50" height="14" fill="#888" stroke="#1a1a1a" strokeWidth="1.5" />
-    <rect x="62" y="54" width="10" height="10" fill="#666" stroke="#1a1a1a" strokeWidth="1.5" />
-    <rect x="65" y="64" width="4" height="14" fill="#3FA9F5" />
-    <ellipse cx="67" cy="86" rx="4" ry="6" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
-    <ellipse cx="56" cy="92" rx="3" ry="4" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
-    <ellipse cx="78" cy="93" rx="2.5" ry="3.5" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1" />
+    <circle cx="40" cy="18" r="9" fill="#666" stroke="#1a1a1a" strokeWidth="2"/>
+    <line x1="32" y1="18" x2="48" y2="18" stroke="#1a1a1a" strokeWidth="2"/>
+    <line x1="40" y1="10" x2="40" y2="26" stroke="#1a1a1a" strokeWidth="2"/>
+    <rect x="36" y="26" width="8" height="14" fill="#888" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <rect x="20" y="40" width="50" height="14" fill="#888" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <rect x="62" y="54" width="10" height="10" fill="#666" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <rect x="65" y="64" width="4" height="14" fill="#3FA9F5"/>
+    <ellipse cx="67" cy="86" rx="4" ry="6" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1"/>
+    <ellipse cx="56" cy="92" rx="3" ry="4" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1"/>
+    <ellipse cx="78" cy="93" rx="2.5" ry="3.5" fill="#3FA9F5" stroke="#1976D2" strokeWidth="1"/>
   </svg>
 );
-
 const ChanceIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     <text x="50" y="78" textAnchor="middle" fontSize="92" fontWeight="900"
-          fill="#F7941D" fontFamily="Fredoka, Arial Black, sans-serif"
-          stroke="#1a1a1a" strokeWidth="2">?</text>
+          fill="#F7941D" fontFamily="Fredoka, Arial Black, sans-serif" stroke="#1a1a1a" strokeWidth="2">?</text>
   </svg>
 );
-
 const ChestIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    <rect x="12" y="50" width="76" height="34" fill="#8B4513" stroke="#1a1a1a" strokeWidth="2" />
-    <path d="M 12 50 Q 50 22 88 50 Z" fill="#A0522D" stroke="#1a1a1a" strokeWidth="2" />
-    <line x1="12" y1="64" x2="88" y2="64" stroke="#1a1a1a" strokeWidth="2" />
-    <line x1="30" y1="36" x2="30" y2="84" stroke="#1a1a1a" strokeWidth="1.5" />
-    <line x1="70" y1="36" x2="70" y2="84" stroke="#1a1a1a" strokeWidth="1.5" />
-    <rect x="44" y="58" width="12" height="14" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1.5" />
-    <circle cx="50" cy="64" r="2" fill="#1a1a1a" />
-    <circle cx="78" cy="44" r="4" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1" />
-    <circle cx="22" cy="44" r="3" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1" />
+    <rect x="12" y="50" width="76" height="34" fill="#8B4513" stroke="#1a1a1a" strokeWidth="2"/>
+    <path d="M 12 50 Q 50 22 88 50 Z" fill="#A0522D" stroke="#1a1a1a" strokeWidth="2"/>
+    <line x1="12" y1="64" x2="88" y2="64" stroke="#1a1a1a" strokeWidth="2"/>
+    <line x1="30" y1="36" x2="30" y2="84" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <line x1="70" y1="36" x2="70" y2="84" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <rect x="44" y="58" width="12" height="14" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1.5"/>
+    <circle cx="50" cy="64" r="2" fill="#1a1a1a"/>
+    <circle cx="78" cy="44" r="4" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1"/>
+    <circle cx="22" cy="44" r="3" fill="#FFD700" stroke="#1a1a1a" strokeWidth="1"/>
   </svg>
 );
-
 const DiamondRingIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
-    <ellipse cx="50" cy="68" rx="28" ry="22" fill="none" stroke="#FFD700" strokeWidth="6" />
-    <ellipse cx="50" cy="68" rx="28" ry="22" fill="none" stroke="#1a1a1a" strokeWidth="1" />
-    <polygon points="50,15 38,32 50,50 62,32" fill="#B0E0E6" stroke="#1a1a1a" strokeWidth="2" />
-    <polygon points="50,15 44,24 50,32 56,24" fill="#fff" />
-    <line x1="38" y1="32" x2="62" y2="32" stroke="#1a1a1a" strokeWidth="1.5" />
+    <ellipse cx="50" cy="68" rx="28" ry="22" fill="none" stroke="#FFD700" strokeWidth="6"/>
+    <ellipse cx="50" cy="68" rx="28" ry="22" fill="none" stroke="#1a1a1a" strokeWidth="1"/>
+    <polygon points="50,15 38,32 50,50 62,32" fill="#B0E0E6" stroke="#1a1a1a" strokeWidth="2"/>
+    <polygon points="50,15 44,24 50,32 56,24" fill="#fff"/>
+    <line x1="38" y1="32" x2="62" y2="32" stroke="#1a1a1a" strokeWidth="1.5"/>
   </svg>
 );
-
 const TaxIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="tile-svg">
     <text x="50" y="68" textAnchor="middle" fontSize="62" fontWeight="900"
-          fill="#1FB25A" fontFamily="Fredoka, Arial Black, sans-serif"
-          stroke="#1a1a1a" strokeWidth="2">$</text>
+          fill="#1FB25A" fontFamily="Fredoka, Arial Black, sans-serif" stroke="#1a1a1a" strokeWidth="2">$</text>
   </svg>
 );
-
 const PalmTreeIcon = () => (
   <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
     <path d="M58 45 Q55 65 52 85 L60 88 L68 85 Q65 65 62 45 Z" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1.5"/>
-    <path d="M58 45 Q52 55 54 70" fill="none" stroke="#654321" strokeWidth="2"/>
     <ellipse cx="60" cy="38" rx="35" ry="12" fill="#228B22" stroke="#1a1a1a" strokeWidth="1.5" transform="rotate(-15 60 38)"/>
     <ellipse cx="60" cy="38" rx="32" ry="10" fill="#32CD32" stroke="#1a1a1a" strokeWidth="1" transform="rotate(10 60 38)"/>
     <ellipse cx="60" cy="38" rx="28" ry="9" fill="#228B22" stroke="#1a1a1a" strokeWidth="1" transform="rotate(35 60 38)"/>
@@ -246,59 +210,43 @@ const PalmTreeIcon = () => (
     <circle cx="59" cy="53" r="3" fill="#8B4513" stroke="#1a1a1a" strokeWidth="1"/>
   </svg>
 );
-
 const ArrowIcon = () => (
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="corner-svg">
-    <path d="M 20 30 L 70 30 L 70 15 L 92 50 L 70 85 L 70 70 L 20 70 Z"
-          fill="#C5392A" stroke="#1a1a1a" strokeWidth="2.5" />
+    <path d="M 20 30 L 70 30 L 70 15 L 92 50 L 70 85 L 70 70 L 20 70 Z" fill="#C5392A" stroke="#1a1a1a" strokeWidth="2.5"/>
   </svg>
 );
-
 const GoArrowIcon = () => (
   <svg viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg" className="go-arrow-svg">
-    <path d="M 5 15 L 18 5 L 18 12 L 95 12 L 95 18 L 18 18 L 18 25 Z"
-          fill="#C5392A" stroke="#1a1a1a" strokeWidth="1.5" />
+    <path d="M 5 15 L 18 5 L 18 12 L 95 12 L 95 18 L 18 18 L 18 25 Z" fill="#C5392A" stroke="#1a1a1a" strokeWidth="1.5"/>
   </svg>
 );
 
-const DIE_DOTS = {
-  1: [5],
-  2: [1, 9],
-  3: [1, 5, 9],
-  4: [1, 3, 7, 9],
-  5: [1, 3, 5, 7, 9],
-  6: [1, 3, 4, 6, 7, 9]
-};
-
+const DIE_DOTS = { 1:[5], 2:[1,9], 3:[1,5,9], 4:[1,3,7,9], 5:[1,3,5,7,9], 6:[1,3,4,6,7,9] };
 function DieFace({ value }) {
   const active = DIE_DOTS[value] || [];
   return (
     <div className="die-face">
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(pos => (
-        <div key={pos} className={`die-dot ${active.includes(pos) ? '' : 'hidden'}`} />
+      {[1,2,3,4,5,6,7,8,9].map(pos => (
+        <div key={pos} className={`die-dot ${active.includes(pos) ? '' : 'hidden'}`}/>
       ))}
     </div>
   );
 }
-
 function TileIcon({ tile }) {
-  if (tile.type === 'railroad') return <AirplaneIcon />;
-  if (tile.type === 'utility') {
-    return tile.id === 12 ? <BulbIcon /> : <FaucetIcon />;
-  }
-  if (tile.type === 'chance') return <ChanceIcon />;
-  if (tile.type === 'chest') return <ChestIcon />;
-  if (tile.type === 'tax') {
-    return tile.id === 38 ? <DiamondRingIcon /> : <TaxIcon />;
-  }
+  if (tile.type === 'railroad') return <AirplaneIcon/>;
+  if (tile.type === 'utility') return tile.id === 12 ? <BulbIcon/> : <FaucetIcon/>;
+  if (tile.type === 'chance') return <ChanceIcon/>;
+  if (tile.type === 'chest') return <ChestIcon/>;
+  if (tile.type === 'tax') return tile.id === 38 ? <DiamondRingIcon/> : <TaxIcon/>;
   return null;
 }
 
-function CornerTile({ tile }) {
+// ISSUE #1: CornerTile now accepts jail zone props; JUST+VISITING text removed
+function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
   if (tile.id === 0) {
     return (
       <div className="corner-inner corner-go">
-        <div className="corner-go-arrow"><GoArrowIcon /></div>
+        <div className="corner-go-arrow"><GoArrowIcon/></div>
         <div className="corner-go-text">START</div>
         <div className="corner-go-collect">COLLECT $200 SALARY AS YOU PASS</div>
       </div>
@@ -308,14 +256,32 @@ function CornerTile({ tile }) {
     return (
       <div className="corner-inner corner-jail">
         <div className="jail-cell">
+          {/* IN PRISON banner at top of cell */}
+          <div className="jail-in-label">IN PRISON</div>
+          {/* Jailed tokens sit BEHIND bars (z-index 2, bars are z-index 3) */}
+          <div className="jail-tokens-behind-bars">
+            {(jailedPlayers || []).map(p => (
+              <span key={p.id} className={`token ${hoppingTokens?.[p.id] ? 'hopping' : ''}`}
+                    style={{ backgroundColor: p.color }} title={p.name}>
+                {TOKEN_EMOJI[p.token] || '\u25CF'}
+              </span>
+            ))}
+          </div>
           <div className="jail-bars-grid">
-            <span></span><span></span><span></span><span></span><span></span>
+            <span/><span/><span/><span/><span/>
           </div>
         </div>
-        <div className="jail-in-label">IN PRISON</div>
-        <div className="jail-just-label">JUST</div>
-        <div className="jail-visiting-label">VISITING</div>
-        <div className="jail-diagonal"></div>
+        {/* Diagonal: from outer board corner (bottom-left of tile) to bottom-left of jail-cell */}
+        <div className="jail-diagonal"/>
+        {/* Visiting tokens in L-shaped outer area */}
+        <div className="jail-visiting-tokens">
+          {(visitingPlayers || []).map(p => (
+            <span key={p.id} className={`token ${hoppingTokens?.[p.id] ? 'hopping' : ''}`}
+                  style={{ backgroundColor: p.color }} title={p.name}>
+              {TOKEN_EMOJI[p.token] || '\u25CF'}
+            </span>
+          ))}
+        </div>
       </div>
     );
   }
@@ -323,7 +289,7 @@ function CornerTile({ tile }) {
     return (
       <div className="corner-inner corner-parking">
         <div className="corner-parking-top">FREE</div>
-        <div className="corner-parking-icon"><PalmTreeIcon /></div>
+        <div className="corner-parking-icon"><PalmTreeIcon/></div>
         <div className="corner-parking-bottom">VACATION</div>
       </div>
     );
@@ -332,7 +298,7 @@ function CornerTile({ tile }) {
     return (
       <div className="corner-inner corner-gotojail">
         <div className="corner-gotojail-top">GO TO</div>
-        <div className="corner-gotojail-icon"><ArrowIcon /></div>
+        <div className="corner-gotojail-icon"><ArrowIcon/></div>
         <div className="corner-gotojail-bottom">PRISON</div>
       </div>
     );
@@ -349,73 +315,74 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
   const [diceAnim, setDiceAnim] = useState({ isRolling: false, values: [1, 1] });
-
-  // NEW: Jail notification overlay state
   const [jailNotification, setJailNotification] = useState(null);
-  
-  // NEW: Auction countdown timer state
   const [auctionTimer, setAuctionTimer] = useState(10);
-  const auctionTimerRef = useRef(null);
-  
-  // NEW: Floating text for transaction feedback
   const [floatingTexts, setFloatingTexts] = useState([]);
-  
-  // FIX 3: Track when token animation completes
   const [displayCard, setDisplayCard] = useState(null);
-  const cardTimerRef = useRef(null);
-  const animCompletionRef = useRef(Date.now());
+  // ISSUE #5: blocks all post-roll UI until token visually lands
+  const [currentPlayerMoving, setCurrentPlayerMoving] = useState(false);
 
   const prevPositionsRef = useRef({});
   const diceIntervalRef = useRef(null);
   const movingPlayersRef = useRef(new Set());
   const timeoutsRef = useRef([]);
+  const auctionTimerRef = useRef(null);
+  // ISSUE #5: which player id is currently animating (gates interactions)
+  const movingCurrentPlayerRef = useRef(null);
+  // ISSUE #4: avoids stale closure inside setInterval
+  const isCurrentPlayerRef = useRef(false);
+  // ISSUE #3: log cursor (null = not yet initialised) and pending-float buffer
+  const prevLogLengthRef = useRef(null);
+  const pendingFloatsRef = useRef([]);
+  const currentPlayerMovingRef = useRef(false);
 
-  // Keep dice in sync
+  const isCurrentPlayer = gameState?.currentPlayerId === playerId;
+  const me = gameState?.players.find(p => p.id === playerId);
+  const currentPlayer = gameState?.players.find(p => p.id === gameState?.currentPlayerId);
+
+  // Keep refs in sync every render (before any effect runs)
+  isCurrentPlayerRef.current = isCurrentPlayer;
+  currentPlayerMovingRef.current = currentPlayerMoving;
+
+  const myProperties = useMemo(() => {
+    if (!gameState || !me) return [];
+    return gameState.properties.filter(p => p.ownerId === playerId);
+  }, [gameState, playerId]);
+
+  // ISSUE #3: stable helper — add floats to state + schedule removal
+  const showFloats = useCallback((floats) => {
+    if (!floats.length) return;
+    setFloatingTexts(prev => [...prev, ...floats]);
+    const ids = new Set(floats.map(f => f.id));
+    setTimeout(() => setFloatingTexts(prev => prev.filter(f => !ids.has(f.id))), 2200);
+  }, []);
+
+  // Sync dice display
   useEffect(() => {
-    if (gameState?.dice) {
-      if (!diceAnim.isRolling) {
-        setDiceAnim(prev => ({ ...prev, values: gameState.dice }));
-      }
-    }
+    if (gameState?.dice && !diceAnim.isRolling)
+      setDiceAnim(prev => ({ ...prev, values: gameState.dice }));
   }, [gameState?.dice, diceAnim.isRolling]);
 
-  // FIX 3: Card display delayed until AFTER animation completes
+  // ISSUE #5: simplified card tracking — render is gated by !currentPlayerMoving
   useEffect(() => {
     if (gameState?.pendingCard) {
-      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
-
-      const now = Date.now();
-      const animDone = animCompletionRef.current;
-      const delay = Math.max(0, animDone - now);
-
-      cardTimerRef.current = setTimeout(() => {
-        setDisplayCard({ ...gameState.pendingCard, turnSequence: gameState.turnSequence });
-      }, delay);
+      setDisplayCard({ ...gameState.pendingCard, turnSequence: gameState.turnSequence });
     } else {
-      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
       setDisplayCard(null);
     }
-    return () => {
-      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
-    };
   }, [gameState?.pendingCard, gameState?.turnSequence]);
 
-  // NEW: Auction countdown timer effect - AUTO-END ONLY
+  // ISSUE #4: auction timer resets whenever highestBid changes (a bid was placed)
   useEffect(() => {
     if (gameState?.turnPhase === 'auction' && gameState?.auction) {
       setAuctionTimer(10);
-      
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
-      
       auctionTimerRef.current = setInterval(() => {
         setAuctionTimer(prev => {
           if (prev <= 1) {
-            // Timer expired - auto-end auction
             clearInterval(auctionTimerRef.current);
             auctionTimerRef.current = null;
-
-            // Only the current player triggers the server call to avoid race conditions
-            if (isCurrentPlayer) {
+            if (isCurrentPlayerRef.current) {
               const roomCode = sessionStorage.getItem('roomCode');
               emit('endAuction', { roomCode, playerId });
             }
@@ -425,248 +392,245 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         });
       }, 1000);
     } else {
-      if (auctionTimerRef.current) {
-        clearInterval(auctionTimerRef.current);
-        auctionTimerRef.current = null;
-      }
+      if (auctionTimerRef.current) { clearInterval(auctionTimerRef.current); auctionTimerRef.current = null; }
     }
-    
-    return () => {
-      if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
-    };
-  }, [gameState?.turnPhase, gameState?.auction?.propertyId]);
+    return () => { if (auctionTimerRef.current) clearInterval(auctionTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.turnPhase, gameState?.auction?.propertyId, gameState?.auction?.highestBid]);
 
-  // NEW: Jail notification effect
+  // Jail notification
   useEffect(() => {
     if (!gameState?.players || !gameState?.log) return;
-    
     const latestLog = gameState.log[gameState.log.length - 1];
     if (!latestLog) return;
-    
-    // Check if someone was sent to jail
-    const jailMatch = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
-    if (jailMatch) {
-      const playerName = jailMatch[1];
-      const isMe = gameState.players.find(p => p.id === playerId)?.name === playerName;
-      
-      setJailNotification({
-        name: playerName,
-        isMe: isMe
-      });
-      
-      // Auto-dismiss after 3 seconds
-      const timer = setTimeout(() => {
-        setJailNotification(null);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
+    const m = latestLog.match(/(.+?) (?:was sent to Jail!|rolled 3 doubles and was sent to Jail!)/);
+    if (m) {
+      const isMe = gameState.players.find(p => p.id === playerId)?.name === m[1];
+      setJailNotification({ name: m[1], isMe });
+      const t = setTimeout(() => setJailNotification(null), 3000);
+      return () => clearTimeout(t);
     }
   }, [gameState?.log, gameState?.players, playerId]);
 
-  // Token animation effect
+  // ISSUE #3: comprehensive floating money — buffers during local animation
+  useEffect(() => {
+    if (!gameState?.log || !gameState?.players) return;
+    const currentLength = gameState.log.length;
+    if (prevLogLengthRef.current === null) { prevLogLengthRef.current = currentLength; return; }
+    if (currentLength <= prevLogLengthRef.current) { prevLogLengthRef.current = currentLength; return; }
+    const newEntries = gameState.log.slice(prevLogLengthRef.current);
+    prevLogLengthRef.current = currentLength;
+
+    const newFloats = [];
+    const mkFloat = (id, text, color, tileId) => {
+      const pos = getGridPos(tileId);
+      return { id: `f${Date.now()}${Math.random()}${id}`, text, color, gridRow: pos.gridRow, gridColumn: pos.gridColumn, direction: getFloatDirection(tileId) };
+    };
+
+    newEntries.forEach(entry => {
+      let m;
+      // rent
+      m = entry.match(/^(.+?) paid \$(\d+) rent to (.+?)\.$/);
+      if (m) {
+        const amt = parseInt(m[2]);
+        const payer = gameState.players.find(p => p.name === m[1]);
+        const recv  = gameState.players.find(p => p.name === m[3]);
+        if (payer) newFloats.push(mkFloat('p', `-$${amt}`, '#ff4444', payer.position));
+        if (recv)  newFloats.push(mkFloat('r', `+$${amt}`, '#44ee44', recv.position));
+        return;
+      }
+      // tax
+      m = entry.match(/^(.+?) paid \$(\d+) in taxes\.$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('t', `-$${parseInt(m[2])}`, '#ff4444', p.position));
+        return;
+      }
+      // card collect
+      m = entry.match(/^(.+?) collected \$(\d+) from card\.$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('cc', `+$${parseInt(m[2])}`, '#44ee44', p.position));
+        return;
+      }
+      // card pay
+      m = entry.match(/^(.+?) paid \$(\d+) from card\.$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('cp', `-$${parseInt(m[2])}`, '#ff4444', p.position));
+        return;
+      }
+      // passed go
+      m = entry.match(/^(.+?) passed Go and collected \$(\d+)$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('g', `+$${parseInt(m[2])}`, '#44ee44', p.position));
+        return;
+      }
+      // free vacation
+      m = entry.match(/^(.+?) collected \$(\d+) from Free Vacation!$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('fv', `+$${parseInt(m[2])}`, '#44ee44', p.position));
+        return;
+      }
+      // pay each
+      m = entry.match(/^(.+?) paid \$(\d+) to each player\.$/);
+      if (m) {
+        const payer = gameState.players.find(pl => pl.name === m[1]);
+        if (payer) {
+          const others = gameState.players.filter(pl => !pl.isBankrupt && pl.id !== payer.id).length;
+          newFloats.push(mkFloat('pe', `-$${parseInt(m[2]) * others}`, '#ff4444', payer.position));
+        }
+        return;
+      }
+      // collect each
+      m = entry.match(/^(.+?) collected \$(\d+) from each player\.$/);
+      if (m) {
+        const recv = gameState.players.find(pl => pl.name === m[1]);
+        if (recv) {
+          const others = gameState.players.filter(pl => !pl.isBankrupt && pl.id !== recv.id).length;
+          newFloats.push(mkFloat('ce', `+$${parseInt(m[2]) * others}`, '#44ee44', recv.position));
+        }
+        return;
+      }
+      // jail fine
+      m = entry.match(/^(.+?) paid \$(\d+) to leave Jail\.$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('jf', `-$${parseInt(m[2])}`, '#ff4444', p.position));
+        return;
+      }
+      // repairs
+      m = entry.match(/^(.+?) paid \$(\d+) for repairs\.$/);
+      if (m) {
+        const p = gameState.players.find(pl => pl.name === m[1]);
+        if (p) newFloats.push(mkFloat('rp', `-$${parseInt(m[2])}`, '#ff4444', p.position));
+        return;
+      }
+    });
+
+    if (!newFloats.length) return;
+    // Buffer if local player is mid-animation; otherwise show immediately
+    if (currentPlayerMovingRef.current) {
+      pendingFloatsRef.current.push(...newFloats);
+    } else {
+      showFloats(newFloats);
+    }
+  }, [gameState?.log?.length, gameState?.players, showFloats]);
+
+  // ISSUE #5: token animation — sets/clears currentPlayerMoving, flushes pending floats on landing
   useEffect(() => {
     if (!gameState?.players) return;
-
     gameState.players.forEach(player => {
       const prevPos = prevPositionsRef.current[player.id];
       const currPos = player.position;
+      if (prevPos === undefined) { prevPositionsRef.current[player.id] = currPos; return; }
+      if (prevPos === currPos || movingPlayersRef.current.has(player.id)) return;
 
-      if (prevPos === undefined) {
+      const isGoToJail = prevPos === 30 && currPos === 10;
+      const wasSentToJail = currPos === 10 && player.inJail &&
+        gameState.log?.some(log => log.includes(player.name) && log.includes('Jail'));
+
+      if (isGoToJail || wasSentToJail) {
         prevPositionsRef.current[player.id] = currPos;
+        setAnimatedPositions(prev => { const n = { ...prev }; delete n[player.id]; return n; });
+        if (player.id === gameState?.currentPlayerId) {
+          movingCurrentPlayerRef.current = player.id;
+          setCurrentPlayerMoving(true); currentPlayerMovingRef.current = true;
+          const t = setTimeout(() => {
+            setCurrentPlayerMoving(false); currentPlayerMovingRef.current = false;
+            movingCurrentPlayerRef.current = null;
+            if (pendingFloatsRef.current.length > 0) {
+              const s = [...pendingFloatsRef.current]; pendingFloatsRef.current = []; showFloats(s);
+            }
+          }, 350);
+          timeoutsRef.current.push(t);
+        }
         return;
       }
 
-      if (prevPos !== currPos && !movingPlayersRef.current.has(player.id)) {
+      movingPlayersRef.current.add(player.id);
+      if (player.id === gameState?.currentPlayerId) {
+        movingCurrentPlayerRef.current = player.id;
+        setCurrentPlayerMoving(true); currentPlayerMovingRef.current = true;
+      }
 
-        // INSTANT TELEPORT for Go To Jail (position 30 -> 10)
-        const isGoToJail = prevPos === 30 && currPos === 10;
-        // Also check for card-based jail sends (any -> 10 when inJail)
-        const wasSentToJail = currPos === 10 && player.inJail && 
-          gameState.log?.some(log => log.includes(player.name) && log.includes('Jail'));
+      const path = [];
+      let p = prevPos;
+      while (p !== currPos) { p = (p + 1) % 40; path.push(p); }
+      const stepDuration = 280;
 
-        if (isGoToJail || wasSentToJail) {
-          // Instant update - no animation
+      const animateStep = (step) => {
+        if (step >= path.length) {
+          movingPlayersRef.current.delete(player.id);
+          setAnimatedPositions(prev => { const n = { ...prev }; delete n[player.id]; return n; });
           prevPositionsRef.current[player.id] = currPos;
-          setAnimatedPositions(prev => {
-            const next = { ...prev };
-            delete next[player.id];
-            return next;
-          });
+          if (player.id === movingCurrentPlayerRef.current) {
+            const st = setTimeout(() => {
+              setCurrentPlayerMoving(false); currentPlayerMovingRef.current = false;
+              movingCurrentPlayerRef.current = null;
+              if (pendingFloatsRef.current.length > 0) {
+                const s = [...pendingFloatsRef.current]; pendingFloatsRef.current = []; showFloats(s);
+              }
+            }, 150);
+            timeoutsRef.current.push(st);
+          }
           return;
         }
-
-        movingPlayersRef.current.add(player.id);
-
-        const path = [];
-        let p = prevPos;
-        while (p !== currPos) {
-          p = (p + 1) % 40;
-          path.push(p);
-        }
-
-        const stepDuration = 280;
-        const totalDuration = path.length * stepDuration + 100;
-        animCompletionRef.current = Date.now() + totalDuration;
-
-        const animateStep = (step) => {
-          if (step >= path.length) {
-            movingPlayersRef.current.delete(player.id);
-            setAnimatedPositions(prev => {
-              const next = { ...prev };
-              delete next[player.id];
-              return next;
-            });
-            prevPositionsRef.current[player.id] = currPos;
-            return;
-          }
-
-          setAnimatedPositions(prev => ({ ...prev, [player.id]: path[step] }));
-          setHoppingTokens(prev => ({ ...prev, [player.id]: true }));
-
-          const t1 = setTimeout(() => {
-            setHoppingTokens(prev => {
-              const next = { ...prev };
-              delete next[player.id];
-              return next;
-            });
-          }, 260);
-          timeoutsRef.current.push(t1);
-
-          const t2 = setTimeout(() => animateStep(step + 1), stepDuration);
-          timeoutsRef.current.push(t2);
-        };
-
-        animateStep(0);
-      }
+        setAnimatedPositions(prev => ({ ...prev, [player.id]: path[step] }));
+        setHoppingTokens(prev => ({ ...prev, [player.id]: true }));
+        const t1 = setTimeout(() => {
+          setHoppingTokens(prev => { const n = { ...prev }; delete n[player.id]; return n; });
+        }, 260);
+        timeoutsRef.current.push(t1);
+        const t2 = setTimeout(() => animateStep(step + 1), stepDuration);
+        timeoutsRef.current.push(t2);
+      };
+      animateStep(0);
     });
-  }, [gameState?.players, gameState?.turnSequence]);
+  }, [gameState?.players, gameState?.turnSequence, showFloats]);
 
-  // NEW: Listen for rent payments to show floating text
-  useEffect(() => {
-    if (!gameState?.log || !gameState?.players) return;
-    
-    const latestLog = gameState.log[gameState.log.length - 1];
-    if (!latestLog) return;
-    
-    const rentMatch = latestLog.match(/(.+?) paid \\$(\\d+) rent to (.+?)\\./);
-    if (rentMatch) {
-      const [, payerName, amountStr, receiverName] = rentMatch;
-      const amount = parseInt(amountStr);
-      
-      const payer = gameState.players.find(p => p.name === payerName);
-      const receiver = gameState.players.find(p => p.name === receiverName);
-      
-      if (payer && receiver) {
-        const receiverPos = receiver.position;
-        const tilePos = getGridPos(receiverPos);
-        
-        const newFloats = [];
-        
-        if (payer.id === playerId) {
-          newFloats.push({
-            id: `payer-${Date.now()}`,
-            text: `-$${amount}`,
-            color: '#ff4444',
-            gridRow: tilePos.gridRow,
-            gridColumn: tilePos.gridColumn,
-            type: 'payer'
-          });
-        }
-        
-        if (receiver.id === playerId) {
-          newFloats.push({
-            id: `receiver-${Date.now()}`,
-            text: `+$${amount}`,
-            color: '#44ff44',
-            gridRow: tilePos.gridRow,
-            gridColumn: tilePos.gridColumn,
-            type: 'receiver'
-          });
-        }
-        
-        if (newFloats.length > 0) {
-          setFloatingTexts(prev => [...prev, ...newFloats]);
-          
-          setTimeout(() => {
-            setFloatingTexts(prev => prev.filter(f => !newFloats.find(nf => nf.id === f.id)));
-          }, 2000);
-        }
-      }
-    }
-  }, [gameState?.log, gameState?.players, playerId]);
-
+  // Cleanup
   useEffect(() => {
     return () => {
       if (diceIntervalRef.current) clearInterval(diceIntervalRef.current);
       timeoutsRef.current.forEach(clearTimeout);
-      if (cardTimerRef.current) clearTimeout(cardTimerRef.current);
       if (auctionTimerRef.current) clearInterval(auctionTimerRef.current);
     };
   }, []);
 
-  const isCurrentPlayer = gameState?.currentPlayerId === playerId;
-  const me = gameState?.players.find(p => p.id === playerId);
-  const currentPlayer = gameState?.players.find(p => p.id === gameState?.currentPlayerId);
-
-  const myProperties = useMemo(() => {
-    if (!gameState || !me) return [];
-    return gameState.properties.filter(p => p.ownerId === playerId);
-  }, [gameState, playerId]);
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
   const handleRoll = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
-
     setDiceAnim({ isRolling: true, values: [1, 1] });
     diceIntervalRef.current = setInterval(() => {
-      setDiceAnim(prev => ({
-        ...prev,
-        values: [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1]
-      }));
+      setDiceAnim(prev => ({ ...prev, values: [Math.floor(Math.random()*6)+1, Math.floor(Math.random()*6)+1] }));
     }, 120);
-
     const startTime = Date.now();
     await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
-
-    const elapsed = Date.now() - startTime;
-    const minRoll = 1200;
-    const remaining = Math.max(0, minRoll - elapsed);
-
+    const remaining = Math.max(0, 1200 - (Date.now() - startTime));
     setTimeout(() => {
-      if (diceIntervalRef.current) {
-        clearInterval(diceIntervalRef.current);
-        diceIntervalRef.current = null;
-      }
-      setDiceAnim(prev => ({
-        ...prev,
-        isRolling: false,
-        values: gameState?.dice || prev.values
-      }));
+      if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
+      setDiceAnim(prev => ({ ...prev, isRolling: false, values: gameState?.dice || prev.values }));
     }, remaining);
   };
 
-  const handleBuy = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('buyProperty', { roomCode, playerId });
-  };
-
-  const handleAuction = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('startAuction', { roomCode, playerId });
-  };
+  const handleBuy        = async () => { const r = sessionStorage.getItem('roomCode'); await emit('buyProperty',    { roomCode: r, playerId }); };
+  const handleAuction    = async () => { const r = sessionStorage.getItem('roomCode'); await emit('startAuction',  { roomCode: r, playerId }); };
+  const handleEndTurn    = async () => { const r = sessionStorage.getItem('roomCode'); await emit('endTurn',       { roomCode: r, playerId }); };
+  const handlePayJail    = async () => { const r = sessionStorage.getItem('roomCode'); await emit('payJailFine',   { roomCode: r, playerId }); };
+  const handleUseJailCard= async () => { const r = sessionStorage.getItem('roomCode'); await emit('useJailCard',   { roomCode: r, playerId }); };
+  const handleResolveCard= async () => { const r = sessionStorage.getItem('roomCode'); await emit('resolveCard',   { roomCode: r, playerId }); };
 
   const handleBidFixed = async (amount) => {
     const roomCode = sessionStorage.getItem('roomCode');
     const auction = gameState?.auction;
     if (!auction) return;
-    
-    const minBid = auction.highestBid + 1;
-    const actualBid = Math.max(minBid, auction.highestBid + amount);
-    
-    if (me?.money >= actualBid) {
-      await emit('placeBid', { roomCode, playerId, amount: actualBid });
-    }
+    const actualBid = Math.max(auction.highestBid + 1, auction.highestBid + amount);
+    if (me?.money >= actualBid) await emit('placeBid', { roomCode, playerId, amount: actualBid });
   };
-
   const handleBid = async () => {
     const roomCode = sessionStorage.getItem('roomCode');
     const amount = parseInt(bidAmount);
@@ -674,54 +638,26 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
     await emit('placeBid', { roomCode, playerId, amount });
     setBidAmount('');
   };
-
-  const handleEndTurn = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('endTurn', { roomCode, playerId });
-  };
-
-  const handlePayJail = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('payJailFine', { roomCode, playerId });
-  };
-
-  const handleUseJailCard = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('useJailCard', { roomCode, playerId });
-  };
-
-  const handleResolveCard = async () => {
-    const roomCode = sessionStorage.getItem('roomCode');
-    await emit('resolveCard', { roomCode, playerId });
-  };
-
   const copyLink = () => {
-    const link = getShareLink();
-    navigator.clipboard.writeText(link).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    navigator.clipboard.writeText(getShareLink()).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   };
 
-  const getPlayersOnTile = (tileId) => {
-    return gameState?.players.filter(p => {
-      if (p.isBankrupt) return false;
-      const displayPos = animatedPositions[p.id] !== undefined ? animatedPositions[p.id] : p.position;
-      return displayPos === tileId;
-    }) || [];
-  };
+  const getPlayersOnTile = (tileId) => gameState?.players.filter(p => {
+    if (p.isBankrupt) return false;
+    const disp = animatedPositions[p.id] !== undefined ? animatedPositions[p.id] : p.position;
+    return disp === tileId;
+  }) || [];
 
-  const getPropertyState = (tileId) => {
-    return gameState?.properties.find(p => p.id === tileId);
-  };
+  const getPropertyState = (tileId) => gameState?.properties.find(p => p.id === tileId);
+
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <div className="game-container">
-      {/* Jail Notification Overlay */}
       {jailNotification && (
         <div className="jail-notification-overlay">
           <div className="jail-notification">
-            <div className="jail-notification-icon">🚔</div>
+            <div className="jail-notification-icon">\u{1F694}</div>
             <div className="jail-notification-text">
               {jailNotification.isMe ? 'YOU ARE GOING TO JAIL' : `${jailNotification.name} IS GOING TO JAIL`}
             </div>
@@ -732,20 +668,14 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       <div className="top-bar">
         <div className="room-info">
           <span className="room-code">Room: {gameState?.roomCode}</span>
-          <button className="btn-small" onClick={copyLink}>
-            {copied ? 'Copied!' : 'Share Link'}
-          </button>
+          <button className="btn-small" onClick={copyLink}>{copied ? 'Copied!' : 'Share Link'}</button>
         </div>
         <div className="game-status">
           {gameState?.status === 'waiting' && (
-            <button className="btn-start" onClick={onStartGame}>
-              Start Game ({gameState.players.length}/4)
-            </button>
+            <button className="btn-start" onClick={onStartGame}>Start Game ({gameState.players.length}/4)</button>
           )}
           {gameState?.status === 'playing' && (
-            <span className="turn-indicator">
-              {currentPlayer?.name}'s Turn
-            </span>
+            <span className="turn-indicator">{currentPlayer?.name}'s Turn</span>
           )}
         </div>
       </div>
@@ -754,37 +684,39 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
         <div className="board-wrapper">
           <div className="board">
             {BOARD_TILES.map(tile => {
-              const pos = getGridPos(tile.id);
-              const propState = getPropertyState(tile.id);
-              const playersHere = getPlayersOnTile(tile.id);
-              const isCorner = tile.type === 'corner';
-              const owner = gameState?.players.find(p => p.id === propState?.ownerId);
-              const side = getTileSide(tile.id);
-              const isProperty = tile.type === 'property';
-              const hasIcon = ['railroad', 'utility', 'chance', 'chest', 'tax'].includes(tile.type);
-              const charClass = getCharClass(tile.name);
+              const pos        = getGridPos(tile.id);
+              const propState  = getPropertyState(tile.id);
+              const playersHere= getPlayersOnTile(tile.id);
+              const isCorner   = tile.type === 'corner';
+              const owner      = gameState?.players.find(p => p.id === propState?.ownerId);
+              const side       = getTileSide(tile.id);
+              const hasIcon    = ['railroad','utility','chance','chest','tax'].includes(tile.type);
+              const charClass  = getCharClass(tile.name);
 
               if (isCorner) {
+                // ISSUE #1: jail tile gets split token zones
+                if (tile.id === 10) {
+                  const jailedHere   = playersHere.filter(p => p.inJail);
+                  const visitingHere = playersHere.filter(p => !p.inJail);
+                  return (
+                    <div key={tile.id} className="tile tile-corner tile-corner-10"
+                         style={{ gridRow: pos.gridRow, gridColumn: pos.gridColumn }}
+                         onClick={() => setShowProperty(tile.id)}>
+                      <CornerTile tile={tile} jailedPlayers={jailedHere}
+                                  visitingPlayers={visitingHere} hoppingTokens={hoppingTokens}/>
+                    </div>
+                  );
+                }
                 return (
-                  <div
-                    key={tile.id}
-                    className={`tile tile-corner tile-corner-${tile.id}`}
-                    style={{
-                      gridRow: pos.gridRow,
-                      gridColumn: pos.gridColumn,
-                    }}
-                    onClick={() => setShowProperty(tile.id)}
-                  >
-                    <CornerTile tile={tile} />
+                  <div key={tile.id} className={`tile tile-corner tile-corner-${tile.id}`}
+                       style={{ gridRow: pos.gridRow, gridColumn: pos.gridColumn }}
+                       onClick={() => setShowProperty(tile.id)}>
+                    <CornerTile tile={tile}/>
                     <div className="tile-tokens corner-tokens">
-                      {playersHere.map((p, i) => (
-                        <span
-                          key={p.id}
-                          className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
-                          style={{ backgroundColor: p.color }}
-                          title={p.name}
-                        >
-                          {TOKEN_EMOJI[p.token] || '●'}
+                      {playersHere.map(p => (
+                        <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
+                              style={{ backgroundColor: p.color }} title={p.name}>
+                          {TOKEN_EMOJI[p.token] || '\u25CF'}
                         </span>
                       ))}
                     </div>
@@ -793,33 +725,18 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
               }
 
               return (
-                <div
-                  key={tile.id}
-                  className={`tile tile-${tile.type}`}
-                  data-side={side || undefined}
-                  style={{
-                    gridRow: pos.gridRow,
-                    gridColumn: pos.gridColumn,
-                  }}
-                  onClick={() => setShowProperty(tile.id)}
-                >
+                <div key={tile.id} className={`tile tile-${tile.type}`}
+                     data-side={side || undefined}
+                     style={{ gridRow: pos.gridRow, gridColumn: pos.gridColumn }}
+                     onClick={() => setShowProperty(tile.id)}>
                   {tile.country && (
                     <div className="color-bar">
-                      <div
-                        className="color-bar-img"
-                        style={{
-                          backgroundImage: `url(${getFlagUrl(tile.country)})`,
-                        }}
-                      />
+                      <div className="color-bar-img" style={{ backgroundImage: `url(${getFlagUrl(tile.country)})` }}/>
                     </div>
                   )}
                   {tile.colorGroup && !tile.country && (
-                    <div
-                      className="color-bar"
-                      style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}
-                    />
+                    <div className="color-bar" style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}/>
                   )}
-
                   <div className="tile-content">
                     <div className="tile-name-wrap">
                       <span className={`tile-name ${charClass}`}>
@@ -828,199 +745,143 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
                         ))}
                       </span>
                     </div>
-
-                    {hasIcon && (
-                      <div className="tile-icon-wrap">
-                        <TileIcon tile={tile} />
-                      </div>
-                    )}
-
-                    {propState?.ownerId && (
-                      <div
-                        className="owner-dot"
-                        style={{ backgroundColor: owner?.color || '#999' }}
-                      />
-                    )}
-
-                    {propState?.houses > 0 && (
-                      <div className="houses-indicator">
-                        {Array(propState.houses).fill('🏠').join('')}
-                      </div>
-                    )}
-                    {propState?.hotel && <div className="hotel-indicator">🏨</div>}
-
+                    {hasIcon && <div className="tile-icon-wrap"><TileIcon tile={tile}/></div>}
+                    {propState?.ownerId && <div className="owner-dot" style={{ backgroundColor: owner?.color || '#999' }}/>}
+                    {propState?.houses > 0 && <div className="houses-indicator">{Array(propState.houses).fill('\u{1F3E0}').join('')}</div>}
+                    {propState?.hotel && <div className="hotel-indicator">\u{1F3E8}</div>}
                     <div className="tile-tokens">
-                      {playersHere.map((p, i) => (
-                        <span
-                          key={p.id}
-                          className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
-                          style={{ backgroundColor: p.color }}
-                          title={p.name}
-                        >
-                          {TOKEN_EMOJI[p.token] || '●'}
+                      {playersHere.map(p => (
+                        <span key={p.id} className={`token ${hoppingTokens[p.id] ? 'hopping' : ''}`}
+                              style={{ backgroundColor: p.color }} title={p.name}>
+                          {TOKEN_EMOJI[p.token] || '\u25CF'}
                         </span>
                       ))}
                     </div>
                   </div>
-
-                  {tile.price && (
-                    <div className="tile-price-edge">${tile.price}</div>
-                  )}
+                  {tile.price && <div className="tile-price-edge">${tile.price}</div>}
                 </div>
               );
             })}
 
+            {/* ISSUE #3: directional floating money overlays */}
             {floatingTexts.map(float => (
-              <div
-                key={float.id}
-                className={`floating-text ${float.type}`}
-                style={{
-                  gridRow: float.gridRow,
-                  gridColumn: float.gridColumn,
-                  color: float.color,
-                }}
-              >
+              <div key={float.id} className={`floating-money ${float.direction}`}
+                   style={{ gridRow: float.gridRow, gridColumn: float.gridColumn, color: float.color }}>
                 {float.text}
               </div>
             ))}
 
             <div className="board-center">
               <span className="board-center-title">WORLD MONOPOLY</span>
-
               <div className="card-deck card-deck-chance">
                 <div className="card-deck-stack">
-                  <div className="card-back card-back-3"></div>
-                  <div className="card-back card-back-2"></div>
+                  <div className="card-back card-back-3"/>
+                  <div className="card-back card-back-2"/>
                   <div className="card-back card-back-1">
                     <div className="card-back-label">SURPRISE</div>
                     <div className="card-back-icon">?</div>
                   </div>
                 </div>
               </div>
-
               <div className="card-deck card-deck-chest">
                 <div className="card-deck-stack">
-                  <div className="card-back card-back-chest-3"></div>
-                  <div className="card-back card-back-chest-2"></div>
+                  <div className="card-back card-back-chest-3"/>
+                  <div className="card-back card-back-chest-2"/>
                   <div className="card-back card-back-chest-1">
                     <div className="card-back-label-chest">TREASURE</div>
-                    <div className="card-back-icon-chest">
-                      <ChestIcon />
-                    </div>
+                    <div className="card-back-icon-chest"><ChestIcon/></div>
                   </div>
                 </div>
               </div>
-
               <div className="dice-area">
                 <div className="dice">
                   <div className={`die ${diceAnim.isRolling ? 'rolling' : ''}`}>
                     <span className="die-number-faded die-number-left">{diceAnim.values[0]}</span>
-                    <DieFace value={diceAnim.values[0]} />
+                    <DieFace value={diceAnim.values[0]}/>
                   </div>
                   <div className={`die ${diceAnim.isRolling ? 'rolling' : ''}`}>
-                    <DieFace value={diceAnim.values[1]} />
+                    <DieFace value={diceAnim.values[1]}/>
                     <span className="die-number-faded die-number-right">{diceAnim.values[1]}</span>
                   </div>
                 </div>
               </div>
               <div className="free-parking">
-                💰 Vacation Fund: ${gameState?.freeParkingMoney || 0}
+                \u{1F4B0} Vacation Fund: ${gameState?.freeParkingMoney || 0}
               </div>
             </div>
           </div>
         </div>
 
         <div className="side-panel">
-          <PlayerPanel
-            players={gameState?.players || []}
-            properties={gameState?.properties || []}
-            currentPlayerId={gameState?.currentPlayerId}
-            myId={playerId}
-            onPropertyClick={setShowProperty}
-            onPlayerClick={setShowPlayerProfile}
-          />
-
+          <PlayerPanel players={gameState?.players || []} properties={gameState?.properties || []}
+                       currentPlayerId={gameState?.currentPlayerId} myId={playerId}
+                       onPropertyClick={setShowProperty} onPlayerClick={setShowPlayerProfile}/>
           <div className="game-log">
             <h4>Game Log</h4>
             <div className="log-entries">
-              {gameState?.log?.map((entry, i) => (
-                <div key={i} className="log-entry">{entry}</div>
-              ))}
+              {gameState?.log?.map((entry, i) => <div key={i} className="log-entry">{entry}</div>)}
             </div>
           </div>
         </div>
       </div>
 
+      {/* ── Controls bar ─────────────────────────────────────────────────────── */}
       <div className="controls-bar">
-        {gameState?.status === 'playing' && isCurrentPlayer && (
+
+        {/* ISSUE #5: ALL current-player controls gated behind !currentPlayerMoving */}
+        {gameState?.status === 'playing' && isCurrentPlayer && !currentPlayerMoving && (
           <>
             {gameState.turnPhase === 'roll' && (
               <button className="btn-control btn-roll" onClick={handleRoll} disabled={diceAnim.isRolling}>
-                {diceAnim.isRolling ? '🎲 Rolling...' : gameState?.extraRoll ? '🎲 Roll Again (Doubles!)' : '🎲 Roll Dice'}
+                {diceAnim.isRolling ? '\u{1F3B2} Rolling...' : gameState?.extraRoll ? '\u{1F3B2} Roll Again (Doubles!)' : '\u{1F3B2} Roll Dice'}
               </button>
             )}
 
             {gameState.turnPhase === 'buy' && (
               <>
-                <button className="btn-control btn-buy" onClick={handleBuy}>
-                  💰 Buy Property
-                </button>
-                <button className="btn-control btn-auction" onClick={handleAuction}>
-                  📢 Auction
-                </button>
+                <button className="btn-control btn-buy" onClick={handleBuy}>\u{1F4B0} Buy Property</button>
+                <button className="btn-control btn-auction" onClick={handleAuction}>\u{1F4E2} Auction</button>
               </>
             )}
 
-            {gameState.turnPhase === 'auction' && gameState.auction && (
-              <div className="auction-bar">
-                <div className="auction-info">
-                  <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
-                  <span className="auction-bid">
-                    Highest: ${gameState.auction.highestBid} {gameState.auction.highestBidder ? `by ${gameState.players.find(p => p.id === gameState.auction.highestBidder)?.name}` : '(No bids)'}
-                  </span>
-                  <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>
-                    ⏱️ {auctionTimer}s
-                  </span>
-                </div>
-                
-                {gameState.auction.activeBidders.includes(playerId) && (
-                  <div className="auction-controls">
-                    <button className="btn-bid" onClick={() => handleBidFixed(1)}>+$1</button>
-                    <button className="btn-bid" onClick={() => handleBidFixed(10)}>+$10</button>
-                    <button className="btn-bid" onClick={() => handleBidFixed(100)}>+$100</button>
-                    <input
-                      type="number"
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      placeholder={`Min $${gameState.auction.highestBid + 1}`}
-                      min={gameState.auction.highestBid + 1}
-                      max={me?.money || 0}
-                      className="bid-input"
-                    />
-                    <button className="btn-control" onClick={handleBid} disabled={!bidAmount || parseInt(bidAmount) <= gameState.auction.highestBid}>
-                      Bid
-                    </button>
+            {gameState.turnPhase === 'auction' && gameState.auction && (() => {
+              const hb = gameState.auction.highestBidder;
+              const hbName = hb ? gameState.players.find(p => p.id === hb)?.name : null;
+              return (
+                <div className="auction-bar">
+                  <div className="auction-info">
+                    <span>\u{1F4E2} Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
+                    <span className="auction-bid">Highest: ${gameState.auction.highestBid}{hbName ? ` by ${hbName}` : ' (No bids)'}</span>
+                    <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1\uFE0F {auctionTimer}s</span>
                   </div>
-                )}
-              </div>
-            )}
+                  {gameState.auction.activeBidders.includes(playerId) && (
+                    <div className="auction-controls">
+                      <button className="btn-bid" onClick={() => handleBidFixed(1)}>+$1</button>
+                      <button className="btn-bid" onClick={() => handleBidFixed(10)}>+$10</button>
+                      <button className="btn-bid" onClick={() => handleBidFixed(100)}>+$100</button>
+                      <input type="number" value={bidAmount} onChange={e => setBidAmount(e.target.value)}
+                             placeholder={`Min $${gameState.auction.highestBid + 1}`}
+                             min={gameState.auction.highestBid + 1} max={me?.money || 0} className="bid-input"/>
+                      <button className="btn-control" onClick={handleBid}
+                              disabled={!bidAmount || parseInt(bidAmount) <= gameState.auction.highestBid}>Bid</button>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
+            {/* ISSUE #5: card modal only appears after currentPlayerMoving = false */}
             {displayCard && (
-              <CardModal
-                key={`${displayCard.id}-${displayCard.turnSequence}`}
-                card={displayCard}
-                onResolve={handleResolveCard}
-              />
+              <CardModal key={`${displayCard.id}-${displayCard.turnSequence}`}
+                         card={displayCard} onResolve={handleResolveCard}/>
             )}
 
             {currentPlayer?.inJail && gameState.turnPhase === 'roll' && (
               <>
-                <button className="btn-control" onClick={handlePayJail}>
-                  💵 Pay $50 Fine
-                </button>
+                <button className="btn-control" onClick={handlePayJail}>\u{1F4B5} Pay $50 Fine</button>
                 {me?.jailCards > 0 && (
                   <button className="btn-control" onClick={handleUseJailCard}>
-                    🎫 Use Jail Card ({me.jailCards})
+                    \u{1F3AB} Use Jail Card ({me.jailCards})
                   </button>
                 )}
               </>
@@ -1028,86 +889,61 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
 
             {gameState.turnPhase === 'end' && (
               <>
-                <button className="btn-control btn-end" onClick={handleEndTurn}>
-                  ✅ End Turn
-                </button>
-                <button className="btn-control" onClick={() => setShowTrade(true)}>
-                  🤝 Trade
-                </button>
+                <button className="btn-control btn-end" onClick={handleEndTurn}>\u2705 End Turn</button>
+                <button className="btn-control" onClick={() => setShowTrade(true)}>\u{1F91D} Trade</button>
               </>
             )}
           </>
         )}
 
-        {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase === 'auction' && gameState?.auction && (
-          <div className="auction-bar">
-            <div className="auction-info">
-              <span>📢 Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
-              <span className="auction-bid">
-                Highest: ${gameState.auction.highestBid} {gameState.auction.highestBidder ? `by ${gameState.players.find(p => p.id === gameState.auction.highestBidder)?.name}` : '(No bids)'}
-              </span>
-              <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>
-                ⏱️ {auctionTimer}s
-              </span>
-            </div>
-            
-            {gameState.auction.activeBidders.includes(playerId) && (
-              <div className="auction-controls">
-                <button className="btn-bid" onClick={() => handleBidFixed(1)}>+$1</button>
-                <button className="btn-bid" onClick={() => handleBidFixed(10)}>+$10</button>
-                <button className="btn-bid" onClick={() => handleBidFixed(100)}>+$100</button>
-                <input
-                  type="number"
-                  value={bidAmount}
-                  onChange={(e) => setBidAmount(e.target.value)}
-                  placeholder={`Min $${gameState.auction.highestBid + 1}`}
-                  min={gameState.auction.highestBid + 1}
-                  max={me?.money || 0}
-                  className="bid-input"
-                />
-                <button className="btn-control" onClick={handleBid} disabled={!bidAmount || parseInt(bidAmount) <= gameState.auction.highestBid}>
-                  Bid
-                </button>
+        {/* Non-current-player auction UI (always visible — no movement gating) */}
+        {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase === 'auction' && gameState?.auction && (() => {
+          const hb = gameState.auction.highestBidder;
+          const hbName = hb ? gameState.players.find(p => p.id === hb)?.name : null;
+          return (
+            <div className="auction-bar">
+              <div className="auction-info">
+                <span>\u{1F4E2} Auction: {BOARD_TILES[gameState.auction.propertyId]?.name}</span>
+                <span className="auction-bid">Highest: ${gameState.auction.highestBid}{hbName ? ` by ${hbName}` : ' (No bids)'}</span>
+                <span className={`auction-timer ${auctionTimer <= 3 ? 'urgent' : ''}`}>\u23F1\uFE0F {auctionTimer}s</span>
               </div>
-            )}
-          </div>
-        )}
+              {gameState.auction.activeBidders.includes(playerId) && (
+                <div className="auction-controls">
+                  <button className="btn-bid" onClick={() => handleBidFixed(1)}>+$1</button>
+                  <button className="btn-bid" onClick={() => handleBidFixed(10)}>+$10</button>
+                  <button className="btn-bid" onClick={() => handleBidFixed(100)}>+$100</button>
+                  <input type="number" value={bidAmount} onChange={e => setBidAmount(e.target.value)}
+                         placeholder={`Min $${gameState.auction.highestBid + 1}`}
+                         min={gameState.auction.highestBid + 1} max={me?.money || 0} className="bid-input"/>
+                  <button className="btn-control" onClick={handleBid}
+                          disabled={!bidAmount || parseInt(bidAmount) <= gameState.auction.highestBid}>Bid</button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase !== 'auction' && (
-          <div className="waiting-msg">
-            Waiting for {currentPlayer?.name}...
-          </div>
+          <div className="waiting-msg">Waiting for {currentPlayer?.name}...</div>
         )}
 
         {gameState?.status === 'ended' && (
-          <div className="game-over">
-            🎉 {gameState.players.find(p => !p.isBankrupt)?.name} Wins!
-          </div>
+          <div className="game-over">\u{1F389} {gameState.players.find(p => !p.isBankrupt)?.name} Wins!</div>
         )}
       </div>
 
+      {/* ── Modals ───────────────────────────────────────────────────────────── */}
       {showTrade && (
-        <TradeModal
-          players={gameState?.players || []}
-          myId={playerId}
-          myProperties={myProperties}
-          allProperties={gameState?.properties || []}
-          boardTiles={BOARD_TILES}
-          onClose={() => setShowTrade(false)}
-          onPropose={(tradeData) => {
-            const roomCode = sessionStorage.getItem('roomCode');
-            emit('proposeTrade', {
-              roomCode,
-              fromId: playerId,
-              toId: tradeData.toId,
-              offerProps: tradeData.offerProps,
-              offerMoney: tradeData.offerMoney,
-              requestProps: tradeData.requestProps,
-              requestMoney: tradeData.requestMoney
-            });
-            setShowTrade(false);
-          }}
-        />
+        <TradeModal players={gameState?.players || []} myId={playerId} myProperties={myProperties}
+                    allProperties={gameState?.properties || []} boardTiles={BOARD_TILES}
+                    onClose={() => setShowTrade(false)}
+                    onPropose={tradeData => {
+                      const roomCode = sessionStorage.getItem('roomCode');
+                      emit('proposeTrade', { roomCode, fromId: playerId, toId: tradeData.toId,
+                        offerProps: tradeData.offerProps, offerMoney: tradeData.offerMoney,
+                        requestProps: tradeData.requestProps, requestMoney: tradeData.requestMoney });
+                      setShowTrade(false);
+                    }}/>
       )}
 
       {gameState?.pendingTrade?.isForMe && (
@@ -1142,42 +978,23 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       )}
 
       {showPlayerProfile && (
-        <PlayerProfileModal
-          playerId={showPlayerProfile}
-          players={gameState?.players || []}
-          properties={gameState?.properties || []}
-          boardTiles={BOARD_TILES}
-          calculateRent={(tileId, diceSum = 7) => calculateRent(tileId, gameState?.properties || [], diceSum)}
-          onClose={() => setShowPlayerProfile(null)}
-        />
+        <PlayerProfileModal playerId={showPlayerProfile} players={gameState?.players || []}
+                            properties={gameState?.properties || []} boardTiles={BOARD_TILES}
+                            calculateRent={(tileId, diceSum = 7) => calculateRent(tileId, gameState?.properties || [], diceSum)}
+                            onClose={() => setShowPlayerProfile(null)}/>
       )}
 
       {showProperty !== null && (
-        <PropertyModal
-          tileId={showProperty}
-          tile={BOARD_TILES[showProperty]}
-          propertyState={getPropertyState(showProperty)}
-          owner={gameState?.players.find(p => p.id === getPropertyState(showProperty)?.ownerId)}
-          isMine={getPropertyState(showProperty)?.ownerId === playerId}
-          isMyTurn={isCurrentPlayer}
-          onClose={() => setShowProperty(null)}
-          onBuild={async () => {
-            const roomCode = sessionStorage.getItem('roomCode');
-            await emit('buildHouse', { roomCode, playerId, propertyId: showProperty });
-          }}
-          onSell={async () => {
-            const roomCode = sessionStorage.getItem('roomCode');
-            await emit('sellHouse', { roomCode, playerId, propertyId: showProperty });
-          }}
-          onMortgage={async () => {
-            const roomCode = sessionStorage.getItem('roomCode');
-            await emit('mortgageProperty', { roomCode, playerId, propertyId: showProperty });
-          }}
-          onUnmortgage={async () => {
-            const roomCode = sessionStorage.getItem('roomCode');
-            await emit('unmortgageProperty', { roomCode, playerId, propertyId: showProperty });
-          }}
-        />
+        <PropertyModal tileId={showProperty} tile={BOARD_TILES[showProperty]}
+                       propertyState={getPropertyState(showProperty)}
+                       owner={gameState?.players.find(p => p.id === getPropertyState(showProperty)?.ownerId)}
+                       isMine={getPropertyState(showProperty)?.ownerId === playerId}
+                       isMyTurn={isCurrentPlayer}
+                       onClose={() => setShowProperty(null)}
+                       onBuild={async () => { const r = sessionStorage.getItem('roomCode'); await emit('buildHouse',       { roomCode: r, playerId, propertyId: showProperty }); }}
+                       onSell={async ()  => { const r = sessionStorage.getItem('roomCode'); await emit('sellHouse',        { roomCode: r, playerId, propertyId: showProperty }); }}
+                       onMortgage={async () => { const r = sessionStorage.getItem('roomCode'); await emit('mortgageProperty',  { roomCode: r, playerId, propertyId: showProperty }); }}
+                       onUnmortgage={async () => { const r = sessionStorage.getItem('roomCode'); await emit('unmortgageProperty',{ roomCode: r, playerId, propertyId: showProperty }); }}/>
       )}
     </div>
   );
