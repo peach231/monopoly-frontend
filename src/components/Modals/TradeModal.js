@@ -60,7 +60,6 @@ export default function TradeModal({ players, myId, myProperties, allProperties,
     const offerProps = Array.from(selectedOfferProps);
     const requestProps = Array.from(selectedRequestProps);
     
-    // Validate: can't offer more than we have
     if (offerMoney > me.money) return;
     if (requestMoney > targetPlayer.money) return;
     
@@ -178,6 +177,10 @@ export default function TradeModal({ players, myId, myProperties, allProperties,
               )}
             </div>
           </div>
+        </div>
+
+        <div className="trade-note">
+          <span>ℹ️</span> Mortgaged properties (🔒) will <strong>retain their mortgage</strong> after the trade. The new owner must unmortgage them to collect rent.
         </div>
 
         <div className="trade-summary">
