@@ -306,7 +306,7 @@ function CornerTile({ tile, jailedPlayers, visitingPlayers, hoppingTokens }) {
   return <div className="corner-inner">{tile.name}</div>;
 }
 
-export default function GameBoard({ gameState, playerId, emit, onStartGame, getShareLink }) {
+export default function GameBoard({ gameState, playerId, emit, connected, onStartGame, getShareLink }) {
   const [showTrade, setShowTrade] = useState(false);
   const [showProperty, setShowProperty] = useState(null);
   const [showPlayerProfile, setShowPlayerProfile] = useState(null);
@@ -398,13 +398,13 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState?.turnPhase, gameState?.auction?.propertyId, gameState?.auction?.highestBid]);
 
-  // ISSUE #3 (reconnect recovery): whenever the server pushes a fresh gameState
-  // (e.g. after a socket disconnect/reconnect), if no token animation is actually
-  // running any more, clear any stale currentPlayerMoving and dice-rolling locks
-  // so the active player can interact with their turn normally.
+  // Reconnect recovery: fires when the socket comes back (connected flips true)
+  // AND at every natural turn boundary. Clears any stuck currentPlayerMoving or
+  // dice-rolling locks so the active player can always interact after a reconnect,
+  // even when the turn sequence and current player haven't changed.
   useEffect(() => {
-    if (!gameState) return;
-    // Give any in-flight animation a 700ms window to register before we check.
+    if (!connected || !gameState) return;
+    // 700 ms grace period so any in-flight animation can register first.
     const t = setTimeout(() => {
       const animActive = movingPlayersRef.current.size > 0 || movingCurrentPlayerRef.current !== null;
       if (!animActive) {
@@ -420,9 +420,10 @@ export default function GameBoard({ gameState, playerId, emit, onStartGame, getS
       }
     }, 700);
     return () => clearTimeout(t);
-  // turnSequence and currentPlayerId change at turn boundaries AND on reconnect broadcasts
+  // `connected` is the key dep: it flips false→true on every reconnect regardless
+  // of whether the turn or sequence changed, guaranteeing the recovery always runs.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState?.turnSequence, gameState?.currentPlayerId]);
+  }, [connected, gameState?.turnSequence, gameState?.currentPlayerId]);
 
   // Jail notification
   useEffect(() => {
