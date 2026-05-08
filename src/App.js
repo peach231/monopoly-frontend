@@ -101,6 +101,7 @@ function App() {
           gameState={gameState}
           playerId={playerId}
           emit={emit}
+          connected={connected}
           onStartGame={handleStartGame}
           getShareLink={getShareLink}
         />
