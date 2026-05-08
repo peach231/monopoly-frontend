@@ -65,8 +65,9 @@ const TOKEN_EMOJI = {
   pencil: '✏️'
 };
 
+// SVG flags - vector, always crisp at any size
 function getFlagUrl(countryCode) {
-  return `https://flagcdn.com/256x192/${countryCode.toLowerCase()}.png`;
+  return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
 }
 
 export default function PlayerProfileModal({ playerId, players, properties, boardTiles, calculateRent, onClose }) {
@@ -145,7 +146,7 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                             src={getFlagUrl(countryCode)} 
                             alt="" 
                             className="prop-flag-inline"
-                            style={{ width: 18, height: 14, marginRight: 6, borderRadius: 2, objectFit: 'cover', verticalAlign: 'middle', border: '1px solid rgba(0,0,0,0.15)' }}
+                            style={{ width: 20, height: 15, marginRight: 8, borderRadius: 1, objectFit: 'cover', verticalAlign: 'middle', display: 'inline-block' }}
                           />
                         )}
                         {prop.tile.name}
@@ -178,20 +179,17 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                   const countryName = countryCode ? COUNTRY_NAMES[countryCode] : color;
                   return (
                     <div key={color} className="monopoly-tracker-item">
-                      <span 
-                        className="monopoly-chip"
-                        style={{ 
-                          backgroundImage: countryCode ? `url(${getFlagUrl(countryCode)})` : 'none',
-                          backgroundColor: countryCode ? 'transparent' : (COLOR_MAP[color] || '#888'),
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                          color: '#000',
-                          fontWeight: 900,
-                          textShadow: '0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff',
-                          border: '1px solid rgba(0,0,0,0.25)'
-                        }}
-                      >
-                        {isComplete ? '💰' : count}
+                      <span className="monopoly-chip-wrapper">
+                        {countryCode && (
+                          <img 
+                            src={getFlagUrl(countryCode)} 
+                            alt="" 
+                            className="monopoly-chip-flag"
+                          />
+                        )}
+                        <span className="monopoly-chip-text">
+                          {isComplete ? '💰' : count}
+                        </span>
                       </span>
                       <span className="monopoly-tracker-label">
                         {isComplete 
