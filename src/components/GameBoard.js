@@ -680,7 +680,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     return () => clearTimeout(t);
   }, [currentPlayerMoving, showFloats]);
 
-  const handleRoll = async () => {
+    const handleRoll = async () => {
     if (diceAnim.isRolling) return;
     const roomCode = sessionStorage.getItem('roomCode');
     if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
@@ -690,7 +690,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     }, 120);
     const startTime = Date.now();
     try {
-      await emit('rollDice', { roomCode, playerId, turnSequence: gameState.turnSequence });
+      await emit('rollDice', { roomCode, playerId });
     } catch (err) {
       console.error('Roll error:', err);
     }
