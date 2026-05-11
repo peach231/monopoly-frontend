@@ -32,7 +32,9 @@ const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
   'graduation-hat': '🎓',
-  pencil: '✏️'
+  pencil: '✏️',
+  compass: '🧭',
+  suitcase: '🧳'
 };
 
 const BOARD_TILES = [
