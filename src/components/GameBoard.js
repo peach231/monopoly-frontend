@@ -721,7 +721,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         </div>
         <div className="game-status">
           {gameState?.status === 'waiting' && (
-            <button className="btn-start" onClick={onStartGame}>Start Game ({gameState.players.length}/4)</button>
+            <button className="btn-start" onClick={onStartGame}>Start Game ({gameState.players.length}/6)</button>
           )}
           {gameState?.status === 'playing' && (
             <span className="turn-indicator">{currentPlayer?.name}'s Turn</span>
