@@ -43,17 +43,17 @@ const BOARD_TILES = [
   { id: 2, name: "Treasure" },
   { id: 3, name: "Sao Paulo", colorGroup: "brown" },
   { id: 4, name: "Earnings Tax" },
-  { id: 5, name: "YYZ Airport" },
+  { id: 5, name: "YYZ Airport", type: "railroad" },
   { id: 6, name: "Montreal", colorGroup: "lightblue" },
   { id: 7, name: "Surprise" },
   { id: 8, name: "Vancouver", colorGroup: "lightblue" },
   { id: 9, name: "Toronto", colorGroup: "lightblue" },
   { id: 10, name: "Prison" },
   { id: 11, name: "Venice", colorGroup: "pink" },
-  { id: 12, name: "Electric Co" },
+  { id: 12, name: "Electric Co", type: "utility" },
   { id: 13, name: "Milan", colorGroup: "pink" },
   { id: 14, name: "Rome", colorGroup: "pink" },
-  { id: 15, name: "CDG Airport" },
+  { id: 15, name: "CDG Airport", type: "railroad" },
   { id: 16, name: "Nice", colorGroup: "orange" },
   { id: 17, name: "Treasure" },
   { id: 18, name: "Lyon", colorGroup: "orange" },
@@ -63,17 +63,17 @@ const BOARD_TILES = [
   { id: 22, name: "Surprise" },
   { id: 23, name: "Birmingham", colorGroup: "red" },
   { id: 24, name: "London", colorGroup: "red" },
-  { id: 25, name: "HND Airport" },
+  { id: 25, name: "HND Airport", type: "railroad" },
   { id: 26, name: "Kyoto", colorGroup: "yellow" },
   { id: 27, name: "Osaka", colorGroup: "yellow" },
-  { id: 28, name: "Water Works" },
+  { id: 28, name: "Water Works", type: "utility" },
   { id: 29, name: "Tokyo", colorGroup: "yellow" },
   { id: 30, name: "Go to Prison" },
   { id: 31, name: "Chongqing", colorGroup: "green" },
   { id: 32, name: "Shanghai", colorGroup: "green" },
   { id: 33, name: "Treasure" },
   { id: 34, name: "Beijing", colorGroup: "green" },
-  { id: 35, name: "JFK Airport" },
+  { id: 35, name: "JFK Airport", type: "railroad" },
   { id: 36, name: "Surprise" },
   { id: 37, name: "Chicago", colorGroup: "darkblue" },
   { id: 38, name: "Premium Tax" },
@@ -133,7 +133,7 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                       e.stopPropagation();
                       onPropertyClick && onPropertyClick(prop.id);
                     }}
-                    title={tile?.name}
+                    title={`${tile?.type === 'railroad' ? '✈️ ' : ''}${tile?.name}`}
                   >
                     {countryCode ? (
                       <img 
