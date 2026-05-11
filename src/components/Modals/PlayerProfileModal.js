@@ -62,7 +62,9 @@ const TOKEN_EMOJI = {
   backpack: '🎒',
   textbooks: '📚',
   'graduation-hat': '🎓',
-  pencil: '✏️'
+  pencil: '✏️',
+  compass: '🧭',
+  suitcase: '🧳'
 };
 
 // SVG flags - vector, always crisp at any size
