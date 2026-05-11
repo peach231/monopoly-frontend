@@ -142,7 +142,7 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                         opacity: prop.isMortgaged ? 0.6 : 1
                       }}
                     >
-                      <div className="profile-prop-name">
+                                            <div className="profile-prop-name">
                         {countryCode && (
                           <img 
                             src={getFlagUrl(countryCode)} 
@@ -151,6 +151,7 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                             style={{ width: 20, height: 15, marginRight: 8, borderRadius: 1, objectFit: 'cover', verticalAlign: 'middle', display: 'inline-block' }}
                           />
                         )}
+                        {prop.tile.type === 'railroad' && <span style={{ marginRight: 4 }}>✈️</span>}
                         {prop.tile.name}
                         {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
                       </div>
