@@ -64,7 +64,8 @@ function getFlagUrl(countryCode) {
 }
 
 const TOKEN_EMOJI = {
-  backpack: '🎒', textbooks: '📚', 'graduation-hat': '🎓', pencil: '✏️'
+  backpack: '🎒', textbooks: '📚', 'graduation-hat': '🎓', pencil: '✏️',
+  compass: '🧭', suitcase: '🧳'
 };
 
 function getCharClass(name) {
