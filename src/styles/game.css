@@ -2938,3 +2938,49 @@
 .trade-note strong {
   color: #1a1a1a;
 }
+
+/* ============================================
+   AIRPORT / RAILROAD FLAG + PLANE ICON FIX
+   ============================================ */
+
+/* Bring railroad flag strip above the icon layer */
+.tile-railroad .color-bar {
+  z-index: 3;
+}
+.tile-railroad .color-bar::after {
+  background: rgba(213, 236, 204, 0.15);
+}
+
+/* Push the airplane icon away from the flag strip */
+.tile-railroad[data-side="bottom"] .tile-icon-wrap {
+  padding-top: 30% !important;
+  padding-bottom: 2% !important;
+}
+.tile-railroad[data-side="top"] .tile-icon-wrap {
+  padding-bottom: 30% !important;
+  padding-top: 2% !important;
+}
+.tile-railroad[data-side="left"] .tile-icon-wrap {
+  padding-right: 30% !important;
+  padding-left: 2% !important;
+}
+.tile-railroad[data-side="right"] .tile-icon-wrap {
+  padding-left: 30% !important;
+  padding-right: 2% !important;
+}
+
+/* Shrink airplane icon so it sits cleanly below/inside the flag */
+.tile-railroad .tile-svg {
+  width: 55% !important;
+  max-width: 34px !important;
+  max-height: none !important;
+  transform: none !important;
+}
+
+/* Make airport name readable over the flag background */
+.tile-railroad .tile-name {
+  text-shadow:
+    0 0 3px rgba(213,236,204,0.95),
+    0 0 6px rgba(213,236,204,0.9),
+    0 0 9px rgba(213,236,204,0.85);
+}
