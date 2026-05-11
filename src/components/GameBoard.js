@@ -647,6 +647,39 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     }
   }, [gameState?.currentPlayerId, currentPlayerMoving, showFloats]);
 
+  // FIX: Auto-clear currentPlayerMoving when server advances turn phase
+  useEffect(() => {
+    if (!currentPlayerMoving) return;
+    if (gameState?.turnPhase === 'end' || gameState?.turnPhase === 'buy' || gameState?.turnPhase === 'auction') {
+      setCurrentPlayerMoving(false);
+      currentPlayerMovingRef.current = false;
+      movingCurrentPlayerRef.current = null;
+      if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
+      if (pendingFloatsRef.current.length > 0) {
+        const toShow = [...pendingFloatsRef.current];
+        pendingFloatsRef.current = [];
+        showFloats(toShow);
+      }
+    }
+  }, [gameState?.turnPhase, currentPlayerMoving, showFloats]);
+
+  // FIX: Hard safety timeout — never stay stuck longer than 4s
+  useEffect(() => {
+    if (!currentPlayerMoving) return;
+    const t = setTimeout(() => {
+      setCurrentPlayerMoving(false);
+      currentPlayerMovingRef.current = false;
+      movingCurrentPlayerRef.current = null;
+      if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
+      if (pendingFloatsRef.current.length > 0) {
+        const toShow = [...pendingFloatsRef.current];
+        pendingFloatsRef.current = [];
+        showFloats(toShow);
+      }
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [currentPlayerMoving, showFloats]);
+
   const handleRoll = async () => {
     if (diceAnim.isRolling) return;
     const roomCode = sessionStorage.getItem('roomCode');
@@ -939,14 +972,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
           </>
         )}
 
-        {gameState?.status === 'playing' && isCurrentPlayer && currentPlayerMoving && gameState.turnPhase === 'end' && (
-          <button className="btn-control btn-end" onClick={() => {
-            setCurrentPlayerMoving(false);
-            currentPlayerMovingRef.current = false;
-            movingCurrentPlayerRef.current = null;
-            if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
-          }}>🔄 Unlock Controls</button>
-        )}
+        {/* REMOVED: Unlock Controls button block */}
 
         {gameState?.status === 'playing' && !isCurrentPlayer && gameState?.turnPhase === 'auction' && gameState?.auction && (() => {
           const hb = gameState.auction.highestBidder;
