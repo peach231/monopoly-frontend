@@ -12,19 +12,18 @@ const COLOR_MAP = {
   airport: '#333333'
 };
 
-// Country code for each property tile (for flag display)
+// Country code for each property tile — airports removed
 const TILE_COUNTRY = {
   1: 'BR', 3: 'BR',
-  5: 'CA', 6: 'CA', 8: 'CA', 9: 'CA',
-  11: 'IT', 13: 'IT', 14: 'IT', 15: 'FR',
+  6: 'CA', 8: 'CA', 9: 'CA',
+  11: 'IT', 13: 'IT', 14: 'IT',
   16: 'FR', 18: 'FR', 19: 'FR',
-  21: 'GB', 23: 'GB', 24: 'GB', 25: 'JP',
+  21: 'GB', 23: 'GB', 24: 'GB',
   26: 'JP', 27: 'JP', 29: 'JP',
-  31: 'CN', 32: 'CN', 34: 'CN', 35: 'US',
+  31: 'CN', 32: 'CN', 34: 'CN',
   37: 'US', 39: 'US'
 };
 
-// SVG flags - vector, always crisp at any size
 function getFlagUrl(countryCode) {
   return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
 }
@@ -124,7 +123,7 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                     key={prop.id}
                     className="prop-chip"
                     style={{
-                      backgroundColor: countryCode ? 'transparent' : (tile?.colorGroup ? COLOR_MAP[tile.colorGroup] : '#666'),
+                      backgroundColor: tile?.type === 'airport' ? '#e8e3da' : (countryCode ? 'transparent' : (tile?.colorGroup ? COLOR_MAP[tile.colorGroup] : '#666')),
                       opacity: prop.isMortgaged ? 0.5 : 1,
                       border: 'none',
                       borderRadius: '2px',
@@ -136,7 +135,9 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                     }}
                     title={`${tile?.type === 'airport' ? '✈️ ' : ''}${tile?.name}`}
                   >
-                    {countryCode ? (
+                    {tile?.type === 'airport' ? (
+                      <span style={{ fontSize: '10px' }}>✈️</span>
+                    ) : countryCode ? (
                       <img 
                         src={getFlagUrl(countryCode)} 
                         alt="" 
