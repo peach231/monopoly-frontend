@@ -881,7 +881,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
                       <div className="color-bar-img" style={{ backgroundImage: `url(${getFlagUrl(tile.country)})` }}/>
                     </div>
                   )}
-                  {tile.colorGroup && !tile.country && (
+                  {tile.colorGroup && !tile.country && tile.type !== 'airport' && (
                     <div className="color-bar" style={{ backgroundColor: COLOR_MAP[tile.colorGroup] }}/>
                   )}
                   <div className="tile-content">
