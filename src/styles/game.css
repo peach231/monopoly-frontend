@@ -2940,33 +2940,55 @@
 }
 
 /* ============================================
-   AIRPORT / RAILROAD — OVERRIDE SPECIAL TILE LAYOUT
+   AIRPORT / RAILROAD — FORCE PROPERTY LAYOUT
    ============================================ */
 
-/* 1. Content padding — same as regular properties */
+/* ===== Bottom row (tile 5) ===== */
 .tile-railroad[data-side="bottom"] .tile-content {
   padding: 0 !important;
   padding-top: 28% !important;
   padding-bottom: 16% !important;
 }
+.tile-railroad[data-side="bottom"] .tile-name-wrap {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 45% !important;
+  padding: 2px 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  flex: 0 0 auto !important;
+}
+.tile-railroad[data-side="bottom"] .tile-name {
+  transform: none !important;
+  font-size: inherit !important;
+}
+.tile-railroad[data-side="bottom"] .tile-icon-wrap {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 55% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ===== Top row (tile 25) ===== */
 .tile-railroad[data-side="top"] .tile-content {
   padding: 0 !important;
   padding-bottom: 28% !important;
   padding-top: 16% !important;
 }
-.tile-railroad[data-side="left"] .tile-content {
-  padding: 0 !important;
-  padding-right: 28% !important;
-  padding-left: 16% !important;
-}
-.tile-railroad[data-side="right"] .tile-content {
-  padding: 0 !important;
-  padding-left: 28% !important;
-  padding-right: 16% !important;
-}
-
-/* 2. Name wrap — override special-tile absolute positioning */
-.tile-railroad[data-side="bottom"] .tile-name-wrap,
 .tile-railroad[data-side="top"] .tile-name-wrap {
   position: relative !important;
   top: auto !important;
@@ -2974,59 +2996,128 @@
   right: auto !important;
   bottom: auto !important;
   width: 100% !important;
-  height: 100% !important;
+  height: 45% !important;
+  padding: 2px 4px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   overflow: hidden !important;
-  padding: 2px 4px !important;
+  background: transparent !important;
+  flex: 0 0 auto !important;
+}
+.tile-railroad[data-side="top"] .tile-name {
+  transform: none !important;
+  font-size: inherit !important;
+}
+.tile-railroad[data-side="top"] .tile-icon-wrap {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 55% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* Left/right: position in the interior space like regular properties */
+/* ===== Left column (tile 15) ===== */
+.tile-railroad[data-side="left"] .tile-content {
+  padding: 0 !important;
+  padding-right: 28% !important;
+  padding-left: 16% !important;
+}
 .tile-railroad[data-side="left"] .tile-name-wrap {
   position: absolute !important;
   right: 24% !important;
   left: 14% !important;
   top: 0 !important;
-  bottom: 0 !important;
+  bottom: 50% !important;
   width: auto !important;
-  height: 100% !important;
+  height: auto !important;
+  padding: 2px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   overflow: hidden !important;
-  padding: 2px !important;
+  background: transparent !important;
+  flex: 0 0 auto !important;
 }
-.tile-railroad[data-side="right"] .tile-name-wrap {
-  position: absolute !important;
-  left: 14% !important;
-  right: 50% !important;
-  top: 0 !important;
-  bottom: 0 !important;
-  width: auto !important;
-  height: 100% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  padding: 2px !important;
-}
-
-/* 3. Name text rotation for left/right */
 .tile-railroad[data-side="left"] .tile-name {
   transform: rotate(90deg) !important;
   transform-origin: center center !important;
   line-height: 1.05 !important;
   white-space: nowrap !important;
+  font-size: inherit !important;
+}
+.tile-railroad[data-side="left"] .tile-icon-wrap {
+  position: absolute !important;
+  right: 24% !important;
+  left: 14% !important;
+  top: 50% !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ===== Right column (tile 35) ===== */
+.tile-railroad[data-side="right"] .tile-content {
+  padding: 0 !important;
+  padding-left: 28% !important;
+  padding-right: 16% !important;
+}
+.tile-railroad[data-side="right"] .tile-name-wrap {
+  position: absolute !important;
+  left: 14% !important;
+  right: 24% !important;
+  top: 0 !important;
+  bottom: 50% !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  flex: 0 0 auto !important;
 }
 .tile-railroad[data-side="right"] .tile-name {
   transform: rotate(-90deg) !important;
   transform-origin: center center !important;
   line-height: 1.05 !important;
   white-space: nowrap !important;
+  font-size: inherit !important;
+}
+.tile-railroad[data-side="right"] .tile-icon-wrap {
+  position: absolute !important;
+  left: 14% !important;
+  right: 24% !important;
+  top: 50% !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* 4. Flag fade and z-index */
+/* ===== Icon sizing ===== */
+.tile-railroad .tile-svg {
+  width: 55% !important;
+  max-width: 34px !important;
+  max-height: none !important;
+  transform: none !important;
+}
+
+/* ===== Flag fade ===== */
 .tile-railroad .color-bar {
   z-index: 3;
 }
@@ -3034,53 +3125,7 @@
   background: rgba(213, 236, 204, 0.50);
 }
 
-/* 5. Icon wrap — push away from flag, override special tile absolute positioning */
-.tile-railroad[data-side="bottom"] .tile-icon-wrap {
-  position: relative !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  padding-top: 32% !important;
-  padding-bottom: 2% !important;
-}
-.tile-railroad[data-side="top"] .tile-icon-wrap {
-  position: relative !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  padding-bottom: 32% !important;
-  padding-top: 2% !important;
-}
-.tile-railroad[data-side="left"] .tile-icon-wrap {
-  position: relative !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  padding-right: 32% !important;
-  padding-left: 2% !important;
-}
-.tile-railroad[data-side="right"] .tile-icon-wrap {
-  position: relative !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  padding-left: 32% !important;
-  padding-right: 2% !important;
-}
-
-/* 6. Shrink airplane icon */
-.tile-railroad .tile-svg {
-  width: 55%;
-  max-width: 34px;
-  max-height: none;
-  transform: none;
-}
-
-/* 7. Text shadow for readability over flag */
+/* ===== Text readability over flag ===== */
 .tile-railroad .tile-name {
   text-shadow:
     0 0 3px rgba(213,236,204,0.95),
