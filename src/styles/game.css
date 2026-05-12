@@ -2940,40 +2940,39 @@
 }
 
 /* ============================================
-   AIRPORT / RAILROAD — TREAT LIKE PROPERTY
+   AIRPORT / RAILROAD — OVERRIDE SPECIAL TILE LAYOUT
    ============================================ */
 
-/* Remove railroad from "special tile" overrides so it uses normal property layout */
-.tile-railroad .tile-content {
-  padding: 0 !important;
-  position: relative;
-}
-
-/* Bottom row: flag at top, name at bottom (interior) */
+/* 1. Content padding — same as regular properties */
 .tile-railroad[data-side="bottom"] .tile-content {
+  padding: 0 !important;
   padding-top: 28% !important;
   padding-bottom: 16% !important;
 }
-/* Top row: flag at bottom, name at top (interior) */
 .tile-railroad[data-side="top"] .tile-content {
+  padding: 0 !important;
   padding-bottom: 28% !important;
   padding-top: 16% !important;
 }
-/* Left column: flag at right, name at left (interior toward center) */
 .tile-railroad[data-side="left"] .tile-content {
+  padding: 0 !important;
   padding-right: 28% !important;
   padding-left: 16% !important;
 }
-/* Right column: flag at left, name at right (interior toward center) */
 .tile-railroad[data-side="right"] .tile-content {
+  padding: 0 !important;
   padding-left: 28% !important;
   padding-right: 16% !important;
 }
 
-/* Name wrap — same as regular properties */
-.tile-railroad .tile-name-wrap {
+/* 2. Name wrap — override special-tile absolute positioning */
+.tile-railroad[data-side="bottom"] .tile-name-wrap,
+.tile-railroad[data-side="top"] .tile-name-wrap {
   position: relative !important;
-  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
   width: 100% !important;
   height: 100% !important;
   display: flex !important;
@@ -2983,48 +2982,97 @@
   padding: 2px 4px !important;
 }
 
-/* Left/right: rotate name like other properties */
-.tile-railroad[data-side="left"] .tile-name {
-  transform: rotate(90deg);
-  transform-origin: center center;
-  line-height: 1.05;
-  white-space: nowrap;
+/* Left/right: position in the interior space like regular properties */
+.tile-railroad[data-side="left"] .tile-name-wrap {
+  position: absolute !important;
+  right: 24% !important;
+  left: 14% !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  padding: 2px !important;
 }
-.tile-railroad[data-side="right"] .tile-name {
-  transform: rotate(-90deg);
-  transform-origin: center center;
-  line-height: 1.05;
-  white-space: nowrap;
+.tile-railroad[data-side="right"] .tile-name-wrap {
+  position: absolute !important;
+  left: 14% !important;
+  right: 50% !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  padding: 2px !important;
 }
 
-/* Bring flag above icon */
+/* 3. Name text rotation for left/right */
+.tile-railroad[data-side="left"] .tile-name {
+  transform: rotate(90deg) !important;
+  transform-origin: center center !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+.tile-railroad[data-side="right"] .tile-name {
+  transform: rotate(-90deg) !important;
+  transform-origin: center center !important;
+  line-height: 1.05 !important;
+  white-space: nowrap !important;
+}
+
+/* 4. Flag fade and z-index */
 .tile-railroad .color-bar {
   z-index: 3;
 }
-/* Same fade as all other properties */
 .tile-railroad .color-bar::after {
   background: rgba(213, 236, 204, 0.50);
 }
 
-/* Icon positioning — pushed away from flag */
+/* 5. Icon wrap — push away from flag, override special tile absolute positioning */
 .tile-railroad[data-side="bottom"] .tile-icon-wrap {
-  padding-top: 32%;
-  padding-bottom: 2%;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  padding-top: 32% !important;
+  padding-bottom: 2% !important;
 }
 .tile-railroad[data-side="top"] .tile-icon-wrap {
-  padding-bottom: 32%;
-  padding-top: 2%;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  padding-bottom: 32% !important;
+  padding-top: 2% !important;
 }
 .tile-railroad[data-side="left"] .tile-icon-wrap {
-  padding-right: 32%;
-  padding-left: 2%;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  padding-right: 32% !important;
+  padding-left: 2% !important;
 }
 .tile-railroad[data-side="right"] .tile-icon-wrap {
-  padding-left: 32%;
-  padding-right: 2%;
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+  padding-left: 32% !important;
+  padding-right: 2% !important;
 }
 
-/* Shrink airplane icon */
+/* 6. Shrink airplane icon */
 .tile-railroad .tile-svg {
   width: 55%;
   max-width: 34px;
@@ -3032,7 +3080,7 @@
   transform: none;
 }
 
-/* Name readability over flag */
+/* 7. Text shadow for readability over flag */
 .tile-railroad .tile-name {
   text-shadow:
     0 0 3px rgba(213,236,204,0.95),
