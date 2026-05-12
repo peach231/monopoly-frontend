@@ -669,7 +669,6 @@
 .tile-chance .tile-content,
 .tile-chest .tile-content,
 .tile-tax .tile-content,
-.tile-railroad .tile-content,
 .tile-utility .tile-content {
   padding: 0 !important;
   position: relative;
@@ -679,7 +678,6 @@
 .tile-chance .tile-name-wrap,
 .tile-chest .tile-name-wrap,
 .tile-tax .tile-name-wrap,
-.tile-railroad .tile-name-wrap,
 .tile-utility .tile-name-wrap {
   position: absolute;
   flex: 0 0 auto;
@@ -692,7 +690,6 @@
 .tile-chance[data-side="bottom"] .tile-name-wrap,
 .tile-chest[data-side="bottom"] .tile-name-wrap,
 .tile-tax[data-side="bottom"] .tile-name-wrap,
-.tile-railroad[data-side="bottom"] .tile-name-wrap,
 .tile-utility[data-side="bottom"] .tile-name-wrap {
   top: 2px;
   left: 0;
@@ -705,7 +702,6 @@
 .tile-chance[data-side="top"] .tile-name-wrap,
 .tile-chest[data-side="top"] .tile-name-wrap,
 .tile-tax[data-side="top"] .tile-name-wrap,
-.tile-railroad[data-side="top"] .tile-name-wrap,
 .tile-utility[data-side="top"] .tile-name-wrap {
   bottom: 2px;
   left: 0;
@@ -719,7 +715,6 @@
 .tile-chance[data-side="left"] .tile-name-wrap,
 .tile-chest[data-side="left"] .tile-name-wrap,
 .tile-tax[data-side="left"] .tile-name-wrap,
-.tile-railroad[data-side="left"] .tile-name-wrap,
 .tile-utility[data-side="left"] .tile-name-wrap {
   right: 0;
   top: 0;
@@ -738,7 +733,6 @@
 .tile-chance[data-side="left"] .tile-name,
 .tile-chest[data-side="left"] .tile-name,
 .tile-tax[data-side="left"] .tile-name,
-.tile-railroad[data-side="left"] .tile-name,
 .tile-utility[data-side="left"] .tile-name {
   transform: rotate(90deg);
   transform-origin: center center;
@@ -752,7 +746,6 @@
 .tile-chance[data-side="right"] .tile-name-wrap,
 .tile-chest[data-side="right"] .tile-name-wrap,
 .tile-tax[data-side="right"] .tile-name-wrap,
-.tile-railroad[data-side="right"] .tile-name-wrap,
 .tile-utility[data-side="right"] .tile-name-wrap {
   left: 0;
   top: 0;
@@ -771,7 +764,6 @@
 .tile-chance[data-side="right"] .tile-name,
 .tile-chest[data-side="right"] .tile-name,
 .tile-tax[data-side="right"] .tile-name,
-.tile-railroad[data-side="right"] .tile-name,
 .tile-utility[data-side="right"] .tile-name {
   transform: rotate(-90deg);
   transform-origin: center center;
@@ -785,7 +777,6 @@
 .tile-chance .tile-icon-wrap,
 .tile-chest .tile-icon-wrap,
 .tile-tax .tile-icon-wrap,
-.tile-railroad .tile-icon-wrap,
 .tile-utility .tile-icon-wrap {
   position: absolute;
   inset: 0;
@@ -801,7 +792,6 @@
 .tile-chance[data-side="bottom"] .tile-icon-wrap,
 .tile-chest[data-side="bottom"] .tile-icon-wrap,
 .tile-tax[data-side="bottom"] .tile-icon-wrap,
-.tile-railroad[data-side="bottom"] .tile-icon-wrap,
 .tile-utility[data-side="bottom"] .tile-icon-wrap {
   padding-top: 18%;
 }
@@ -810,7 +800,6 @@
 .tile-chance[data-side="top"] .tile-icon-wrap,
 .tile-chest[data-side="top"] .tile-icon-wrap,
 .tile-tax[data-side="top"] .tile-icon-wrap,
-.tile-railroad[data-side="top"] .tile-icon-wrap,
 .tile-utility[data-side="top"] .tile-icon-wrap {
   padding-bottom: 18%;
 }
@@ -819,7 +808,6 @@
 .tile-chance[data-side="left"] .tile-icon-wrap,
 .tile-chest[data-side="left"] .tile-icon-wrap,
 .tile-tax[data-side="left"] .tile-icon-wrap,
-.tile-railroad[data-side="left"] .tile-icon-wrap,
 .tile-utility[data-side="left"] .tile-icon-wrap {
   padding: 0;
   padding-right: 22%;
@@ -829,7 +817,6 @@
 .tile-chance[data-side="right"] .tile-icon-wrap,
 .tile-chest[data-side="right"] .tile-icon-wrap,
 .tile-tax[data-side="right"] .tile-icon-wrap,
-.tile-railroad[data-side="right"] .tile-icon-wrap,
 .tile-utility[data-side="right"] .tile-icon-wrap {
   padding: 0;
   padding-left: 22%;
@@ -855,7 +842,6 @@
 .tile-chance[data-side="left"] .tile-svg,
 .tile-chest[data-side="left"] .tile-svg,
 .tile-tax[data-side="left"] .tile-svg,
-.tile-railroad[data-side="left"] .tile-svg,
 .tile-utility[data-side="left"] .tile-svg {
   transform: rotate(90deg);
 }
@@ -864,7 +850,6 @@
 .tile-chance[data-side="right"] .tile-svg,
 .tile-chest[data-side="right"] .tile-svg,
 .tile-tax[data-side="right"] .tile-svg,
-.tile-railroad[data-side="right"] .tile-svg,
 .tile-utility[data-side="right"] .tile-svg {
   transform: rotate(-90deg);
 }
@@ -873,7 +858,6 @@
 .tile-chance .tile-name,
 .tile-chest .tile-name,
 .tile-tax .tile-name,
-.tile-railroad .tile-name,
 .tile-utility .tile-name {
   font-weight: 800;
   letter-spacing: 0.3px;
@@ -2940,195 +2924,171 @@
 }
 
 /* ============================================
-   AIRPORT / RAILROAD — FORCE PROPERTY LAYOUT
+   AIRPORT TILES — Black bar + plane icon
    ============================================ */
 
-/* ===== Bottom row (tile 5) ===== */
-.tile-railroad[data-side="bottom"] .tile-content {
-  padding: 0 !important;
-  padding-top: 28% !important;
-  padding-bottom: 16% !important;
+/* Airport tiles: solid black color bar, no country flag */
+.tile-airport .color-bar {
+  background-color: #333333 !important;
+  border-color: #1a1a1a !important;
 }
-.tile-railroad[data-side="bottom"] .tile-name-wrap {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: 100% !important;
-  height: 45% !important;
-  padding: 2px 4px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  background: transparent !important;
-  flex: 0 0 auto !important;
-}
-.tile-railroad[data-side="bottom"] .tile-name {
-  transform: none !important;
-  font-size: inherit !important;
-}
-.tile-railroad[data-side="bottom"] .tile-icon-wrap {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: 100% !important;
-  height: 55% !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+.tile-airport .color-bar::after {
+  background: rgba(213, 236, 204, 0.20) !important;
 }
 
-/* ===== Top row (tile 25) ===== */
-.tile-railroad[data-side="top"] .tile-content {
-  padding: 0 !important;
-  padding-bottom: 28% !important;
-  padding-top: 16% !important;
+/* Airport layout: identical to regular properties */
+.tile-airport[data-side="bottom"] .tile-content {
+  padding-top: 28%;
+  padding-bottom: 16%;
 }
-.tile-railroad[data-side="top"] .tile-name-wrap {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: 100% !important;
-  height: 45% !important;
-  padding: 2px 4px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  background: transparent !important;
-  flex: 0 0 auto !important;
+.tile-airport[data-side="top"] .tile-content {
+  padding-bottom: 28%;
+  padding-top: 16%;
 }
-.tile-railroad[data-side="top"] .tile-name {
-  transform: none !important;
-  font-size: inherit !important;
+.tile-airport[data-side="left"] .tile-content {
+  padding-right: 28%;
+  padding-left: 16%;
 }
-.tile-railroad[data-side="top"] .tile-icon-wrap {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: 100% !important;
-  height: 55% !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+.tile-airport[data-side="right"] .tile-content {
+  padding-left: 28%;
+  padding-right: 16%;
 }
 
-/* ===== Left column (tile 15) ===== */
-.tile-railroad[data-side="left"] .tile-content {
-  padding: 0 !important;
-  padding-right: 28% !important;
-  padding-left: 16% !important;
-}
-.tile-railroad[data-side="left"] .tile-name-wrap {
-  position: absolute !important;
-  right: 24% !important;
-  left: 14% !important;
-  top: 0 !important;
-  bottom: 50% !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 2px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  background: transparent !important;
-  flex: 0 0 auto !important;
-}
-.tile-railroad[data-side="left"] .tile-name {
-  transform: rotate(90deg) !important;
-  transform-origin: center center !important;
-  line-height: 1.05 !important;
-  white-space: nowrap !important;
-  font-size: inherit !important;
-}
-.tile-railroad[data-side="left"] .tile-icon-wrap {
-  position: absolute !important;
-  right: 24% !important;
-  left: 14% !important;
-  top: 50% !important;
-  bottom: 0 !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+/* Name wrap */
+.tile-airport .tile-name-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2px 4px;
 }
 
-/* ===== Right column (tile 35) ===== */
-.tile-railroad[data-side="right"] .tile-content {
-  padding: 0 !important;
-  padding-left: 28% !important;
-  padding-right: 16% !important;
+/* Left/right name rotation */
+.tile-airport[data-side="left"] .tile-name {
+  transform: rotate(90deg);
+  transform-origin: center center;
+  line-height: 1.05;
+  white-space: nowrap;
 }
-.tile-railroad[data-side="right"] .tile-name-wrap {
-  position: absolute !important;
-  left: 14% !important;
-  right: 24% !important;
-  top: 0 !important;
-  bottom: 50% !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 2px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  overflow: hidden !important;
-  background: transparent !important;
-  flex: 0 0 auto !important;
-}
-.tile-railroad[data-side="right"] .tile-name {
-  transform: rotate(-90deg) !important;
-  transform-origin: center center !important;
-  line-height: 1.05 !important;
-  white-space: nowrap !important;
-  font-size: inherit !important;
-}
-.tile-railroad[data-side="right"] .tile-icon-wrap {
-  position: absolute !important;
-  left: 14% !important;
-  right: 24% !important;
-  top: 50% !important;
-  bottom: 0 !important;
-  width: auto !important;
-  height: auto !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+.tile-airport[data-side="right"] .tile-name {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
-/* ===== Icon sizing ===== */
-.tile-railroad .tile-svg {
-  width: 55% !important;
-  max-width: 34px !important;
-  max-height: none !important;
-  transform: none !important;
+/* Icon positioning */
+.tile-airport[data-side="bottom"] .tile-icon-wrap {
+  padding-top: 32%;
+  padding-bottom: 2%;
+}
+.tile-airport[data-side="top"] .tile-icon-wrap {
+  padding-bottom: 32%;
+  padding-top: 2%;
+}
+.tile-airport[data-side="left"] .tile-icon-wrap {
+  padding-right: 32%;
+  padding-left: 2%;
+}
+.tile-airport[data-side="right"] .tile-icon-wrap {
+  padding-left: 32%;
+  padding-right: 2%;
 }
 
-/* ===== Flag fade ===== */
-.tile-railroad .color-bar {
-  z-index: 3;
-}
-.tile-railroad .color-bar::after {
-  background: rgba(213, 236, 204, 0.50);
+/* Black airplane icon */
+.tile-airport .tile-svg {
+  width: 55%;
+  max-width: 34px;
+  max-height: none;
 }
 
-/* ===== Text readability over flag ===== */
-.tile-railroad .tile-name {
+/* Text shadow */
+.tile-airport .tile-name {
   text-shadow:
     0 0 3px rgba(213,236,204,0.95),
     0 0 6px rgba(213,236,204,0.9),
     0 0 9px rgba(213,236,204,0.85);
+}
+
+/* Owner dot, houses, hotel — same as properties */
+.tile-airport[data-side="bottom"] .owner-dot,
+.tile-airport[data-side="bottom"] .houses-indicator,
+.tile-airport[data-side="bottom"] .hotel-indicator {
+  top: 23%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tile-airport[data-side="top"] .owner-dot,
+.tile-airport[data-side="top"] .houses-indicator,
+.tile-airport[data-side="top"] .hotel-indicator {
+  bottom: 23%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tile-airport[data-side="left"] .owner-dot,
+.tile-airport[data-side="left"] .houses-indicator,
+.tile-airport[data-side="left"] .hotel-indicator {
+  top: 50%;
+  right: 23%;
+  transform: translateY(-50%);
+}
+.tile-airport[data-side="right"] .owner-dot,
+.tile-airport[data-side="right"] .houses-indicator,
+.tile-airport[data-side="right"] .hotel-indicator {
+  top: 50%;
+  left: 23%;
+  transform: translateY(-50%);
+}
+
+/* Price edge */
+.tile-airport[data-side="bottom"] .tile-price-edge {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tile-airport[data-side="top"] .tile-price-edge {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.tile-airport[data-side="left"] .tile-price-edge {
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
+}
+.tile-airport[data-side="right"] .tile-price-edge {
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: center;
+}
+
+/* Tokens */
+.tile-airport[data-side="bottom"] .tile-tokens {
+  bottom: 14%;
+  left: 0;
+  right: 0;
+}
+.tile-airport[data-side="top"] .tile-tokens {
+  top: 14%;
+  left: 0;
+  right: 0;
+}
+.tile-airport[data-side="left"] .tile-tokens {
+  left: 14%;
+  top: 0;
+  bottom: 0;
+  flex-direction: column;
+  z-index: 10;
+}
+.tile-airport[data-side="right"] .tile-tokens {
+  right: 14%;
+  top: 0;
+  bottom: 0;
+  flex-direction: column;
+  z-index: 10;
 }
