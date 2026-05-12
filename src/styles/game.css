@@ -2924,107 +2924,153 @@
 }
 
 /* ============================================
-   AIRPORT TILES — Black bar + plane icon
+   AIRPORT TILES — No bar, name at edge, icon centered
    ============================================ */
 
-/* Airport tiles: solid black color bar, no country flag */
+/* No color bar for airports */
 .tile-airport .color-bar {
-  background-color: #333333 !important;
-  border-color: #1a1a1a !important;
-}
-.tile-airport .color-bar::after {
-  background: rgba(213, 236, 204, 0.20) !important;
+  display: none !important;
 }
 
-/* Airport layout: identical to regular properties */
-.tile-airport[data-side="bottom"] .tile-content {
-  padding-top: 28%;
-  padding-bottom: 16%;
-}
-.tile-airport[data-side="top"] .tile-content {
-  padding-bottom: 28%;
-  padding-top: 16%;
-}
-.tile-airport[data-side="left"] .tile-content {
-  padding-right: 28%;
-  padding-left: 16%;
-}
-.tile-airport[data-side="right"] .tile-content {
-  padding-left: 28%;
-  padding-right: 16%;
-}
-
-/* Name wrap */
-.tile-airport .tile-name-wrap {
+/* Airport content: no padding, name is absolute-positioned */
+.tile-airport .tile-content {
+  padding: 0 !important;
   position: relative;
+}
+
+/* Bottom row: name at top (where bar was), icon below */
+.tile-airport[data-side="bottom"] .tile-name-wrap {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
+  height: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  z-index: 3;
+}
+
+/* Top row: name at bottom (where bar was), icon above */
+.tile-airport[data-side="top"] .tile-name-wrap {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  z-index: 3;
+}
+
+/* Left column: name at right (where bar was), rotated */
+.tile-airport[data-side="left"] .tile-name-wrap {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: auto;
+  width: 22%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: transparent;
+}
+
+/* Right column: name at left (where bar was), rotated */
+.tile-airport[data-side="right"] .tile-name-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: auto;
+  width: 22%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: transparent;
+}
+
+/* Left column name rotation */
+.tile-airport[data-side="left"] .tile-name {
+  transform: rotate(90deg);
+  transform-origin: center center;
+  font-size: clamp(7px, 1.3vmin, 11px);
+  line-height: 1.05;
+  white-space: nowrap;
+  width: max-content;
+}
+
+/* Right column name rotation */
+.tile-airport[data-side="right"] .tile-name {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  font-size: clamp(7px, 1.3vmin, 11px);
+  line-height: 1.05;
+  white-space: nowrap;
+  width: max-content;
+}
+
+/* Icon fills the tile, centered */
+.tile-airport .tile-icon-wrap {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  padding: 2px 4px;
+  padding: 0;
 }
 
-/* Left/right name rotation */
-.tile-airport[data-side="left"] .tile-name {
-  transform: rotate(90deg);
-  transform-origin: center center;
-  line-height: 1.05;
-  white-space: nowrap;
-}
-.tile-airport[data-side="right"] .tile-name {
-  transform: rotate(-90deg);
-  transform-origin: center center;
-  line-height: 1.05;
-  white-space: nowrap;
-}
-
-/* Icon positioning */
+/* Push icon away from name strip at outer edge */
 .tile-airport[data-side="bottom"] .tile-icon-wrap {
-  padding-top: 32%;
-  padding-bottom: 2%;
+  padding-top: 18%;
 }
 .tile-airport[data-side="top"] .tile-icon-wrap {
-  padding-bottom: 32%;
-  padding-top: 2%;
+  padding-bottom: 18%;
 }
 .tile-airport[data-side="left"] .tile-icon-wrap {
-  padding-right: 32%;
-  padding-left: 2%;
+  padding-right: 22%;
 }
 .tile-airport[data-side="right"] .tile-icon-wrap {
-  padding-left: 32%;
-  padding-right: 2%;
+  padding-left: 22%;
 }
 
-/* Black airplane icon */
+/* Plane icon sizing */
 .tile-airport .tile-svg {
   width: 55%;
   max-width: 34px;
   max-height: none;
+  transform: none;
 }
 
-/* Text shadow */
+/* No text shadow needed without bar */
 .tile-airport .tile-name {
-  text-shadow:
-    0 0 3px rgba(213,236,204,0.95),
-    0 0 6px rgba(213,236,204,0.9),
-    0 0 9px rgba(213,236,204,0.85);
+  text-shadow: none;
 }
 
-/* Owner dot, houses, hotel — same as properties */
+/* Owner dot, houses, hotel */
 .tile-airport[data-side="bottom"] .owner-dot,
 .tile-airport[data-side="bottom"] .houses-indicator,
 .tile-airport[data-side="bottom"] .hotel-indicator {
-  top: 23%;
+  top: 18%;
   left: 50%;
   transform: translateX(-50%);
 }
 .tile-airport[data-side="top"] .owner-dot,
 .tile-airport[data-side="top"] .houses-indicator,
 .tile-airport[data-side="top"] .hotel-indicator {
-  bottom: 23%;
+  bottom: 18%;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -3032,14 +3078,14 @@
 .tile-airport[data-side="left"] .houses-indicator,
 .tile-airport[data-side="left"] .hotel-indicator {
   top: 50%;
-  right: 23%;
+  right: 18%;
   transform: translateY(-50%);
 }
 .tile-airport[data-side="right"] .owner-dot,
 .tile-airport[data-side="right"] .houses-indicator,
 .tile-airport[data-side="right"] .hotel-indicator {
   top: 50%;
-  left: 23%;
+  left: 18%;
   transform: translateY(-50%);
 }
 
