@@ -2947,34 +2947,91 @@
 .tile-railroad .color-bar {
   z-index: 3;
 }
+/* FIX: Use same fade as all other properties (0.50 not 0.15) */
 .tile-railroad .color-bar::after {
-  background: rgba(213, 236, 204, 0.15);
+  background: rgba(213, 236, 204, 0.50);
+}
+
+/* FIX: Push the text name away from the flag strip — same as other properties */
+.tile-railroad[data-side="bottom"] .tile-content {
+  padding-top: 28%;
+  padding-bottom: 16%;
+}
+.tile-railroad[data-side="top"] .tile-content {
+  padding-bottom: 28%;
+  padding-top: 16%;
+}
+.tile-railroad[data-side="left"] .tile-content {
+  padding-right: 28%;
+  padding-left: 16%;
+}
+.tile-railroad[data-side="right"] .tile-content {
+  padding-left: 28%;
+  padding-right: 16%;
+}
+
+/* FIX: Position the name wrap properly for left/right columns */
+.tile-railroad[data-side="left"] .tile-name-wrap {
+  position: absolute;
+  right: 24%;
+  left: 14%;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.tile-railroad[data-side="right"] .tile-name-wrap {
+  position: absolute;
+  left: 14%;
+  right: 50%;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* FIX: Rotate railroad names on left/right like other properties */
+.tile-railroad[data-side="left"] .tile-name {
+  transform: rotate(90deg);
+  transform-origin: center center;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+.tile-railroad[data-side="right"] .tile-name {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 /* Push the airplane icon away from the flag strip */
 .tile-railroad[data-side="bottom"] .tile-icon-wrap {
-  padding-top: 30% !important;
-  padding-bottom: 2% !important;
+  padding-top: 30%;
+  padding-bottom: 2%;
 }
 .tile-railroad[data-side="top"] .tile-icon-wrap {
-  padding-bottom: 30% !important;
-  padding-top: 2% !important;
+  padding-bottom: 30%;
+  padding-top: 2%;
 }
 .tile-railroad[data-side="left"] .tile-icon-wrap {
-  padding-right: 30% !important;
-  padding-left: 2% !important;
+  padding-right: 30%;
+  padding-left: 2%;
 }
 .tile-railroad[data-side="right"] .tile-icon-wrap {
-  padding-left: 30% !important;
-  padding-right: 2% !important;
+  padding-left: 30%;
+  padding-right: 2%;
 }
 
 /* Shrink airplane icon so it sits cleanly below/inside the flag */
 .tile-railroad .tile-svg {
-  width: 55% !important;
-  max-width: 34px !important;
-  max-height: none !important;
-  transform: none !important;
+  width: 55%;
+  max-width: 34px;
+  max-height: none;
+  transform: none;
 }
 
 /* Make airport name readable over the flag background */
