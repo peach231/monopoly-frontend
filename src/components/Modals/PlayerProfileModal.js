@@ -160,12 +160,14 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                         {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
                       </div>
                       <div className="profile-prop-details">
-                        {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
-                        {' · '}
-                        {prop.isMortgaged 
-                          ? 'Rent: $0 (Mortgaged)' 
-                          : `Rent: $${rentValue}`}
-                      </div>
+  {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
+  {' · '}
+  {prop.isMortgaged 
+    ? 'Rent: $0 (Mortgaged)' 
+    : prop.tile.type === 'utility'
+      ? 'Rent: ? (depends on dice roll)'
+      : `Rent: $${rentValue}`}
+</div>
                     </div>
                   );
                 })}
