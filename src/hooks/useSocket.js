@@ -63,7 +63,6 @@ export function useSocket() {
         console.log('Socket disconnected:', reason);
         setConnected(false);
         if (keepaliveRef.current) clearInterval(keepaliveRef.current);
-        lastGameStateRef.current = gameState;
 
         if (reason === 'io server disconnect') {
           setConnectionError('Server closed connection. Refresh to reconnect.');
@@ -101,7 +100,7 @@ export function useSocket() {
       }
       socketRef.current = null;
     };
-  }, [getIdentity, gameState]);
+  }, [getIdentity]); // FIXED: removed gameState
 
   const emit = useCallback((event, data, timeoutMs = 10000) => {
     return new Promise((resolve) => {
