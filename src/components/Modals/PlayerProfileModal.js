@@ -8,7 +8,8 @@ const COLOR_MAP = {
   red: '#ED1B24',
   yellow: '#FEF200',
   green: '#1FB25A',
-  darkblue: '#0072BB'
+  darkblue: '#0072BB',
+  airport: '#333333'
 };
 
 // Country code for each property tile
@@ -32,7 +33,8 @@ const COUNTRY_NAMES = {
   GB: 'United Kingdom',
   JP: 'Japan',
   CN: 'China',
-  US: 'United States'
+  US: 'United States',
+  AP: 'Airport'
 };
 
 // Color group → country code mapping (for monopoly tracker)
@@ -44,7 +46,8 @@ const COLOR_GROUP_COUNTRY = {
   red: 'GB',
   yellow: 'JP',
   green: 'CN',
-  darkblue: 'US'
+  darkblue: 'US',
+  airport: 'AP'
 };
 
 const COLOR_GROUP_TOTALS = {
@@ -55,7 +58,8 @@ const COLOR_GROUP_TOTALS = {
   red: 3,
   yellow: 3,
   green: 3,
-  darkblue: 2
+  darkblue: 2,
+  airport: 4
 };
 
 const TOKEN_EMOJI = {
@@ -142,7 +146,7 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                         opacity: prop.isMortgaged ? 0.6 : 1
                       }}
                     >
-                                            <div className="profile-prop-name">
+                      <div className="profile-prop-name">
                         {countryCode && (
                           <img 
                             src={getFlagUrl(countryCode)} 
@@ -151,7 +155,7 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                             style={{ width: 20, height: 15, marginRight: 8, borderRadius: 1, objectFit: 'cover', verticalAlign: 'middle', display: 'inline-block' }}
                           />
                         )}
-                        {prop.tile.type === 'railroad' && <span style={{ marginRight: 4 }}>✈️</span>}
+                        {prop.tile.type === 'airport' && <span style={{ marginRight: 4 }}>✈️</span>}
                         {prop.tile.name}
                         {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
                       </div>
