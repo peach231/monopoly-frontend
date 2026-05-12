@@ -8,7 +8,8 @@ const COLOR_MAP = {
   red: '#ED1B24',
   yellow: '#FEF200',
   green: '#1FB25A',
-  darkblue: '#0072BB'
+  darkblue: '#0072BB',
+  airport: '#333333'
 };
 
 export default function TradeModal({ players, myId, myProperties, allProperties, boardTiles, onClose, onPropose }) {
