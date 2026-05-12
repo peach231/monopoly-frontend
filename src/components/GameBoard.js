@@ -980,7 +980,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               </button>
             )}
 
-            {gameState.turnPhase === 'buy' && (
+            {gameState.turnPhase === 'buy' && !diceAnim.isRolling && (
               <>
                 <button className="btn-control btn-buy" onClick={handleBuy}>💰 Buy Property</button>
                 <button className="btn-control btn-auction" onClick={handleAuction}>📢 Auction</button>
