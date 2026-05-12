@@ -12,19 +12,18 @@ const COLOR_MAP = {
   airport: '#333333'
 };
 
-// Country code for each property tile
+// Country code for each property tile — airports removed
 const TILE_COUNTRY = {
   1: 'BR', 3: 'BR',
-  5: 'CA', 6: 'CA', 8: 'CA', 9: 'CA',
-  11: 'IT', 13: 'IT', 14: 'IT', 15: 'FR',
+  6: 'CA', 8: 'CA', 9: 'CA',
+  11: 'IT', 13: 'IT', 14: 'IT',
   16: 'FR', 18: 'FR', 19: 'FR',
-  21: 'GB', 23: 'GB', 24: 'GB', 25: 'JP',
+  21: 'GB', 23: 'GB', 24: 'GB',
   26: 'JP', 27: 'JP', 29: 'JP',
-  31: 'CN', 32: 'CN', 34: 'CN', 35: 'US',
+  31: 'CN', 32: 'CN', 34: 'CN',
   37: 'US', 39: 'US'
 };
 
-// Country names for display
 const COUNTRY_NAMES = {
   BR: 'Brazil',
   CA: 'Canada',
@@ -37,7 +36,6 @@ const COUNTRY_NAMES = {
   AP: 'Airport'
 };
 
-// Color group → country code mapping (for monopoly tracker)
 const COLOR_GROUP_COUNTRY = {
   brown: 'BR',
   lightblue: 'CA',
@@ -71,7 +69,6 @@ const TOKEN_EMOJI = {
   suitcase: '🧳'
 };
 
-// SVG flags - vector, always crisp at any size
 function getFlagUrl(countryCode) {
   return `https://flagcdn.com/${countryCode.toLowerCase()}.svg`;
 }
@@ -91,7 +88,6 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
     });
 
   const currentTile = boardTiles[player.position];
-
   const colorGroupStats = {};
   playerProps.forEach(p => {
     if (p.tile.colorGroup) {
@@ -160,14 +156,14 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                         {prop.isMortgaged && <span className="mortgaged-label"> 🔒 Mortgaged</span>}
                       </div>
                       <div className="profile-prop-details">
-  {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
-  {' · '}
-  {prop.isMortgaged 
-    ? 'Rent: $0 (Mortgaged)' 
-    : prop.tile.type === 'utility'
-      ? 'Rent: ? (depends on dice roll)'
-      : `Rent: $${rentValue}`}
-</div>
+                        {prop.hotel ? '🏨 Hotel' : prop.houses > 0 ? `${prop.houses} 🏠` : 'No houses'}
+                        {' · '}
+                        {prop.isMortgaged 
+                          ? 'Rent: $0 (Mortgaged)' 
+                          : prop.tile.type === 'utility'
+                            ? 'Rent: ? (depends on dice roll)'
+                            : `Rent: $${rentValue}`}
+                      </div>
                     </div>
                   );
                 })}
@@ -189,21 +185,24 @@ export default function PlayerProfileModal({ playerId, players, properties, boar
                   return (
                     <div key={color} className="monopoly-tracker-item">
                       <span className="monopoly-chip-wrapper">
-                        {countryCode && (
+                        {countryCode && countryCode !== 'AP' && (
                           <img 
                             src={getFlagUrl(countryCode)} 
                             alt="" 
                             className="monopoly-chip-flag"
                           />
                         )}
+                        {color === 'airport' && (
+                          <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', zIndex: 1 }}>
+                            ✈️
+                          </span>
+                        )}
                         <span className="monopoly-chip-text">
                           {isComplete ? '💰' : count}
                         </span>
                       </span>
                       <span className="monopoly-tracker-label">
-                        {isComplete 
-                          ? `${countryName} Monopoly!` 
-                          : `${countryName}: ${count}/${total}`}
+                        {isComplete ? `${countryName} Monopoly!` : `${countryName}: ${count}/${total}`}
                       </span>
                     </div>
                   );
