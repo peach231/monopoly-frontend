@@ -8,14 +8,15 @@ const COLOR_MAP = {
   red: '#ED1B24',
   yellow: '#FEF200',
   green: '#1FB25A',
-  darkblue: '#0072BB'
+  darkblue: '#0072BB',
+  airport: '#333333'
 };
 
 export default function PropertyModal({ tileId, tile, propertyState, owner, isMine, isMyTurn, onClose, onBuild, onSell, onMortgage, onUnmortgage }) {
   if (!tile) return null;
 
   const isProperty = tile.type === 'property';
-  const isRailroad = tile.type === 'railroad';
+  const isAirport = tile.type === 'airport';
   const isUtility = tile.type === 'utility';
   const isCorner = tile.type === 'corner';
   const isTax = tile.type === 'tax';
@@ -70,7 +71,7 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
           )}
 
           {/* Owner info visible to ALL players */}
-          {(isProperty || isRailroad || isUtility) && (
+          {(isProperty || isAirport || isUtility) && (
             propertyState?.ownerId ? (
               <div className="property-owner">
                 Owner: <span style={{ color: owner?.color }}>{owner?.name || 'Unknown'}</span>
@@ -105,8 +106,8 @@ export default function PropertyModal({ tileId, tile, propertyState, owner, isMi
             </div>
           )}
 
-          {/* Railroad rent table */}
-          {isRailroad && (
+          {/* Airport rent table */}
+          {isAirport && (
             <div className="rent-table">
               <div className="rent-row"><span>1 Airport</span><span>$25</span></div>
               <div className="rent-row"><span>2 Airports</span><span>$50</span></div>
