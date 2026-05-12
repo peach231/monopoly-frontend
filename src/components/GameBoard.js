@@ -680,25 +680,89 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     return () => clearTimeout(t);
   }, [currentPlayerMoving, showFloats]);
 
-    const handleRoll = async () => {
-    if (diceAnim.isRolling) return;
+  // SAFETY: Force-clear dice animation if stuck
+  useEffect(() => {
+    if (!diceAnim.isRolling) return;
+    const t = setTimeout(() => {
+      if (diceIntervalRef.current) {
+        clearInterval(diceIntervalRef.current);
+        diceIntervalRef.current = null;
+      }
+      setDiceAnim(prev => ({ ...prev, isRolling: false }));
+    }, 4000);
+    return () => clearTimeout(t);
+  }, [diceAnim.isRolling]);
+
+  // SAFETY: Force-clear currentPlayerMoving when turnPhase advances
+  useEffect(() => {
+    if (gameState?.turnPhase === 'end' || gameState?.turnPhase === 'buy' || gameState?.turnPhase === 'auction') {
+      setCurrentPlayerMoving(false);
+      currentPlayerMovingRef.current = false;
+      movingCurrentPlayerRef.current = null;
+      if (diceIntervalRef.current) {
+        clearInterval(diceIntervalRef.current);
+        diceIntervalRef.current = null;
+      }
+      setDiceAnim(prev => ({ ...prev, isRolling: false }));
+    }
+  }, [gameState?.turnPhase]);
+
+  const handleRoll = async () => {
+    if (diceAnim.isRolling || currentPlayerMoving) return;
     const roomCode = sessionStorage.getItem('roomCode');
+    if (!roomCode) {
+      console.error('No room code found');
+      return;
+    }
+
     if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
     setDiceAnim({ isRolling: true, values: [1, 1] });
+
     diceIntervalRef.current = setInterval(() => {
       setDiceAnim(prev => ({ ...prev, values: [Math.floor(Math.random()*6)+1, Math.floor(Math.random()*6)+1] }));
     }, 120);
+
+    // HARD SAFETY: Force stop dice animation after 4 seconds max
+    const animSafetyTimer = setTimeout(() => {
+      if (diceIntervalRef.current) {
+        clearInterval(diceIntervalRef.current);
+        diceIntervalRef.current = null;
+      }
+      setDiceAnim(prev => ({ ...prev, isRolling: false }));
+    }, 4000);
+
     const startTime = Date.now();
     try {
-      await emit('rollDice', { roomCode, playerId });
+      const res = await emit('rollDice', { roomCode, playerId }, 10000);
+      clearTimeout(animSafetyTimer);
+
+      if (!res.success) {
+        console.error('Roll rejected:', res.message);
+        if (diceIntervalRef.current) {
+          clearInterval(diceIntervalRef.current);
+          diceIntervalRef.current = null;
+        }
+        setDiceAnim(prev => ({ ...prev, isRolling: false }));
+        return;
+      }
+
+      const remaining = Math.max(0, 1200 - (Date.now() - startTime));
+      setTimeout(() => {
+        if (diceIntervalRef.current) {
+          clearInterval(diceIntervalRef.current);
+          diceIntervalRef.current = null;
+        }
+        setDiceAnim(prev => ({ ...prev, isRolling: false, values: gameState?.dice || prev.values }));
+      }, remaining);
     } catch (err) {
+      clearTimeout(animSafetyTimer);
       console.error('Roll error:', err);
+      if (diceIntervalRef.current) {
+        clearInterval(diceIntervalRef.current);
+        diceIntervalRef.current = null;
+      }
+      setDiceAnim(prev => ({ ...prev, isRolling: false }));
     }
-    const remaining = Math.max(0, 1200 - (Date.now() - startTime));
-    setTimeout(() => {
-      if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
-      setDiceAnim(prev => ({ ...prev, isRolling: false, values: gameState?.dice || prev.values }));
-    }, remaining);
   };
 
   const handleBuy        = async () => { const r = sessionStorage.getItem('roomCode'); await emit('buyProperty',    { roomCode: r, playerId }); };
