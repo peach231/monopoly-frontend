@@ -12,7 +12,7 @@ const BOARD_TILES = [
   { id: 2, name: "Treasure", type: "chest" },
   { id: 3, name: "Sao Paulo", type: "property", colorGroup: "brown", price: 60, country: "BR", rent: [4, 20, 60, 180, 320, 450], houseCost: 50, mortgageValue: 30 },
   { id: 4, name: "Earnings Tax", type: "tax", price: 200, amount: 200 },
-  { id: 5, name: "YYZ Airport", type: "railroad", price: 200, country: "CA", mortgageValue: 100 },
+  { id: 5, name: "YYZ Airport", type: "airport", price: 200, colorGroup: "airport", mortgageValue: 100 },
   { id: 6, name: "Montreal", type: "property", colorGroup: "lightblue", price: 100, country: "CA", rent: [6, 30, 90, 270, 400, 550], houseCost: 50, mortgageValue: 50 },
   { id: 7, name: "Surprise", type: "chance" },
   { id: 8, name: "Vancouver", type: "property", colorGroup: "lightblue", price: 100, country: "CA", rent: [6, 30, 90, 270, 400, 550], houseCost: 50, mortgageValue: 50 },
@@ -22,7 +22,7 @@ const BOARD_TILES = [
   { id: 12, name: "Electric Co", type: "utility", price: 150, mortgageValue: 75 },
   { id: 13, name: "Milan", type: "property", colorGroup: "pink", price: 140, country: "IT", rent: [10, 50, 150, 450, 625, 750], houseCost: 100, mortgageValue: 70 },
   { id: 14, name: "Rome", type: "property", colorGroup: "pink", price: 160, country: "IT", rent: [12, 60, 180, 500, 700, 900], houseCost: 100, mortgageValue: 80 },
-  { id: 15, name: "CDG Airport", type: "railroad", price: 200, country: "FR", mortgageValue: 100 },
+  { id: 15, name: "CDG Airport", type: "airport", price: 200, colorGroup: "airport", mortgageValue: 100 },
   { id: 16, name: "Nice", type: "property", colorGroup: "orange", price: 180, country: "FR", rent: [14, 70, 200, 550, 750, 950], houseCost: 100, mortgageValue: 90 },
   { id: 17, name: "Treasure", type: "chest" },
   { id: 18, name: "Lyon", type: "property", colorGroup: "orange", price: 180, country: "FR", rent: [14, 70, 200, 550, 750, 950], houseCost: 100, mortgageValue: 90 },
@@ -32,7 +32,7 @@ const BOARD_TILES = [
   { id: 22, name: "Surprise", type: "chance" },
   { id: 23, name: "Birmingham", type: "property", colorGroup: "red", price: 220, country: "GB", rent: [18, 90, 250, 700, 875, 1050], houseCost: 150, mortgageValue: 110 },
   { id: 24, name: "London", type: "property", colorGroup: "red", price: 240, country: "GB", rent: [20, 100, 300, 750, 925, 1100], houseCost: 150, mortgageValue: 120 },
-  { id: 25, name: "HND Airport", type: "railroad", price: 200, country: "JP", mortgageValue: 100 },
+  { id: 25, name: "HND Airport", type: "airport", price: 200, colorGroup: "airport", mortgageValue: 100 },
   { id: 26, name: "Kyoto", type: "property", colorGroup: "yellow", price: 260, country: "JP", rent: [22, 110, 330, 800, 975, 1150], houseCost: 150, mortgageValue: 130 },
   { id: 27, name: "Osaka", type: "property", colorGroup: "yellow", price: 260, country: "JP", rent: [22, 110, 330, 800, 975, 1150], houseCost: 150, mortgageValue: 130 },
   { id: 28, name: "Water Works", type: "utility", price: 150, mortgageValue: 75 },
@@ -42,7 +42,7 @@ const BOARD_TILES = [
   { id: 32, name: "Shanghai", type: "property", colorGroup: "green", price: 300, country: "CN", rent: [26, 130, 390, 900, 1100, 1275], houseCost: 200, mortgageValue: 150 },
   { id: 33, name: "Treasure", type: "chest" },
   { id: 34, name: "Beijing", type: "property", colorGroup: "green", price: 320, country: "CN", rent: [28, 150, 450, 1000, 1200, 1400], houseCost: 200, mortgageValue: 160 },
-  { id: 35, name: "JFK Airport", type: "railroad", price: 200, country: "US", mortgageValue: 100 },
+  { id: 35, name: "JFK Airport", type: "airport", price: 200, colorGroup: "airport", mortgageValue: 100 },
   { id: 36, name: "Surprise", type: "chance" },
   { id: 37, name: "Chicago", type: "property", colorGroup: "darkblue", price: 350, country: "US", rent: [35, 175, 500, 1100, 1300, 1500], houseCost: 200, mortgageValue: 175 },
   { id: 38, name: "Premium Tax", type: "tax", price: 100, amount: 100 },
@@ -51,10 +51,12 @@ const BOARD_TILES = [
 
 const COLOR_MAP = {
   brown: '#955436', lightblue: '#AAE0FA', pink: '#D93A96', orange: '#F7941D',
-  red: '#ED1B24', yellow: '#FEF200', green: '#1FB25A', darkblue: '#0072BB'
+  red: '#ED1B24', yellow: '#FEF200', green: '#1FB25A', darkblue: '#0072BB',
+  airport: '#333333'
 };
 
 const COLOR_GROUPS = {
+  airport: [5, 15, 25, 35],
   brown: [1, 3], lightblue: [6, 8, 9], pink: [11, 13, 14], orange: [16, 18, 19],
   red: [21, 23, 24], yellow: [26, 27, 29], green: [31, 32, 34], darkblue: [37, 39]
 };
@@ -107,9 +109,9 @@ function calculateRent(tileId, properties, diceSum = 7) {
     }
     return tile.rent[0];
   }
-  if (tile.type === 'railroad') {
-    const rr = [5,15,25,35].filter(id => { const p = properties.find(x => x.id === id); return p && p.ownerId === prop.ownerId; });
-    return 25 * Math.pow(2, rr.length - 1);
+  if (tile.type === 'airport') {
+    const ap = [5,15,25,35].filter(id => { const p = properties.find(x => x.id === id); return p && p.ownerId === prop.ownerId; });
+    return 25 * Math.pow(2, ap.length - 1);
   }
   if (tile.type === 'utility') {
     const ut = [12,28].filter(id => { const p = properties.find(x => x.id === id); return p && p.ownerId === prop.ownerId; });
@@ -233,7 +235,7 @@ function DieFace({ value }) {
   );
 }
 function TileIcon({ tile }) {
-  if (tile.type === 'railroad') return <AirplaneIcon/>;
+  if (tile.type === 'airport') return <AirplaneIcon/>;
   if (tile.type === 'utility') return tile.id === 12 ? <BulbIcon/> : <FaucetIcon/>;
   if (tile.type === 'chance') return <ChanceIcon/>;
   if (tile.type === 'chest') return <ChestIcon/>;
@@ -836,7 +838,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               const isCorner   = tile.type === 'corner';
               const owner      = gameState?.players.find(p => p.id === propState?.ownerId);
               const side       = getTileSide(tile.id);
-              const hasIcon    = ['railroad','utility','chance','chest','tax'].includes(tile.type);
+              const hasIcon    = ['airport','utility','chance','chest','tax'].includes(tile.type);
               const charClass  = getCharClass(tile.name);
 
               if (isCorner) {
