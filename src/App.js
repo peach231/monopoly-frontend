@@ -5,13 +5,12 @@ import GameBoard from './components/GameBoard';
 import './styles/game.css';
 
 function App() {
-  const { connected, gameState, emit } = useSocket();
-  const [view, setView] = useState('lobby'); // lobby | game
+  const { connected, gameState, emit, connectionError, reconnect } = useSocket();
+  const [view, setView] = useState('lobby');
   const [playerId, setPlayerId] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Parse URL for room code (for direct joins via share link)
     const params = new URLSearchParams(window.location.search);
     const roomFromUrl = params.get('room');
     const savedRoom = sessionStorage.getItem('roomCode');
@@ -65,24 +64,55 @@ function App() {
     await emit('startGame', { roomCode });
   };
 
- const getShareLink = () => {
+  const getShareLink = () => {
     const roomCode = sessionStorage.getItem('roomCode');
     const parentUrl = process.env.REACT_APP_PARENT_URL;
-
-    // Use the exact URL you set in Vercel first
     if (parentUrl) {
       return `${parentUrl}${parentUrl.includes('?') ? '&' : '?'}room=${roomCode}`;
     }
-
-    // Fallback if the environment variable is missing
     return `${window.location.origin}${window.location.pathname}?room=${roomCode}`;
   };
+
+  if (connectionError) {
+    return (
+      <div className="loading-screen">
+        <div style={{ textAlign: 'center', maxWidth: '400px', padding: '20px' }}>
+          <p style={{ color: '#c5392a', fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '12px' }}>
+            ⚠️ Connection Issue
+          </p>
+          <p style={{ fontSize: '0.9rem', marginBottom: '8px' }}>
+            {connectionError}
+          </p>
+          <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '20px' }}>
+            The server may have restarted or your network changed.
+            Your game progress is saved on the server.
+          </p>
+          <button className="btn-primary" onClick={reconnect}>
+            🔄 Reconnect to Game
+          </button>
+          <button 
+            className="btn-text" 
+            onClick={() => {
+              sessionStorage.clear();
+              window.location.reload();
+            }} 
+            style={{ marginTop: '12px', display: 'block', margin: '12px auto 0' }}
+          >
+            Start Fresh (Leave Game)
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!connected) {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
         <p>Connecting to game server...</p>
+        <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '8px' }}>
+          This may take a moment if the server was sleeping.
+        </p>
       </div>
     );
   }
