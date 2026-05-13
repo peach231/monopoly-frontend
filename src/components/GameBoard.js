@@ -348,10 +348,24 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     setTimeout(() => setFloatingTexts(prev => prev.filter(f => !ids.has(f.id))), 2200);
   }, []);
 
+  // REMOVED: Don't auto-sync gameState.dice into diceAnim while not rolling.
+  // That useEffect was causing dice to visually change AFTER the animation stopped
+  // because gameState updates asynchronously and would overwrite the final values.
+
+  // FIX: Only sync dice from gameState when it's NOT our turn (watching others roll)
+  // or when no animation is active. This prevents the "dice change after landing" bug.
   useEffect(() => {
-    if (gameState?.dice && !diceAnim.isRolling)
+    if (!gameState?.dice) return;
+    if (diceAnim.isRolling) return;
+    // Don't overwrite if we just rolled and the animation finished
+    // Only sync when gameState dice differ from what's displayed
+    const [d1, d2] = gameState.dice;
+    const [v1, v2] = diceAnim.values;
+    if (d1 !== v1 || d2 !== v2) {
       setDiceAnim(prev => ({ ...prev, values: gameState.dice }));
-  }, [gameState?.dice, diceAnim.isRolling]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.dice]);
 
   useEffect(() => {
     if (gameState?.pendingCard) {
@@ -748,13 +762,16 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         return;
       }
 
+      // FIX: Use the dice values returned directly from the server response,
+      // NOT gameState?.dice which is stale from the previous render closure.
+      const finalDice = res.dice || [1, 1];
       const remaining = Math.max(0, 1200 - (Date.now() - startTime));
       setTimeout(() => {
         if (diceIntervalRef.current) {
           clearInterval(diceIntervalRef.current);
           diceIntervalRef.current = null;
         }
-        setDiceAnim(prev => ({ ...prev, isRolling: false, values: gameState?.dice || prev.values }));
+        setDiceAnim({ isRolling: false, values: finalDice });
       }, remaining);
     } catch (err) {
       clearTimeout(animSafetyTimer);
