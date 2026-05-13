@@ -408,7 +408,8 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         if (diceIntervalRef.current) {
           clearInterval(diceIntervalRef.current);
           diceIntervalRef.current = null;
-          setDiceAnim(prev => ({ ...prev, isRolling: false, values: gameState.dice || prev.values }));
+          // FIX: Don't overwrite dice values here - let handleRoll set the final values
+          setDiceAnim(prev => ({ ...prev, isRolling: false }));
         }
       }
     }, 700);
@@ -719,6 +720,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         clearInterval(diceIntervalRef.current);
         diceIntervalRef.current = null;
       }
+      // FIX: Don't touch dice.values here, only stop rolling state
       setDiceAnim(prev => ({ ...prev, isRolling: false }));
     }
   }, [gameState?.turnPhase]);
