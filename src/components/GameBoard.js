@@ -10,7 +10,7 @@ import {
   diceRoll, tokenMove, tokenLand, buyProperty, payRent,
   goToJail, drawCard, buildHouse, tradeComplete, freeParking,
   bankruptcy, gameOver
-} from './audio';
+} from '../audio';
 
 const BOARD_TILES = [
   { id: 0, name: "START", type: "corner" },
