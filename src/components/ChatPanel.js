@@ -34,7 +34,8 @@ export default function ChatPanel({
   onClose, 
   isOpen,
   hasNudged,
-  soundEnabled
+  soundEnabled,
+  onToggleSound
 }) {
   const [input, setInput] = useState('');
 
@@ -46,16 +47,21 @@ export default function ChatPanel({
 
   const me = players.find(p => p.id === myId);
 
-  // Auto-scroll to bottom on new messages unless user scrolled up
+  // Auto-scroll to bottom only for messages from OTHERS (not your own)
+  // When you send, your screen stays exactly where you are
   useEffect(() => {
     if (messages.length > prevMessagesLength.current) {
+      const lastMsg = messages[messages.length - 1];
+      const isFromMe = lastMsg && lastMsg.playerId === myId;
+
+      // Only auto-scroll for messages from others, and only if not manually scrolled up
       const container = messagesContainerRef.current;
-      if (container && !scrolledUp) {
+      if (container && !scrolledUp && !isFromMe) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
+
       // Play beep for new messages from others when sound is enabled
-      const lastMsg = messages[messages.length - 1];
-      if (soundEnabled && lastMsg && lastMsg.playerId !== myId && lastMsg.type !== 'system') {
+      if (soundEnabled && lastMsg && !isFromMe && lastMsg.type !== 'system') {
         chatReceive();
       }
     }
@@ -85,10 +91,8 @@ export default function ChatPanel({
     }
     onSend(trimmed);
     setInput('');
-    setScrolledUp(false);
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
+    // Don't force scroll on send — stay where user is typing
+    // Only scroll to bottom when receiving messages from others
   }, [input, onSend, soundEnabled]);
 
   const handleKeyDown = (e) => {
@@ -109,12 +113,13 @@ export default function ChatPanel({
           <span className="chat-online-count">{onlineCount} online</span>
         </div>
         <div className="chat-header-right">
-          <span 
+          <button 
             className={`chat-sound-toggle ${soundEnabled ? 'on' : ''}`}
+            onClick={onToggleSound}
             title={soundEnabled ? 'Sound on' : 'Sound off'}
           >
             {soundEnabled ? '🔊' : '🔇'}
-          </span>
+          </button>
           <button className="chat-close" onClick={onClose} title="Close chat">✕</button>
         </div>
       </div>
