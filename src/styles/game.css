@@ -3672,3 +3672,35 @@
   color: #ffe082;
   background: rgba(255,224,130,0.2);
 }
+
+/* ============================================
+   CHAT CENSOR PREVIEW
+   ============================================ */
+
+.chat-censor-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff3e0;
+  border-bottom: 1px solid #ffe0b2;
+  font-size: 0.8rem;
+  animation: censorSlide 0.3s ease-out;
+}
+
+@keyframes censorSlide {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.chat-censor-label {
+  color: #e65100;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.chat-censor-text {
+  color: #333;
+  font-style: italic;
+  word-break: break-word;
+}
