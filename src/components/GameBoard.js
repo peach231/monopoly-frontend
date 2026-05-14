@@ -5,6 +5,12 @@ import TradeModal from './Modals/TradeModal';
 import AuctionModal from './Modals/AuctionModal';
 import PropertyModal from './Modals/PropertyModal';
 import PlayerProfileModal from './Modals/PlayerProfileModal';
+import ChatPanel from './ChatPanel';
+import {
+  diceRoll, tokenMove, tokenLand, buyProperty, payRent,
+  goToJail, drawCard, buildHouse, tradeComplete, freeParking,
+  bankruptcy, gameOver
+} from './audio';
 
 const BOARD_TILES = [
   { id: 0, name: "START", type: "corner" },
@@ -307,7 +313,10 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   const [showTrade, setShowTrade] = useState(false);
   const [showProperty, setShowProperty] = useState(null);
   const [showPlayerProfile, setShowPlayerProfile] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatUnread, setChatUnread] = useState(0);
+  const [hasNudged, setHasNudged] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [bidAmount, setBidAmount] = useState('');
   const [hoppingTokens, setHoppingTokens] = useState({});
   const [animatedPositions, setAnimatedPositions] = useState({});
@@ -414,6 +423,20 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
 
   useEffect(() => {
     if (!gameState?.log || !gameState?.players) return;
+
+    // Audio triggers based on log entries
+    if (soundEnabled) {
+      const latest = gameState.log[gameState.log.length - 1] || '';
+      if (latest.includes('paid') && latest.includes('rent')) payRent();
+      else if (latest.includes('was sent to Jail') || latest.includes('Go to Prison')) goToJail();
+      else if (latest.includes('collected') && latest.includes('Free Vacation')) freeParking();
+      else if (latest.includes('went bankrupt')) bankruptcy();
+      else if (latest.includes('wins the game')) gameOver();
+      else if (latest.includes('built a house')) buildHouse();
+      else if (latest.includes('completed a trade')) tradeComplete();
+      else if (latest.includes('drew a') || latest.includes('card')) drawCard();
+    }
+
     const currentLength = gameState.log.length;
     if (prevLogLengthRef.current === null) { prevLogLengthRef.current = currentLength; return; }
     if (currentLength <= prevLogLengthRef.current) { prevLogLengthRef.current = currentLength; return; }
@@ -590,6 +613,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
           movingPlayersRef.current.delete(player.id);
           setAnimatedPositions(prev => { const n = { ...prev }; delete n[player.id]; return n; });
           prevPositionsRef.current[player.id] = currPos;
+          if (soundEnabled) tokenLand();
           if (movingPlayersRef.current.size === 0 && movingCurrentPlayerRef.current === null) {
             const ft = setTimeout(() => {
               if (pendingFloatsRef.current.length > 0) {
@@ -614,6 +638,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         }
         setAnimatedPositions(prev => ({ ...prev, [player.id]: path[step] }));
         setHoppingTokens(prev => ({ ...prev, [player.id]: true }));
+        if (soundEnabled) tokenMove();
         const t1 = setTimeout(() => {
           setHoppingTokens(prev => { const n = { ...prev }; delete n[player.id]; return n; });
         }, 260);
@@ -715,6 +740,8 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
       return;
     }
 
+    if (soundEnabled) diceRoll();
+
     if (diceIntervalRef.current) { clearInterval(diceIntervalRef.current); diceIntervalRef.current = null; }
     // Don't reset to [1,1] — keep whatever values are already showing
     setDiceAnim(prev => ({ ...prev, isRolling: true }));
@@ -753,7 +780,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     }
   };
 
-  const handleBuy        = async () => { const r = sessionStorage.getItem('roomCode'); await emit('buyProperty',    { roomCode: r, playerId }); };
+  const handleBuy        = async () => { const r = sessionStorage.getItem('roomCode'); if (soundEnabled) buyProperty(); await emit('buyProperty',    { roomCode: r, playerId }); };
   const handleAuction    = async () => { const r = sessionStorage.getItem('roomCode'); await emit('startAuction',  { roomCode: r, playerId }); };
   const handleEndTurn    = async () => { const r = sessionStorage.getItem('roomCode'); await emit('endTurn',       { roomCode: r, playerId }); };
   const handlePayJail    = async () => { const r = sessionStorage.getItem('roomCode'); await emit('payJailFine',   { roomCode: r, playerId }); };
@@ -774,8 +801,31 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     await emit('placeBid', { roomCode, playerId, amount });
     setBidAmount('');
   };
-  const copyLink = () => {
-    navigator.clipboard.writeText(getShareLink()).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+  // Chat nudge logic: show hint on first message received
+  useEffect(() => {
+    if (!gameState?.chatMessages) return;
+    const msgs = gameState.chatMessages;
+    const lastMsg = msgs[msgs.length - 1];
+    if (!lastMsg || lastMsg.playerId === playerId) return;
+    if (!chatOpen) {
+      setChatUnread(prev => prev + 1);
+      if (!hasNudged && msgs.length <= 3) {
+        setHasNudged(true);
+      }
+    }
+  }, [gameState?.chatMessages?.length]);
+
+  const handleToggleChat = () => {
+    setChatOpen(prev => !prev);
+    if (!chatOpen) {
+      setChatUnread(0);
+      setHasNudged(false);
+    }
+  };
+
+  const handleSendMessage = async (text) => {
+    const roomCode = sessionStorage.getItem('roomCode');
+    await emit('sendMessage', { roomCode, playerId, text });
   };
 
   const getPlayersOnTile = (tileId) => gameState?.players.filter(p => {
@@ -802,7 +852,6 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
       <div className="top-bar">
         <div className="room-info">
           <span className="room-code">Room: {gameState?.roomCode}</span>
-          <button className="btn-small" onClick={copyLink}>{copied ? 'Copied!' : 'Share Link'}</button>
         </div>
         <div className="game-status">
           {gameState?.status === 'waiting' && (
@@ -812,6 +861,22 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
             <span className="turn-indicator">{currentPlayer?.name}'s Turn</span>
           )}
         </div>
+        <button 
+          className={`sound-toggle ${soundEnabled ? 'on' : ''}`}
+          onClick={() => setSoundEnabled(!soundEnabled)}
+          title={soundEnabled ? 'Sound on' : 'Sound off'}
+        >
+          {soundEnabled ? '🔊' : '🔇'}
+        </button>
+        <button 
+          className={`chat-toggle ${chatUnread > 0 ? 'has-unread' : ''} ${hasNudged ? 'nudge' : ''}`}
+          onClick={handleToggleChat}
+          title={chatOpen ? 'Close chat' : 'Open chat'}
+        >
+          <span className="chat-toggle-icon">💬</span>
+          {chatUnread > 0 && <span className="chat-badge">{chatUnread}</span>}
+          {hasNudged && chatUnread === 0 && <span className="chat-nudge-dot" />}
+        </button>
       </div>
 
       <div className="game-layout">
@@ -1124,6 +1189,17 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
                        onMortgage={async () => { const r = sessionStorage.getItem('roomCode'); await emit('mortgageProperty',  { roomCode: r, playerId, propertyId: showProperty }); }}
                        onUnmortgage={async () => { const r = sessionStorage.getItem('roomCode'); await emit('unmortgageProperty',{ roomCode: r, playerId, propertyId: showProperty }); }}/>
       )}
+
+      <ChatPanel
+        messages={gameState?.chatMessages || []}
+        players={gameState?.players || []}
+        myId={playerId}
+        onSend={handleSendMessage}
+        onClose={() => setChatOpen(false)}
+        isOpen={chatOpen}
+        hasNudged={hasNudged}
+        soundEnabled={soundEnabled}
+      />
     </div>
   );
 }
