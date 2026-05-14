@@ -39,7 +39,7 @@ export default function ChatPanel({
 }) {
   const [input, setInput] = useState('');
 
-  const [scrolledUp, setScrolledUp] = useState(false);
+
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const inputRef = useRef(null);
@@ -47,18 +47,11 @@ export default function ChatPanel({
 
   const me = players.find(p => p.id === myId);
 
-  // Auto-scroll to bottom only for messages from OTHERS (not your own)
-  // When you send, your screen stays exactly where you are
+  // Never auto-scroll on any message — all players stay where they are
   useEffect(() => {
     if (messages.length > prevMessagesLength.current) {
       const lastMsg = messages[messages.length - 1];
       const isFromMe = lastMsg && lastMsg.playerId === myId;
-
-      // Only auto-scroll for messages from others, and only if not manually scrolled up
-      const container = messagesContainerRef.current;
-      if (container && !scrolledUp && !isFromMe) {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }
 
       // Play beep for new messages from others when sound is enabled
       if (soundEnabled && lastMsg && !isFromMe && lastMsg.type !== 'system') {
@@ -66,7 +59,7 @@ export default function ChatPanel({
       }
     }
     prevMessagesLength.current = messages.length;
-  }, [messages.length, scrolledUp, soundEnabled, myId]);
+  }, [messages.length, soundEnabled, myId]);
 
   // Focus input when opened
   useEffect(() => {
@@ -75,13 +68,7 @@ export default function ChatPanel({
     }
   }, [isOpen]);
 
-  // Handle scroll to detect if user is reading history
-  const handleScroll = useCallback(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return;
-    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 30;
-    setScrolledUp(!isAtBottom);
-  }, []);
+
 
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
@@ -134,7 +121,6 @@ export default function ChatPanel({
       <div 
         className="chat-messages" 
         ref={messagesContainerRef}
-        onScroll={handleScroll}
       >
         {messages.length === 0 ? (
           <div className="chat-empty">
@@ -203,17 +189,7 @@ export default function ChatPanel({
         <div ref={messagesEndRef} />
       </div>
 
-      {scrolledUp && messages.length > 0 && (
-        <button 
-          className="chat-scroll-bottom"
-          onClick={() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            setScrolledUp(false);
-          }}
-        >
-          ↓ New messages
-        </button>
-      )}
+
 
       <div className="chat-input-bar">
         <div className="chat-input-wrapper">
