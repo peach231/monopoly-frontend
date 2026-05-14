@@ -1199,6 +1199,7 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         isOpen={chatOpen}
         hasNudged={hasNudged}
         soundEnabled={soundEnabled}
+        onToggleSound={() => setSoundEnabled(prev => !prev)}
       />
     </div>
   );
