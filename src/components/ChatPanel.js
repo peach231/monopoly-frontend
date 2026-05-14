@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { chatReceive, chatSend } from '../audio';
+import { censorMessage } from '../chatFilter';
 
 const TOKEN_EMOJI = {
   backpack: '🎒', textbooks: '📚', 'graduation-hat': '🎓', pencil: '✏️',
