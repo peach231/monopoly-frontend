@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { chatReceive, chatSend } from '../audio';
 
 const TOKEN_EMOJI = {
   backpack: '🎒', textbooks: '📚', 'graduation-hat': '🎓', pencil: '✏️',
@@ -20,7 +21,6 @@ function formatTime(timestamp) {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-import { chatReceive, chatSend } from '../audio';
 
 function formatExactTime(timestamp) {
   return new Date(timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
