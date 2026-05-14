@@ -38,6 +38,7 @@ export default function ChatPanel({
   onToggleSound
 }) {
   const [input, setInput] = useState('');
+  const [censoredPreview, setCensoredPreview] = useState(null);
 
 
   const messagesEndRef = useRef(null);
@@ -73,13 +74,18 @@ export default function ChatPanel({
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
     if (!trimmed || trimmed.length > 200) return;
+
+    // Censor before sending
+    const { censored, wasFiltered } = censorMessage(trimmed);
+
     if (soundEnabled) {
       chatSend();
     }
-    onSend(trimmed);
+    onSend(censored);
     setInput('');
-    // Don't force scroll on send — stay where user is typing
-    // Only scroll to bottom when receiving messages from others
+    setCensoredPreview(wasFiltered ? { original: trimmed, clean: censored } : null);
+    // Clear preview after 3 seconds
+    setTimeout(() => setCensoredPreview(null), 3000);
   }, [input, onSend, soundEnabled]);
 
   const handleKeyDown = (e) => {
@@ -191,6 +197,12 @@ export default function ChatPanel({
 
 
 
+      {censoredPreview && (
+        <div className="chat-censor-preview">
+          <span className="chat-censor-label">Filtered:</span>
+          <span className="chat-censor-text">{censoredPreview.clean}</span>
+        </div>
+      )}
       <div className="chat-input-bar">
         <div className="chat-input-wrapper">
           <textarea
