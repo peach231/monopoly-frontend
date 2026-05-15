@@ -828,6 +828,12 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
     await emit('sendMessage', { roomCode, playerId, text });
   };
 
+  const handleToggleAutoMortgage = async () => {
+    const roomCode = sessionStorage.getItem('roomCode');
+    const newValue = !(me?.autoMortgage);
+    await emit('setAutoMortgage', { roomCode, playerId, enabled: newValue });
+  };
+
   const getPlayersOnTile = (tileId) => gameState?.players.filter(p => {
     if (p.isBankrupt) return false;
     const disp = animatedPositions[p.id] !== undefined ? animatedPositions[p.id] : p.position;
@@ -849,6 +855,18 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         </div>
       )}
 
+      {me?.inDebt && !me.isBankrupt && (
+        <div className="debt-banner" role="alert">
+          <span className="debt-banner-icon">⚠️</span>
+          <div className="debt-banner-content">
+            <div className="debt-banner-title">You owe ${me.debtAmount}</div>
+            <div className="debt-banner-sub">
+              You can't roll until you're back in the green. Trade, mortgage properties, or sell houses to recover.
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="top-bar">
         <div className="room-info">
           <span className="room-code">Room: {gameState?.roomCode}</span>
@@ -861,6 +879,18 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
             <span className="turn-indicator">{currentPlayer?.name}'s Turn</span>
           )}
         </div>
+        {gameState?.status === 'playing' && me && !me.isBankrupt && (
+          <button
+            className={`auto-mortgage-toggle ${me.autoMortgage ? 'on' : ''}`}
+            onClick={handleToggleAutoMortgage}
+            title={me.autoMortgage
+              ? 'Auto-mortgage is ON. Properties will be mortgaged automatically when you owe money.'
+              : 'Auto-mortgage is OFF. You will manage debt manually.'}
+          >
+            <span className="auto-mortgage-indicator-dot" />
+            Auto-mortgage: {me.autoMortgage ? 'ON' : 'OFF'}
+          </button>
+        )}
         <button 
           className={`sound-toggle ${soundEnabled ? 'on' : ''}`}
           onClick={() => setSoundEnabled(!soundEnabled)}
@@ -1026,9 +1056,21 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         {gameState?.status === 'playing' && isCurrentPlayer && !currentPlayerMoving && (
           <>
             {gameState.turnPhase === 'roll' && (
-              <button className="btn-control btn-roll" onClick={handleRoll} disabled={diceAnim.isRolling}>
-                {diceAnim.isRolling ? '🎲 Rolling...' : gameState?.extraRoll ? '🎲 Roll Again (Doubles!)' : '🎲 Roll Dice'}
+              <button
+                className={`btn-control btn-roll ${me?.inDebt ? 'blocked-by-debt' : ''}`}
+                onClick={handleRoll}
+                disabled={diceAnim.isRolling || !!me?.inDebt}
+                title={me?.inDebt ? `You owe $${me.debtAmount}. Resolve debt before rolling.` : ''}
+              >
+                {me?.inDebt
+                  ? `⛔ Can't Roll (Owe $${me.debtAmount})`
+                  : diceAnim.isRolling ? '🎲 Rolling...' : gameState?.extraRoll ? '🎲 Roll Again (Doubles!)' : '🎲 Roll Dice'}
               </button>
+            )}
+
+            {/* Allow trading any time the player is in debt during their own turn */}
+            {me?.inDebt && gameState.turnPhase === 'roll' && (
+              <button className="btn-control" onClick={() => setShowTrade(true)}>🤝 Trade</button>
             )}
 
             {gameState.turnPhase === 'buy' && !diceAnim.isRolling && (
