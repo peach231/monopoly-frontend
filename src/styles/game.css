@@ -3838,6 +3838,50 @@
   box-shadow: 0 0 6px rgba(255,255,255,0.7);
 }
 
+.auto-mortgage-toggle.pending {
+  opacity: 0.75;
+  cursor: wait;
+  pointer-events: none;
+}
+
+.auto-mortgage-toggle:disabled {
+  cursor: not-allowed;
+}
+
+/* ============================================
+   GAME TOAST (transient feedback)
+   ============================================ */
+.game-toast {
+  position: fixed;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: 'Outfit', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  z-index: 9999;
+  animation: gameToastSlide 0.25s ease-out;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.game-toast-success {
+  background: linear-gradient(135deg, #2e7d32, #43a047);
+}
+
+.game-toast-error {
+  background: linear-gradient(135deg, #c5392a, #8b0000);
+}
+
+@keyframes gameToastSlide {
+  from { transform: translate(-50%, -20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
 /* Player card visual when in debt */
 .player-card.in-debt {
   background: linear-gradient(135deg, #ffe5e0 0%, #ffd2cc 100%);
