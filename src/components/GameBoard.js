@@ -879,16 +879,17 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
             <span className="turn-indicator">{currentPlayer?.name}'s Turn</span>
           )}
         </div>
-        {gameState?.status === 'playing' && me && !me.isBankrupt && (
+        {gameState && me && !me.isBankrupt && (gameState.status === 'playing' || gameState.status === 'waiting') && (
           <button
+            type="button"
             className={`auto-mortgage-toggle ${me.autoMortgage ? 'on' : ''}`}
             onClick={handleToggleAutoMortgage}
             title={me.autoMortgage
-              ? 'Auto-mortgage is ON. Properties will be mortgaged automatically when you owe money.'
-              : 'Auto-mortgage is OFF. You will manage debt manually.'}
+              ? 'Auto-mortgage is ON. Properties will be mortgaged automatically when you owe money. Click to turn OFF.'
+              : 'Auto-mortgage is OFF. You will manage debt manually. Click to turn ON.'}
           >
-            <span className="auto-mortgage-indicator-dot" />
-            Auto-mortgage: {me.autoMortgage ? 'ON' : 'OFF'}
+            <span className="auto-mortgage-indicator-dot" aria-hidden="true" />
+            <span className="auto-mortgage-label">Auto-mortgage: {me.autoMortgage ? 'ON' : 'OFF'}</span>
           </button>
         )}
         <button 
