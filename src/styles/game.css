@@ -3060,33 +3060,47 @@
 }
 
 /* Owner dot, houses, hotel */
+/* IMPORTANT: explicitly reset base .owner-dot (top:3px; right:3px) on each side
+   so the dot positions correctly on every airport (incl. HND on the top row). */
 .tile-airport[data-side="bottom"] .owner-dot,
 .tile-airport[data-side="bottom"] .houses-indicator,
 .tile-airport[data-side="bottom"] .hotel-indicator {
   top: 18%;
+  bottom: auto;
   left: 50%;
+  right: auto;
   transform: translateX(-50%);
+  z-index: 5;
 }
 .tile-airport[data-side="top"] .owner-dot,
 .tile-airport[data-side="top"] .houses-indicator,
 .tile-airport[data-side="top"] .hotel-indicator {
+  top: auto;
   bottom: 18%;
   left: 50%;
+  right: auto;
   transform: translateX(-50%);
+  z-index: 5;
 }
 .tile-airport[data-side="left"] .owner-dot,
 .tile-airport[data-side="left"] .houses-indicator,
 .tile-airport[data-side="left"] .hotel-indicator {
   top: 50%;
+  bottom: auto;
   right: 18%;
+  left: auto;
   transform: translateY(-50%);
+  z-index: 5;
 }
 .tile-airport[data-side="right"] .owner-dot,
 .tile-airport[data-side="right"] .houses-indicator,
 .tile-airport[data-side="right"] .hotel-indicator {
   top: 50%;
+  bottom: auto;
   left: 18%;
+  right: auto;
   transform: translateY(-50%);
+  z-index: 5;
 }
 
 /* Price edge */
@@ -3703,4 +3717,137 @@
   color: #333;
   font-style: italic;
   word-break: break-word;
+}
+
+/* ============================================
+   DEBT / NEGATIVE BALANCE BANNER & CONTROLS
+   ============================================ */
+.debt-banner {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #c5392a, #8b0000);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(197, 57, 42, 0.5);
+  z-index: 1000;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 90%;
+  animation: debtPulse 1.5s ease-in-out infinite;
+  border: 2px solid #fff;
+}
+
+@keyframes debtPulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(197, 57, 42, 0.5); }
+  50% { box-shadow: 0 4px 24px rgba(197, 57, 42, 0.9), 0 0 32px rgba(255, 50, 50, 0.4); }
+}
+
+.debt-banner-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.debt-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.debt-banner-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.debt-banner-sub {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Auto-mortgage toggle button (in top bar) */
+.auto-mortgage-toggle {
+  background: transparent;
+  border: 2px solid #ccc;
+  color: #ccc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auto-mortgage-toggle:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+.auto-mortgage-toggle.on {
+  background: #f7941d;
+  border-color: #f7941d;
+  color: #1a1a1a;
+}
+
+.auto-mortgage-toggle.on:hover {
+  background: #ffa733;
+  border-color: #ffa733;
+}
+
+.auto-mortgage-indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.auto-mortgage-toggle.on .auto-mortgage-indicator-dot {
+  opacity: 1;
+}
+
+/* Player card visual when in debt */
+.player-card.in-debt {
+  background: linear-gradient(135deg, #ffe5e0 0%, #ffd2cc 100%);
+  border-left: 4px solid #c5392a;
+  animation: debtCardPulse 2s ease-in-out infinite;
+}
+
+@keyframes debtCardPulse {
+  0%, 100% { border-left-color: #c5392a; }
+  50% { border-left-color: #ff5040; }
+}
+
+.debt-badge {
+  display: inline-block;
+  background: #c5392a;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.player-money.negative {
+  color: #c5392a;
+  font-weight: 800;
+}
+
+/* Roll button when blocked by debt */
+.btn-control.btn-roll.blocked-by-debt {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
