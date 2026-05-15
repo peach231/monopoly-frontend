@@ -326,6 +326,11 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   const [floatingTexts, setFloatingTexts] = useState([]);
   const [displayCard, setDisplayCard] = useState(null);
   const [currentPlayerMoving, setCurrentPlayerMoving] = useState(false);
+  // Optimistic state for auto-mortgage so the button flips instantly on click;
+  // null = follow server state, true/false = pending override until server confirms.
+  const [optimisticAutoMortgage, setOptimisticAutoMortgage] = useState(null);
+  const [autoMortgagePending, setAutoMortgagePending] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const prevPositionsRef = useRef({});
   const diceIntervalRef = useRef(null);
@@ -829,10 +834,79 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
   };
 
   const handleToggleAutoMortgage = async () => {
+    // Guard against double-clicks
+    if (autoMortgagePending) return;
+
+    // Use server state as source of truth, fall back to false if missing
+    const currentServerValue = !!me?.autoMortgage;
+    // If we have an optimistic override pending, base off of that instead
+    const currentDisplayed = optimisticAutoMortgage !== null ? optimisticAutoMortgage : currentServerValue;
+    const newValue = !currentDisplayed;
+
     const roomCode = sessionStorage.getItem('roomCode');
-    const newValue = !(me?.autoMortgage);
-    await emit('setAutoMortgage', { roomCode, playerId, enabled: newValue });
+    if (!roomCode) {
+      setToast({ type: 'error', message: 'No room code found. Please refresh.' });
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+    if (!playerId) {
+      setToast({ type: 'error', message: 'No player ID. Please refresh.' });
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
+    // Flip the UI immediately so the user sees instant feedback
+    setOptimisticAutoMortgage(newValue);
+    setAutoMortgagePending(true);
+
+    console.log('[auto-mortgage] toggling to', newValue, { roomCode, playerId });
+
+    try {
+      const res = await emit('setAutoMortgage', { roomCode, playerId, enabled: newValue });
+      console.log('[auto-mortgage] server response:', res);
+
+      if (!res || !res.success) {
+        // Revert optimistic update on failure
+        setOptimisticAutoMortgage(null);
+        setToast({
+          type: 'error',
+          message: res?.message || 'Failed to toggle auto-mortgage. Server did not respond.'
+        });
+        setTimeout(() => setToast(null), 4000);
+      } else {
+        // Success — show brief confirmation toast
+        setToast({
+          type: 'success',
+          message: newValue
+            ? '✓ Auto-mortgage ON — properties will be mortgaged automatically when you owe money'
+            : '✓ Auto-mortgage OFF — you control debt manually'
+        });
+        setTimeout(() => setToast(null), 2500);
+        // Clear optimistic state after a short delay; server state will take over
+        setTimeout(() => setOptimisticAutoMortgage(null), 800);
+      }
+    } catch (err) {
+      console.error('[auto-mortgage] error:', err);
+      setOptimisticAutoMortgage(null);
+      setToast({ type: 'error', message: 'Network error. Please try again.' });
+      setTimeout(() => setToast(null), 4000);
+    } finally {
+      setAutoMortgagePending(false);
+    }
   };
+
+  // Effective auto-mortgage value for display: optimistic if set, else server state
+  const effectiveAutoMortgage = optimisticAutoMortgage !== null
+    ? optimisticAutoMortgage
+    : !!me?.autoMortgage;
+
+  // Once server state catches up with our optimistic value, clear the override
+  useEffect(() => {
+    if (optimisticAutoMortgage === null) return;
+    if (me && me.autoMortgage === optimisticAutoMortgage) {
+      setOptimisticAutoMortgage(null);
+    }
+  }, [me?.autoMortgage, optimisticAutoMortgage]);
 
   const getPlayersOnTile = (tileId) => gameState?.players.filter(p => {
     if (p.isBankrupt) return false;
@@ -852,6 +926,12 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
               {jailNotification.isMe ? 'YOU ARE GOING TO JAIL' : `${jailNotification.name} IS GOING TO JAIL`}
             </div>
           </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className={`game-toast game-toast-${toast.type}`} role="status">
+          {toast.message}
         </div>
       )}
 
@@ -882,14 +962,16 @@ export default function GameBoard({ gameState, playerId, emit, connected, onStar
         {gameState && me && !me.isBankrupt && (gameState.status === 'playing' || gameState.status === 'waiting') && (
           <button
             type="button"
-            className={`auto-mortgage-toggle ${me.autoMortgage ? 'on' : ''}`}
+            className={`auto-mortgage-toggle ${effectiveAutoMortgage ? 'on' : ''} ${autoMortgagePending ? 'pending' : ''}`}
             onClick={handleToggleAutoMortgage}
-            title={me.autoMortgage
-              ? 'Auto-mortgage is ON. Properties will be mortgaged automatically when you owe money. Click to turn OFF.'
-              : 'Auto-mortgage is OFF. You will manage debt manually. Click to turn ON.'}
+            disabled={autoMortgagePending}
+            aria-pressed={effectiveAutoMortgage}
+            title={effectiveAutoMortgage
+              ? 'Auto-mortgage is ON. When you owe money, your properties will be mortgaged/houses sold automatically. Click to turn OFF.'
+              : 'Auto-mortgage is OFF. When you owe money, you will manage it manually (mortgage properties, sell houses, trade). Click to turn ON.'}
           >
             <span className="auto-mortgage-indicator-dot" aria-hidden="true" />
-            <span className="auto-mortgage-label">Auto-mortgage: {me.autoMortgage ? 'ON' : 'OFF'}</span>
+            <span className="auto-mortgage-label">Auto-mortgage: {effectiveAutoMortgage ? 'ON' : 'OFF'}</span>
           </button>
         )}
         <button 
