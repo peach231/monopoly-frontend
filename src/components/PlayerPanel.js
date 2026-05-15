@@ -88,11 +88,12 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
         const isMe = player.id === myId;
         const isCurrent = player.id === currentPlayerId;
         const playerProps = properties.filter(p => p.ownerId === player.id);
+        const inDebt = player.inDebt && !player.isBankrupt;
 
         return (
           <div
             key={player.id}
-            className={`player-card ${isCurrent ? 'current' : ''} ${isMe ? 'me' : ''} ${player.isBankrupt ? 'bankrupt' : ''}`}
+            className={`player-card ${isCurrent ? 'current' : ''} ${isMe ? 'me' : ''} ${player.isBankrupt ? 'bankrupt' : ''} ${inDebt ? 'in-debt' : ''}`}
             onClick={() => onPlayerClick && onPlayerClick(player.id)}
             style={{ cursor: 'pointer' }}
           >
@@ -106,7 +107,14 @@ export default function PlayerPanel({ players, properties, currentPlayerId, myId
                   {player.isBankrupt && ' 💀'}
                   {!player.isConnected && ' ⚠️'}
                 </span>
-                <span className="player-money">${player.money}</span>
+                <span className={`player-money ${player.money < 0 ? 'negative' : ''}`}>
+                  ${player.money}
+                </span>
+                {inDebt && (
+                  <span className="debt-badge" title={`Owes $${player.debtAmount}`}>
+                    ⚠️ OWES ${player.debtAmount}
+                  </span>
+                )}
               </div>
               {isCurrent && <span className="turn-badge">▶</span>}
             </div>
